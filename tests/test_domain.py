@@ -116,6 +116,23 @@ class DomainTest(unittest.TestCase):
         self.assertAlmostEqual(comparisons[1].predicted_renewable_share, 0.65)
         self.assertAlmostEqual(comparisons[1].absolute_error, 0.25)
 
+    def test_baseline_ignores_periods_without_renewable_share_in_evaluation(self) -> None:
+        records = [
+            GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 50.0),
+            GenerationRecord(datetime(2026, 1, 1, 0), "termica", 50.0),
+            GenerationRecord(datetime(2026, 1, 1, 1), "hidraulica", 0.0),
+            GenerationRecord(datetime(2026, 1, 1, 1), "termica", 0.0),
+            GenerationRecord(datetime(2026, 1, 1, 2), "hidraulica", 75.0),
+            GenerationRecord(datetime(2026, 1, 1, 2), "termica", 25.0),
+        ]
+
+        prediction = predict_next_renewable_share(summarize_by_period(records), window=2)
+
+        self.assertEqual(prediction.evaluated_points, 1)
+        self.assertAlmostEqual(prediction.comparisons[0].predicted_renewable_share, 0.5)
+        self.assertAlmostEqual(prediction.comparisons[0].actual_renewable_share, 0.75)
+        self.assertAlmostEqual(prediction.mean_absolute_error or 0, 0.25)
+
     def test_baseline_rejects_invalid_window(self) -> None:
         with self.assertRaises(ValueError):
             predict_next_renewable_share([], window=0)
