@@ -48,7 +48,7 @@ radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-c
 
 O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
 
-A integração ONS é validada na suíte por fixture offline, cobrindo o formato `din_instante`, `nom_tipousina` e `val_geracaomwmed`. O comando real com `--fonte ons --ons-periodo YYYY-MM` é uma validação manual com rede e não faz parte da CI obrigatória.
+A integração ONS é validada na suíte por fixture offline, cobrindo o formato `din_instante`, `nom_tipousina` e `val_geracaomwmed`. A suíte também valida `data_source`, erro de download, payload não UTF-8 e limite local de tamanho. O comando real com `--fonte ons --ons-periodo YYYY-MM` é uma validação manual com rede e não faz parte da CI obrigatória.
 
 Para o primeiro build local experimental:
 

@@ -1,6 +1,6 @@
 # Contribuindo
 
-Obrigado por considerar contribuir com o **Radar da Transição Energética**. O projeto ainda está no início, então a melhor contribuição agora é ajudar a transformar o planejamento em uma primeira aplicação local simples, testável e bem documentada.
+Obrigado por considerar contribuir com o **Radar da Transição Energética**. O projeto ainda está no início, mas já possui uma primeira aplicação local em Python, com CLI, testes, cache JSON, exemplo offline e integração com a fonte pública ONS Geração por Usina em Base Horária.
 
 ## Antes de Começar
 
@@ -15,18 +15,27 @@ Leia estes documentos:
 
 ## Estado Atual
 
-O projeto ainda está em fase de planejamento e documentação. O scaffold Python, os comandos oficiais de instalação e a primeira implementação funcional serão definidos a partir da matriz de issues planejadas.
+A primeira fatia funcional já foi implementada. O projeto atualmente:
 
-Enquanto isso, contribuições úteis incluem:
+- carrega o exemplo embutido ou um CSV local;
+- carrega a fonte pública ONS com `--fonte ons --ons-periodo YYYY-MM`;
+- normaliza período, fonte e geração;
+- calcula participação renovável;
+- registra a origem da análise em `data_source`;
+- grava cache JSON local;
+- executa testes automatizados com `unittest`;
+- pode gerar um `.exe` local experimental com PyInstaller.
+
+Contribuições úteis agora incluem:
 
 - revisar clareza dos requisitos;
-- melhorar documentação;
+- melhorar documentação de execução, limites e fontes públicas;
 - propor dados sintéticos para testes;
-- validar fontes públicas de dados;
-- preparar issues pequenas e rastreáveis;
+- ampliar fixtures ONS para fontes ainda não classificadas na V0;
+- melhorar cache local e rastreabilidade de dados;
 - revisar critérios de aceite.
 
-A primeira fatia funcional deve priorizar scaffold Python, carregamento inicial de uma fonte pública, cálculo de participação renovável e testes automatizados de domínio.
+A próxima evolução recomendada é transformar o cache JSON em uma camada mais robusta, como SQLite ou DuckDB, mantendo testes offline e sem credenciais privadas.
 
 ## Padrão de Trabalho
 
@@ -34,11 +43,12 @@ Prefira mudanças pequenas, revisáveis e conectadas ao MVP.
 
 Exemplos de bons escopos:
 
-- documentar setup inicial;
-- adicionar teste para cálculo de participação renovável;
-- implementar carregamento de uma fonte pública;
+- documentar limite ou comportamento da fonte ONS;
+- adicionar fixture ONS com nova fonte ainda não classificada;
+- adicionar teste para cache ou serialização;
 - melhorar mensagem de erro para dados indisponíveis;
-- revisar uma tabela de requisitos.
+- revisar uma tabela de requisitos;
+- evoluir cache local sem depender de rede.
 
 Evite misturar documentação, arquitetura, UI, modelo e CI na mesma mudança quando esses tópicos puderem ser revisados separadamente.
 
@@ -68,20 +78,21 @@ Evite mensagens genéricas como `ajustes`, `final`, `mudancas` ou `update`.
 
 ## Testes
 
-Quando o scaffold Python existir, cada contribuição de código deve incluir ou atualizar testes compatíveis com o risco da mudança.
+Cada contribuição de código deve incluir ou atualizar testes compatíveis com o risco da mudança.
 
 Prioridades iniciais:
 
 - testes unitários para regras puras;
 - fixtures sintéticas para dados;
-- testes de integração leve para cache local;
+- testes de integração leve para cache local e serialização;
+- validações offline para a fonte ONS;
 - QA manual documentado para visualizações e alertas.
 
 Se uma mudança ainda não puder ser testada automaticamente, descreva claramente a validação manual feita.
 
 ## Checklist de Pull Request
 
-Este checklist é uma orientação inicial. Um PR template formal deve ser criado apenas depois que o projeto tiver scaffold Python, primeira fatia funcional, testes básicos e comando local documentado.
+Este checklist é uma orientação inicial. Um PR template formal continua adiado até o fluxo de contribuição ficar mais estável.
 
 Antes de abrir uma PR, confira:
 
@@ -108,6 +119,6 @@ Não inclua:
 
 ## Como Escolher Uma Issue
 
-Comece pela [matriz de issues](docs/matriz-issues.md). As primeiras contribuições recomendadas são documentação de setup, scaffold Python, carregamento inicial de dados e cálculo de participação renovável.
+Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial e cálculo de participação renovável já existem, boas contribuições agora estão em cache local, fixtures ONS, documentação de limites, integração climática e futura interface.
 
 Se uma issue parecer grande demais, divida em uma etapa menor com critério de aceite próprio.

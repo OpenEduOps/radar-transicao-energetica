@@ -61,7 +61,7 @@ Contribuidores:
 - Dado um conjunto de dados público válido, quando o usuário iniciar a análise, então o sistema deve calcular a participação renovável do período.
 - Dado um período mensal ONS válido a partir de 2022, quando o usuário executar `--fonte ons --ons-periodo YYYY-MM`, então o sistema deve baixar e normalizar o CSV público correspondente.
 - Dado que a análise use exemplo, CSV local ou ONS, quando o resultado JSON ou cache for gerado, então a origem dos dados deve aparecer em `data_source`.
-- Dado que a fonte pública ONS esteja indisponível, quando a coleta for executada, então o sistema deve informar erro claro sem traceback.
+- Dado que a fonte pública ONS esteja indisponível, acima do limite local ou com encoding inválido, quando a coleta for executada, então o sistema deve informar erro claro sem traceback.
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado um conjunto de dados insuficiente ou indisponível, quando a aplicação tentar carregar informações, então o sistema deve informar o problema sem quebrar o fluxo principal.
 - Dado um conjunto com fonte ainda não classificada na V0, quando a análise for concluída, então a fonte deve aparecer explicitamente como não classificada em vez de ficar implícita no cálculo.
@@ -76,7 +76,7 @@ Contribuidores:
 | --- | --- | --- | --- |
 | `TEST-001` | Unitário | `REQ-003` | Validar cálculo de participação renovável com dados sintéticos. |
 | `TEST-002` | Unitário | `REQ-003` | Validar tratamento de fontes ausentes ou valores zerados. |
-| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline e escrita/leitura de cache local. |
+| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download e escrita/leitura de cache local. |
 | `TEST-004` | Unitário | `REQ-006` | Validar treino e predição do modelo baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Verificar se gráfico, comparação e alerta são compreensíveis. |

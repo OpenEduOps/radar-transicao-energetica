@@ -181,6 +181,13 @@ Fonte pública consolidada na V0:
 
 - [ONS Geração por Usina em Base Horária](https://dados.ons.org.br/dataset/geracao-usina-2): geração verificada de usinas, conjuntos de usinas e grupos de pequenas usinas em base horária. A integração atual usa os CSVs mensais publicados no bucket público do ONS na AWS, no padrão `GERACAO_USINA-2_YYYY_MM.csv`.
 
+Limites e decisões da integração ONS V0:
+
+- arquivos anteriores a 2022, agrupados por ano, não entram nesta primeira integração;
+- a suíte automatizada usa fixtures offline e não baixa dados reais do ONS;
+- o resultado JSON e o cache registram a origem da análise em `data_source`;
+- a coleta manual com rede possui limite local de 200 MB por arquivo mensal.
+
 Fontes candidatas para o projeto:
 
 - [ONS Dados Abertos](https://dados.ons.org.br/dataset/?organization=ons&res_format=CSV): geração por fonte, dados operacionais, carga e informações do sistema elétrico.

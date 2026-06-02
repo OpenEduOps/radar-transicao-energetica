@@ -84,7 +84,7 @@ Limites assumidos:
 - o baseline atual é média móvel simples, não modelo de machine learning;
 - a visualização atual é textual, não desktop;
 - o cache atual é JSON, não SQLite ou DuckDB;
-- a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, mas a execução com rede ainda é manual e fora da CI obrigatória;
+- a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
 - não há release workflow, checksum, assinatura, smoke test formal ou build automático de artefato.
 
 Gate mínimo para considerar o primeiro `.exe` válido:
@@ -185,7 +185,7 @@ Commits sugeridos:
 
 Status: concluída para a primeira fonte pública real.
 
-A implementação atual consolida o dataset **ONS Geração por Usina em Base Horária** como primeira fonte pública real. O CLI aceita `--fonte ons --ons-periodo YYYY-MM`, baixa o CSV mensal público do ONS na AWS, normaliza colunas de período, tipo de usina e geração em MWmed, e mantém CSV local/exemplo embutido como caminho offline.
+A implementação atual consolida o dataset **ONS Geração por Usina em Base Horária** como primeira fonte pública real. O CLI aceita `--fonte ons --ons-periodo YYYY-MM`, baixa o CSV mensal público do ONS na AWS, normaliza colunas de período, tipo de usina e geração em MWmed, registra a origem da análise em `data_source` e mantém CSV local/exemplo embutido como caminho offline.
 
 Rastreabilidade:
 
@@ -202,6 +202,8 @@ Entregáveis:
 - decisão registrada sobre a fonte escolhida;
 - módulo `ons.py` para URL pública mensal e carregamento;
 - normalização mínima para formato tabular;
+- metadados `data_source` com origem da análise;
+- limite local de download por arquivo ONS;
 - fixtures ONS sintéticas equivalentes;
 - teste de carregamento/normalização e falha de download.
 
@@ -233,6 +235,8 @@ Critérios de aceite:
 
 - carregamento retorna dados em formato tratável;
 - erro de fonte indisponível é tratado de forma clara;
+- erro de arquivo acima do limite local é tratado de forma clara;
+- origem dos dados aparece no JSON e no cache;
 - normalização é coberta por teste;
 - dados privados ou credenciais não são necessários.
 
@@ -248,6 +252,9 @@ Validação implementada:
 - testes unitários de URL ONS mensal;
 - fixture offline com colunas `din_instante`, `nom_tipousina` e `val_geracaomwmed`;
 - teste de erro controlado quando a fonte pública não pode ser baixada;
+- teste de limite local de download;
+- teste de payload não UTF-8;
+- teste de `data_source` para exemplo, CSV local e ONS;
 - suíte automatizada sem dependência de rede.
 
 Commits sugeridos:
@@ -325,6 +332,7 @@ Checklist de saída da primeira fatia funcional:
 - scaffold Python existe;
 - comandos reais de instalação e teste estão documentados;
 - fonte pública inicial foi escolhida e normalizada;
+- origem da análise é rastreável em `data_source`;
 - cálculo de participação renovável roda sem UI;
 - testes de domínio passam localmente;
 - suíte automatizada não depende de rede.

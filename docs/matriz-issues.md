@@ -43,8 +43,8 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 
 - `ISSUE-001`: implementada com comandos reais no README.
 - `ISSUE-002`: implementada com `pyproject.toml`, pacote em `src` e testes.
-- `ISSUE-003`: implementada para a primeira fonte real com ONS Geração por Usina em Base Horária, mantendo carregador CSV local, aliases de colunas e exemplo offline.
-- `ISSUE-004`: parcialmente implementada com cache JSON local.
+- `ISSUE-003`: implementada para a primeira fonte real com ONS Geração por Usina em Base Horária, mantendo carregador CSV local, aliases de colunas, exemplo offline, limite local de download e `data_source`.
+- `ISSUE-004`: parcialmente implementada com cache JSON local que registra o payload da análise e a origem dos dados.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
 - `ISSUE-006`: parcialmente implementada com visualização textual.
 - `ISSUE-008`: parcialmente implementada com baseline por média móvel.
@@ -59,7 +59,7 @@ Pendências principais:
 
 ## Fatia Funcional Inicial
 
-A primeira fatia funcional deve se limitar a:
+A primeira fatia funcional foi planejada para se limitar a:
 
 - `ISSUE-002`: scaffold Python mínimo;
 - `ISSUE-003`: carregamento inicial de fonte pública;
@@ -68,9 +68,17 @@ A primeira fatia funcional deve se limitar a:
 
 Parte de `ISSUE-006`, `ISSUE-008` e `ISSUE-010` já foi antecipada em forma textual para viabilizar o primeiro `.exe` local. As versões completas dessas issues continuam planejadas.
 
+Critérios já atendidos para `ISSUE-003`:
+
+- fonte ONS escolhida e documentada;
+- CSV mensal público carregável por `--fonte ons --ons-periodo YYYY-MM`;
+- normalização ONS coberta por fixture offline;
+- erros de download, encoding e tamanho excessivo tratados sem traceback;
+- origem da análise registrada em `data_source` no JSON e cache.
+
 ## Backlog Adiado
 
-Estes itens não devem entrar nas primeiras issues. Eles ficam aguardando scaffold Python, primeira fatia funcional e testes básicos:
+Estes itens continuam fora do escopo atual. Eles ficam aguardando um fluxo mais estável de contribuição, interface e release:
 
 - `SECURITY.md`;
 - `CODE_OF_CONDUCT.md`;
@@ -80,7 +88,7 @@ Estes itens não devem entrar nas primeiras issues. Eles ficam aguardando scaffo
 - regras de branch protection;
 - CI completa com build de artefato.
 
-Esses tópicos voltam para a matriz apenas quando o projeto já tiver um fluxo local demonstrável e comandos oficiais de execução e teste.
+Esses tópicos voltam para a matriz quando o projeto tiver fluxo local demonstrável mais estável, interface inicial ou decisão clara de release.
 
 O build local experimental do `.exe` não altera esse backlog: release, smoke test formal e CI de artefato seguem adiados.
 
@@ -124,12 +132,12 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 
 ## Boas Candidatas Para Primeiras Contribuições
 
-- revisar documentação de setup quando o scaffold existir;
+- revisar documentação de setup e limites da fonte ONS;
 - adicionar teste unitário para cálculo de participação renovável;
 - criar dados sintéticos de teste;
 - melhorar mensagens de erro para dados ausentes;
 - revisar clareza de alertas educacionais;
-- validar links de dados públicos e instruções do README.
+- validar links de dados públicos e instruções do README;
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
 
 ## Evitar Como Primeira Issue
