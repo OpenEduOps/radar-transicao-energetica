@@ -1,0 +1,569 @@
+# Plano de Implementação
+
+Este plano organiza a implementação do **Radar da Transição Energética** a partir do escopo já documentado no [README](../README.md), em [requisitos](requisitos.md), [arquitetura](arquitetura.md), [matriz de issues](matriz-issues.md) e [CI/CD](ci.md).
+
+O projeto ainda está em planejamento público inicial. Este documento não inicia implementação; ele define a sequência recomendada para sair da documentação e chegar ao MVP funcional.
+
+## Objetivo
+
+Implementar uma aplicação Python local que carregue dados públicos de geração elétrica, calcule participação renovável, evolua para visualização por fonte, adicione modelo baseline e entregue alertas interpretáveis sem depender de credenciais privadas.
+
+## Escopo Atual
+
+### Primeira Fatia Funcional
+
+A primeira fatia funcional deve entregar:
+
+- scaffold Python mínimo;
+- carregamento inicial de uma fonte pública de geração elétrica;
+- cálculo de participação renovável;
+- testes automatizados para o cálculo;
+- instruções básicas de execução e teste.
+
+Esta fatia não deve incluir interface desktop, integração climática, modelo de machine learning, empacotamento como executável ou CI completa.
+
+### MVP Funcional
+
+O MVP funcional deve evoluir a primeira fatia para incluir:
+
+- cache local;
+- visualização inicial de geração por fonte;
+- modelo baseline para previsão ou classificação;
+- comparação entre dado real e previsão;
+- alerta interpretável para participação renovável ou pressão térmica;
+- documentação de instalação, execução e testes.
+
+### Itens Adiados
+
+Ficam fora da primeira fatia funcional e só devem voltar depois de base validada:
+
+- `SECURITY.md`;
+- `CODE_OF_CONDUCT.md`;
+- PR template formal;
+- workflow de release;
+- smoke test de executável;
+- regras de branch protection;
+- CI completa com build de artefato;
+- empacotamento final como `.exe`.
+
+## Estratégia de Implementação
+
+A implementação deve seguir uma ordem incremental:
+
+1. criar estrutura Python mínima;
+2. escolher uma fonte pública inicial;
+3. implementar carregamento e normalização;
+4. implementar cálculo de participação renovável;
+5. validar com dados sintéticos e testes automatizados;
+6. adicionar cache local;
+7. criar visualização inicial;
+8. adicionar modelo baseline;
+9. adicionar comparação e alerta interpretável;
+10. preparar automação e documentação compatíveis com o estado real do projeto.
+
+Cada etapa deve gerar uma entrega revisável, com commit próprio quando representar avanço verificável.
+
+## Fase 0: Preparação Documental
+
+Status: concluída.
+
+Entregas já disponíveis:
+
+- `README.md`;
+- `CONTRIBUTING.md`;
+- `docs/planejamento-inicial.md`;
+- `docs/requisitos.md`;
+- `docs/arquitetura.md`;
+- `docs/matriz-issues.md`;
+- `docs/ci.md`;
+- `docs/plano-implementacao.md`.
+
+Critério de aceite:
+
+- documentação pública mínima descreve produto, escopo, requisitos, arquitetura, matriz de issues, CI inicial e plano de implementação.
+
+Validação:
+
+- links locais da documentação resolvem corretamente;
+- template local de planejamento permanece ignorado pelo Git.
+
+## Fase 1: Scaffold Python Mínimo
+
+Rastreabilidade:
+
+- Issue: `ISSUE-002`;
+- Requisito: `REQ-009`;
+- Teste: `TEST-007`.
+
+Objetivo:
+
+Criar a estrutura mínima do projeto Python para permitir instalação local, execução simples e testes automatizados.
+
+Entregáveis:
+
+- `pyproject.toml`;
+- pacote em `src/radar_transicao_energetica`;
+- diretório `tests`;
+- módulo de entrada inicial;
+- instruções básicas no README ou documento de setup;
+- comando de teste documentado.
+
+Escopo:
+
+- definir metadados do pacote;
+- configurar dependências mínimas de desenvolvimento;
+- criar primeiro teste simples;
+- garantir que `python -m pytest` funcione.
+
+Fora de escopo:
+
+- interface desktop;
+- integração com dados reais;
+- machine learning;
+- CI completa;
+- empacotamento.
+
+Critérios de aceite:
+
+- o projeto instala em ambiente local;
+- o pacote importa sem erro;
+- a suíte de testes inicial executa;
+- a documentação informa como instalar e testar.
+
+Testes esperados:
+
+- teste de importação do pacote;
+- teste mínimo de sanidade.
+
+Commits sugeridos:
+
+- `Cria scaffold Python inicial`;
+- `Documenta comandos iniciais de setup`;
+- `Adiciona teste de sanidade do pacote`.
+
+## Fase 2: Fonte Pública Inicial
+
+Rastreabilidade:
+
+- Issue: `ISSUE-003`;
+- Requisito: `REQ-001`;
+- Teste: `TEST-003`.
+
+Objetivo:
+
+Escolher e implementar o carregamento inicial de uma fonte pública de geração elétrica.
+
+Entregáveis:
+
+- decisão registrada sobre a fonte escolhida;
+- função ou classe de carregamento;
+- normalização mínima para formato tabular;
+- fixtures ou dados sintéticos equivalentes;
+- teste de carregamento/normalização.
+
+Critérios para escolher a fonte:
+
+- dados públicos;
+- sem credenciais;
+- formato estável o suficiente para MVP;
+- possibilidade de testar normalização com fixture;
+- aderência a geração por fonte ou informação equivalente.
+
+Escopo:
+
+- carregar arquivo ou endpoint público;
+- validar colunas mínimas;
+- converter datas e valores numéricos;
+- retornar estrutura compatível com cálculo posterior.
+
+Fora de escopo:
+
+- múltiplas fontes simultâneas;
+- clima;
+- PLD;
+- UI;
+- cache persistente completo.
+
+Critérios de aceite:
+
+- carregamento retorna dados em formato tratável;
+- erro de fonte indisponível é tratado de forma clara;
+- normalização é coberta por teste;
+- dados privados ou credenciais não são necessários.
+
+Testes esperados:
+
+- fixture sintética válida;
+- fixture com coluna ausente;
+- fixture com valor inválido;
+- teste de tratamento de erro.
+
+Commits sugeridos:
+
+- `Registra fonte publica inicial`;
+- `Implementa carregamento de geracao eletrica`;
+- `Valida normalizacao de dados de geracao`.
+
+## Fase 3: Cálculo de Participação Renovável
+
+Rastreabilidade:
+
+- Issue: `ISSUE-005`;
+- Requisito: `REQ-003`;
+- Testes: `TEST-001`, `TEST-002`.
+
+Objetivo:
+
+Implementar a regra de domínio que calcula participação renovável por período.
+
+Entregáveis:
+
+- função pura de cálculo;
+- definição de fontes consideradas renováveis na V0;
+- testes com dados sintéticos;
+- tratamento de fontes ausentes, valores zerados e totais inválidos.
+
+Regra inicial sugerida:
+
+```text
+participacao_renovavel = geracao_renovavel_total / geracao_total
+```
+
+Fontes renováveis iniciais:
+
+- hidráulica;
+- eólica;
+- solar.
+
+Fonte não renovável inicial:
+
+- térmica.
+
+Critérios de aceite:
+
+- cálculo retorna percentual ou razão consistente;
+- total zero não causa divisão inválida;
+- fontes ausentes são tratadas explicitamente;
+- testes cobrem fluxo feliz e casos de exceção;
+- regra não depende de UI nem de rede.
+
+Testes esperados:
+
+- cálculo com todas as fontes;
+- cálculo sem uma fonte renovável;
+- cálculo com geração total zero;
+- cálculo com valores ausentes;
+- cálculo com fonte desconhecida.
+
+Commits sugeridos:
+
+- `Define regra de participacao renovavel`;
+- `Implementa calculo de renovabilidade`;
+- `Testa casos limite da participacao renovavel`.
+
+Marco de saída:
+
+Esta fase encerra a primeira fatia funcional quando combinada com scaffold, carregamento inicial e documentação de execução.
+
+## Fase 4: Cache Local
+
+Rastreabilidade:
+
+- Issue: `ISSUE-004`;
+- Requisito: `REQ-002`;
+- Teste: `TEST-003`;
+- NFR: `NFR-005`.
+
+Objetivo:
+
+Persistir dados carregados ou normalizados para reduzir dependência de rede e facilitar demonstrações.
+
+Entregáveis:
+
+- escolha entre SQLite e DuckDB;
+- camada de cache local;
+- leitura e escrita em diretório controlado;
+- testes usando diretório temporário.
+
+Critérios de aceite:
+
+- dados podem ser salvos e recuperados;
+- cache não exige serviço externo;
+- testes não escrevem fora de diretório temporário;
+- falha de cache não apaga dados do usuário sem confirmação.
+
+Commits sugeridos:
+
+- `Escolhe armazenamento local de cache`;
+- `Implementa cache local de dados`;
+- `Valida leitura e escrita de cache`.
+
+## Fase 5: Visualização Inicial
+
+Rastreabilidade:
+
+- Issue: `ISSUE-006`;
+- Requisito: `REQ-004`;
+- Teste: `TEST-006`.
+
+Objetivo:
+
+Criar a primeira visualização de geração por fonte.
+
+Entregáveis:
+
+- gráfico de geração por fonte;
+- estado sem dados;
+- estado de erro;
+- QA manual documentado.
+
+Escopo:
+
+- visualização local simples;
+- gráfico legível;
+- dados reais ou sintéticos normalizados;
+- sem fluxo visual complexo.
+
+Fora de escopo:
+
+- layout final;
+- acessibilidade completa;
+- empacotamento;
+- regressão visual automatizada.
+
+Critérios de aceite:
+
+- gráfico mostra fontes de forma comparável;
+- dados ausentes não quebram a visualização;
+- usuário entende o período e as fontes exibidas;
+- QA manual registra o cenário validado.
+
+Commits sugeridos:
+
+- `Cria visualizacao inicial por fonte`;
+- `Adiciona estados basicos de visualizacao`;
+- `Documenta QA da visualizacao inicial`.
+
+## Fase 6: Variáveis Climáticas
+
+Rastreabilidade:
+
+- Issue: `ISSUE-007`;
+- Requisito: `REQ-005`;
+- Teste: `TEST-003`.
+
+Objetivo:
+
+Integrar variáveis climáticas iniciais úteis para previsão ou interpretação.
+
+Entregáveis:
+
+- escolha de variáveis climáticas;
+- carregamento de dados climáticos públicos;
+- normalização por período;
+- integração com features.
+
+Variáveis candidatas:
+
+- vento;
+- radiação solar;
+- temperatura;
+- nebulosidade.
+
+Critérios de aceite:
+
+- integração não exige chave privada;
+- dados climáticos podem ser testados com fixture;
+- falha da fonte climática não impede cálculo de participação renovável;
+- documentação registra limitações.
+
+Commits sugeridos:
+
+- `Define variaveis climaticas iniciais`;
+- `Implementa carregamento climatico`;
+- `Integra clima a features do modelo`.
+
+## Fase 7: Modelo Baseline
+
+Rastreabilidade:
+
+- Issue: `ISSUE-008`;
+- Requisito: `REQ-006`;
+- Teste: `TEST-004`.
+
+Objetivo:
+
+Implementar um modelo baseline simples para previsão de participação renovável ou classificação de risco.
+
+Decisão pendente:
+
+- regressão para participação renovável;
+- classificação para risco baixo, médio ou alto.
+
+Recomendação inicial:
+
+Começar por regressão de participação renovável, porque a métrica é mais direta e a classificação pode ser derivada depois por faixas interpretáveis.
+
+Entregáveis:
+
+- pipeline de treino baseline;
+- divisão simples entre treino e validação;
+- métrica inicial;
+- teste com dataset mínimo;
+- documentação de limitações.
+
+Critérios de aceite:
+
+- modelo treina com dataset mínimo;
+- predição retorna formato esperado;
+- métrica é calculada;
+- limitações são explícitas;
+- modelo não depende de UI.
+
+Commits sugeridos:
+
+- `Define alvo inicial do modelo baseline`;
+- `Implementa treino baseline`;
+- `Valida predicao baseline com dataset minimo`.
+
+## Fase 8: Comparação e Alerta Interpretável
+
+Rastreabilidade:
+
+- Issues: `ISSUE-009`, `ISSUE-010`;
+- Requisitos: `REQ-007`, `REQ-008`;
+- Testes: `TEST-005`, `TEST-006`.
+
+Objetivo:
+
+Apresentar comparação entre dado real e previsão e gerar alerta compreensível para usuário não especialista.
+
+Entregáveis:
+
+- métrica ou comparação visual;
+- regra inicial de alerta;
+- mensagens educacionais;
+- teste da classificação textual;
+- QA manual.
+
+Alertas candidatos:
+
+- boa janela renovável;
+- atenção para queda de participação renovável;
+- maior dependência térmica;
+- dados insuficientes para alerta confiável.
+
+Critérios de aceite:
+
+- alerta usa linguagem clara;
+- regra é testável;
+- dados insuficientes geram mensagem apropriada;
+- comparação não promete precisão operacional;
+- documentação reforça caráter educacional.
+
+Commits sugeridos:
+
+- `Define regras de alerta interpretavel`;
+- `Implementa alerta de renovabilidade`;
+- `Exibe comparacao entre real e previsto`;
+- `Valida mensagens de alerta`.
+
+## Fase 9: CI Inicial
+
+Rastreabilidade:
+
+- Documento: [CI/CD](ci.md);
+- Requisitos: `REQ-009`, `NFR-002`, `NFR-004`.
+
+Objetivo:
+
+Criar automação compatível com o estado real do projeto, sem antecipar release ou build de artefato.
+
+Entregáveis:
+
+- workflow de CI Python mínima;
+- execução de testes;
+- checagem de importação ou compilação;
+- permissões mínimas.
+
+Critérios de aceite:
+
+- CI roda em push e PR;
+- testes passam;
+- permissões começam com `contents: read`;
+- release, artefato e smoke test permanecem fora do escopo.
+
+Commits sugeridos:
+
+- `Adiciona CI Python inicial`;
+- `Executa testes no workflow de CI`;
+- `Documenta validacao automatizada inicial`.
+
+## Fase 10: Fechamento do MVP Funcional
+
+Objetivo:
+
+Consolidar a aplicação demonstrável com dados, cálculo, visualização, baseline e alerta.
+
+Entregáveis:
+
+- README atualizado com setup real;
+- documentação de limitações;
+- critérios de aceite revisados;
+- matriz de issues atualizada;
+- QA manual do fluxo principal;
+- decisão sobre próximos passos de release.
+
+Critérios de aceite:
+
+- fluxo principal roda localmente;
+- usuário consegue carregar dados ou cache;
+- gráfico e alerta são exibidos;
+- testes automatizados relevantes passam;
+- documentação não promete uso operacional crítico;
+- itens adiados permanecem claramente separados.
+
+## Ordem Recomendada de Commits
+
+1. `Cria scaffold Python inicial`.
+2. `Documenta comandos iniciais de setup`.
+3. `Adiciona teste de sanidade do pacote`.
+4. `Registra fonte publica inicial`.
+5. `Implementa carregamento de geracao eletrica`.
+6. `Valida normalizacao de dados de geracao`.
+7. `Define regra de participacao renovavel`.
+8. `Implementa calculo de renovabilidade`.
+9. `Testa casos limite da participacao renovavel`.
+10. `Implementa cache local de dados`.
+11. `Cria visualizacao inicial por fonte`.
+12. `Implementa treino baseline`.
+13. `Implementa alerta de renovabilidade`.
+14. `Adiciona CI Python inicial`.
+
+Essa ordem pode ser ajustada conforme descobertas técnicas, mas cada commit deve manter um tópico verificável.
+
+## Riscos Principais
+
+| Risco | Impacto | Mitigação |
+| --- | --- | --- |
+| Fonte pública instável | Quebra de coleta | Usar fixtures, validar schema e manter cache local. |
+| Escopo crescer antes da base | Atraso e baixa testabilidade | Encerrar primeira fatia funcional antes de UI/ML. |
+| Modelo baseline pouco confiável | Interpretação ruim | Documentar limitações e usar alerta educacional. |
+| UI antecipada demais | Regras difíceis de testar | Implementar domínio e dados antes de tela. |
+| CI pesada cedo demais | Custo e manutenção | Começar com testes e importação, sem release. |
+| Empacotamento prematuro | Trabalho sem fluxo estável | Adiar `.exe` até MVP funcional validado. |
+
+## Critérios Para Avançar Entre Fases
+
+Uma fase só deve avançar quando:
+
+- critérios de aceite da fase anterior foram atendidos;
+- testes planejados relevantes passam;
+- documentação afetada foi atualizada;
+- limitações e decisões pendentes foram registradas;
+- não há dependência de credenciais privadas;
+- mudança está pequena o suficiente para revisão.
+
+## Próxima Ação Recomendada
+
+Iniciar pela `ISSUE-002`: criar scaffold Python mínimo com `pyproject.toml`, pacote em `src/radar_transicao_energetica`, diretório `tests`, teste de sanidade e comandos básicos documentados.
