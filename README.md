@@ -45,6 +45,13 @@ Requisito recomendado:
 
 - Python 3.12 ou superior.
 
+Criar e ativar um ambiente virtual no Windows:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
 Executar a partir do código-fonte, sem instalar o pacote:
 
 ```powershell
@@ -72,6 +79,13 @@ Executar retornando JSON:
 $env:PYTHONPATH='src'
 python -m radar_transicao_energetica --arquivo examples\geracao_exemplo.csv --json --sem-cache
 ```
+
+O JSON retornado possui quatro blocos principais:
+
+- `summary`: totais, período analisado, participação renovável e geração por fonte;
+- `period_summaries`: participação renovável agregada por período;
+- `alert`: nível e mensagem interpretável;
+- `baseline`: método, pontos usados e previsão simples da próxima janela.
 
 Rodar testes:
 

@@ -91,6 +91,8 @@ Gate mínimo para considerar o primeiro `.exe` válido:
 
 - `python -m unittest discover -s tests` passa;
 - `python -m compileall src tests scripts` passa;
+- `python -m pip install -e .` instala o pacote;
+- `radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-cache` roda pelo comando instalado;
 - CLI roda com exemplo embutido;
 - CLI roda com `examples/geracao_exemplo.csv`;
 - `scripts/build_exe.py` gera `dist/radar-transicao-energetica.exe`;
@@ -150,7 +152,7 @@ Escopo:
 - configurar dependências mínimas de desenvolvimento;
 - criar primeiro teste simples;
 - garantir que `python -m unittest discover -s tests` funcione;
-- validar instalação editável com `python -m pip install -e .`;
+- validar instalação editável em ambiente virtual com `python -m pip install -e .`;
 - documentar apenas comandos que existam no scaffold.
 
 Fora de escopo:
@@ -343,6 +345,8 @@ Critérios de aceite:
 
 - CI roda em push e PR;
 - testes passam;
+- pacote instala em modo editável;
+- comando `radar-transicao-energetica` executa um smoke test com o CSV de exemplo;
 - permissões começam com `contents: read`;
 - release, artefato e smoke test permanecem fora do escopo.
 

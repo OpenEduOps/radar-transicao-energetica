@@ -40,8 +40,10 @@ A automação deve responder, de forma incremental:
 Os comandos oficiais iniciais são:
 
 ```text
+python -m pip install -e .
 python -m unittest discover -s tests
 python -m compileall src tests scripts
+radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-cache
 ```
 
 O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.

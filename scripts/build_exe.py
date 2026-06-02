@@ -13,7 +13,7 @@ EXE_NAME = "radar-transicao-energetica"
 def main() -> int:
     if importlib.util.find_spec("PyInstaller") is None:
         print(
-            "PyInstaller nao esta instalado. Execute: python -m pip install pyinstaller",
+            'PyInstaller nao esta instalado. Execute: python -m pip install -e ".[dev]"',
             file=sys.stderr,
         )
         return 1

@@ -44,6 +44,7 @@ radar-transicao-energetica/
 │       ├── baseline.py
 │       ├── alerts.py
 │       ├── charts.py
+│       ├── serialization.py
 │       └── cache.py
 ├── tests/
 ├── examples/
@@ -63,6 +64,7 @@ radar-transicao-energetica/
 | `baseline.py` | Baseline simples e interpretável para a próxima janela. |
 | `alerts.py` | Regras textuais de alerta educacional. |
 | `charts.py` | Visualização textual inicial. |
+| `serialization.py` | Contrato JSON compartilhado entre CLI e cache. |
 | `cache.py` | Escrita de cache JSON local. |
 | `tests` | Testes unitários, integração leve e QA automatizável. |
 
