@@ -37,12 +37,14 @@ radar-transicao-energetica/
 ├── pyproject.toml
 ├── src/
 │   └── radar_transicao_energetica/
-│       ├── data/
-│       ├── features/
-│       ├── models/
-│       ├── ui/
+│       ├── app.py
 │       ├── cli.py
-│       └── app.py
+│       ├── data.py
+│       ├── domain.py
+│       ├── baseline.py
+│       ├── alerts.py
+│       ├── charts.py
+│       └── cache.py
 ├── tests/
 ├── examples/
 ├── scripts/
@@ -54,12 +56,14 @@ radar-transicao-energetica/
 
 | Camada | Responsabilidade |
 | --- | --- |
-| `data` | Coleta, normalização, validação e cache de dados públicos. |
-| `features` | Criação de variáveis para análise e machine learning. |
-| `models` | Treino, avaliação, persistência e execução de modelos baseline. |
-| `ui` | Telas, gráficos, estados de carregamento, erros e alertas. |
+| `app.py` | Orquestra o fluxo de análise reutilizável por CLI ou futura UI. |
 | `cli.py` | Entrada de linha de comando para a primeira versão empacotável. |
-| `app.py` | Composição da aplicação e ponto de entrada. |
+| `data.py` | Leitura, normalização e validação de dados de geração. |
+| `domain.py` | Cálculo de participação renovável e agregações por período. |
+| `baseline.py` | Baseline simples e interpretável para a próxima janela. |
+| `alerts.py` | Regras textuais de alerta educacional. |
+| `charts.py` | Visualização textual inicial. |
+| `cache.py` | Escrita de cache JSON local. |
 | `tests` | Testes unitários, integração leve e QA automatizável. |
 
 ## Fluxo de Dados Inicial

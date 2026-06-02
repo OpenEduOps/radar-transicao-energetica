@@ -52,6 +52,13 @@ $env:PYTHONPATH='src'
 python -m radar_transicao_energetica --sem-cache
 ```
 
+Instalar em modo editável e executar pelo comando do projeto:
+
+```powershell
+python -m pip install -e .
+radar-transicao-energetica --sem-cache
+```
+
 Executar com o CSV de exemplo:
 
 ```powershell
@@ -77,10 +84,10 @@ python -m compileall src tests scripts
 
 O executável local experimental é gerado com PyInstaller. Ele não é commitado no repositório e fica em `dist/`.
 
-Instalar a dependência de build no ambiente escolhido:
+Instalar as dependências de desenvolvimento no ambiente escolhido:
 
 ```powershell
-python -m pip install pyinstaller
+python -m pip install -e ".[dev]"
 ```
 
 Gerar o `.exe`:
@@ -212,23 +219,31 @@ radar-transicao-energetica/
 ├── pyproject.toml
 ├── src/
 │   └── radar_transicao_energetica/
-│       ├── data/
-│       ├── features/
-│       ├── models/
-│       ├── ui/
-│       └── app.py
+│       ├── app.py
+│       ├── cli.py
+│       ├── data.py
+│       ├── domain.py
+│       ├── baseline.py
+│       ├── alerts.py
+│       ├── charts.py
+│       └── cache.py
 ├── tests/
+├── examples/
+├── scripts/
 └── data/
     └── cache/
 ```
 
 Responsabilidades sugeridas:
 
-- `data`: coleta, normalização e cache de dados;
-- `features`: criação de variáveis para análise e machine learning;
-- `models`: treino, avaliação e previsão;
-- `ui`: telas, gráficos e controles da interface;
-- `app.py`: ponto de entrada da aplicação.
+- `app.py`: orquestra o fluxo de análise reutilizável por CLI ou futura UI;
+- `cli.py`: entrada de linha de comando;
+- `data.py`: leitura e normalização de CSV;
+- `domain.py`: cálculo de participação renovável;
+- `baseline.py`: baseline simples por média móvel;
+- `alerts.py`: regras textuais de alerta;
+- `charts.py`: visualização textual inicial;
+- `cache.py`: escrita de cache JSON local.
 
 ## Critérios de Sucesso do MVP
 

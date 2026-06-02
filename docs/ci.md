@@ -29,9 +29,9 @@ A automação deve responder, de forma incremental:
 | Job | Objetivo | Obrigatório no início |
 | --- | --- | --- |
 | Docs | Validar documentação central e links internos. | Sim, quando CI inicial for criada |
-| Format/Lint | Validar padrão de código quando o scaffold existir. | Sim, após código |
+| Format/Lint | Validar padrão de código quando ferramenta for definida. | Não na CI atual |
 | Tests | Rodar testes unitários e integração leve. | Sim, após código |
-| Security | Checar segredos e dependências vulneráveis quando dependências existirem. | Sim, após scaffold |
+| Security | Checar segredos e dependências vulneráveis quando dependências existirem. | Não na CI atual |
 | Build artifact | Gerar executável ou pacote. | Não na V0 inicial |
 | Smoke artifact | Validar execução do artefato final. | Não na V0 inicial |
 
@@ -49,7 +49,7 @@ O comando com `pytest` é opcional nesta fase, porque os testes foram escritos c
 Para o primeiro build local experimental:
 
 ```text
-python -m pip install pyinstaller
+python -m pip install -e ".[dev]"
 python scripts/build_exe.py
 dist\radar-transicao-energetica.exe --sem-cache
 ```

@@ -149,7 +149,8 @@ Escopo:
 - definir metadados do pacote;
 - configurar dependências mínimas de desenvolvimento;
 - criar primeiro teste simples;
-- garantir que `python -m pytest` funcione;
+- garantir que `python -m unittest discover -s tests` funcione;
+- validar instalação editável com `python -m pip install -e .`;
 - documentar apenas comandos que existam no scaffold.
 
 Fora de escopo:
