@@ -269,6 +269,15 @@ Marco de saída:
 
 Esta fase encerra a primeira fatia funcional quando combinada com scaffold, carregamento inicial e documentação de execução.
 
+Checklist de saída da primeira fatia funcional:
+
+- scaffold Python existe;
+- comandos reais de instalação e teste estão documentados;
+- fonte pública inicial foi escolhida e normalizada;
+- cálculo de participação renovável roda sem UI;
+- testes de domínio passam localmente;
+- suíte automatizada não depende de rede.
+
 ## Fase 4: CI Inicial da Primeira Fatia
 
 Rastreabilidade:
@@ -294,6 +303,15 @@ Critérios de aceite:
 - permissões começam com `contents: read`;
 - release, artefato e smoke test permanecem fora do escopo.
 
+Fora de escopo:
+
+- build de executável;
+- smoke test de artefato;
+- workflow de release;
+- checagens pesadas de segurança;
+- branch protection;
+- lint/typecheck rígidos antes de ferramentas e convenções estarem definidas.
+
 Commits sugeridos:
 
 - `Adiciona CI Python inicial`;
@@ -313,6 +331,8 @@ Objetivo:
 
 Persistir dados carregados ou normalizados para reduzir dependência de rede e facilitar demonstrações.
 
+Esta fase transforma o fluxo validado localmente em um fluxo mais repetível. Ela não deve alterar a regra de participação renovável já validada na primeira fatia funcional.
+
 Entregáveis:
 
 - escolha entre SQLite e DuckDB;
@@ -326,6 +346,7 @@ Critérios de aceite:
 - cache não exige serviço externo;
 - testes não escrevem fora de diretório temporário;
 - falha de cache não apaga dados do usuário sem confirmação.
+- CI continua rodando sem depender de rede externa.
 
 Commits sugeridos:
 
@@ -358,10 +379,12 @@ Escopo:
 - gráfico legível;
 - dados reais ou sintéticos normalizados;
 - sem fluxo visual complexo.
+- permitir uma visualização inicial simples antes de uma interface PySide6 completa.
 
 Fora de escopo:
 
 - layout final;
+- aplicação desktop completa;
 - acessibilidade completa;
 - empacotamento;
 - regressão visual automatizada.
@@ -411,6 +434,14 @@ Critérios de aceite:
 - dados climáticos podem ser testados com fixture;
 - falha da fonte climática não impede cálculo de participação renovável;
 - documentação registra limitações.
+- a suíte automatizada continua podendo rodar sem rede.
+
+Fora de escopo:
+
+- múltiplos provedores climáticos simultâneos;
+- otimização de previsão;
+- decisões operacionais baseadas em clima;
+- dependência obrigatória de API externa em testes.
 
 Commits sugeridos:
 
@@ -439,6 +470,8 @@ Recomendação inicial:
 
 Começar por regressão de participação renovável, porque a métrica é mais direta e a classificação pode ser derivada depois por faixas interpretáveis.
 
+O primeiro baseline pode usar apenas variáveis temporais e histórico de geração se a integração climática ainda estiver instável. Variáveis climáticas devem melhorar o modelo, não bloquear o treino mínimo.
+
 Entregáveis:
 
 - pipeline de treino baseline;
@@ -454,6 +487,7 @@ Critérios de aceite:
 - métrica é calculada;
 - limitações são explícitas;
 - modelo não depende de UI.
+- dados insuficientes geram erro ou aviso controlado.
 
 Commits sugeridos:
 
