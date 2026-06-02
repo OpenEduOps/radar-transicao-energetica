@@ -30,9 +30,11 @@ class CliTest(unittest.TestCase):
 
         payload = json.loads(result.stdout)
 
-        self.assertIn("renewable_share", payload)
-        self.assertGreater(payload["renewable_share"], 0)
+        self.assertIn("summary", payload)
+        self.assertGreater(payload["summary"]["renewable_share"], 0)
         self.assertIn("alert", payload)
+        self.assertIn("baseline", payload)
+        self.assertIn("period_summaries", payload)
 
     def test_cli_writes_cache_when_enabled(self) -> None:
         env = os.environ.copy()
@@ -61,6 +63,32 @@ class CliTest(unittest.TestCase):
         self.assertIn("summary", payload)
         self.assertIn("alert", payload)
 
+    def test_cli_json_includes_cache_path_when_cache_is_enabled(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "cache.json"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "radar_transicao_energetica",
+                    "--json",
+                    "--cache",
+                    str(cache_path),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+
+            payload = json.loads(result.stdout)
+
+        self.assertEqual(payload["cache_path"], str(cache_path))
+
     def test_cli_reports_invalid_file_with_nonzero_exit(self) -> None:
         env = os.environ.copy()
         env["PYTHONPATH"] = str(Path.cwd() / "src")
@@ -80,6 +108,28 @@ class CliTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 1)
         self.assertIn("Arquivo nao encontrado", result.stderr)
+
+    def test_cli_reports_cache_write_failure_without_traceback(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "radar_transicao_energetica",
+                    "--cache",
+                    tmpdir,
+                ],
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Nao foi possivel gravar o cache", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
 
 
 if __name__ == "__main__":

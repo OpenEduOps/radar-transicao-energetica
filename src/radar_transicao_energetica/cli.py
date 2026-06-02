@@ -9,6 +9,7 @@ from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.charts import render_share_trend, render_source_chart
 from radar_transicao_energetica.data import GenerationDataError
 from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
+from radar_transicao_energetica.serialization import analysis_payload
 
 
 DEFAULT_CACHE_PATH = Path("data/cache/ultima-analise.json")
@@ -30,13 +31,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.json:
         print(
             json.dumps(
-                {
-                    "renewable_share": result.summary.renewable_share,
-                    "total_generation_mw": result.summary.total_generation_mw,
-                    "renewable_generation_mw": result.summary.renewable_generation_mw,
-                    "alert": result.alert.level,
-                    "baseline_prediction": result.baseline.predicted_renewable_share,
-                },
+                analysis_payload(
+                    summary=result.summary,
+                    period_summaries=result.period_summaries,
+                    alert=result.alert,
+                    baseline=result.baseline,
+                    cache_path=result.cache_path,
+                ),
                 ensure_ascii=False,
                 indent=2,
             )

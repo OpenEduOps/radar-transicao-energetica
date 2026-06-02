@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from radar_transicao_energetica.app import run_analysis
+from radar_transicao_energetica.cache import AnalysisCacheError
 
 
 class AppTest(unittest.TestCase):
@@ -33,6 +34,11 @@ class AppTest(unittest.TestCase):
 
         self.assertIsNone(result.cache_path)
         self.assertFalse(cache_path.exists())
+
+    def test_run_analysis_reports_cache_write_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.assertRaises(AnalysisCacheError):
+                run_analysis(cache_path=Path(tmpdir))
 
 
 if __name__ == "__main__":
