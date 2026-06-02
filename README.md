@@ -90,8 +90,9 @@ python -m radar_transicao_energetica --fonte ons --ons-periodo 2026-01 --json --
 
 O argumento `--ons-periodo` usa o formato `YYYY-MM`, com mês em dois dígitos. A integração ONS V0 trabalha com os arquivos mensais publicados a partir de 2022. Essa execução depende de acesso à internet, pode baixar arquivos com dezenas de MB e possui limite local de 200 MB por download; os testes automatizados continuam usando fixtures offline.
 
-O JSON retornado possui quatro blocos principais:
+O JSON retornado possui cinco blocos principais:
 
+- `data_source`: origem da análise, como exemplo embutido, CSV local ou dataset ONS com período e URL do recurso;
 - `summary`: totais, período analisado, participação renovável e geração por fonte;
 - `period_summaries`: participação renovável agregada por período;
 - `alert`: nível e mensagem interpretável;

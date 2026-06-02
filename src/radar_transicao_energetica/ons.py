@@ -5,6 +5,7 @@ from typing import Any, Callable
 from urllib.request import Request, urlopen
 
 from radar_transicao_energetica.data import (
+    DataSourceMetadata,
     GenerationDataError,
     GenerationRecord,
     load_generation_csv_text,
@@ -37,6 +38,16 @@ def build_ons_generation_url(year: int, month: int) -> str:
     return (
         f"{ONS_GENERATION_BY_PLANT_AWS_BASE_URL}/"
         f"GERACAO_USINA-2_{year}_{month:02d}.csv"
+    )
+
+
+def ons_generation_source_metadata(year: int, month: int) -> DataSourceMetadata:
+    return DataSourceMetadata(
+        kind="ons",
+        label="ONS Geracao por Usina em Base Horaria",
+        period=f"{year}-{month:02d}",
+        dataset_url=ONS_GENERATION_BY_PLANT_DATASET_URL,
+        resource_url=build_ons_generation_url(year, month),
     )
 
 

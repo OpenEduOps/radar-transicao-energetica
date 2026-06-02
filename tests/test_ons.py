@@ -10,6 +10,7 @@ from radar_transicao_energetica.data import GenerationDataError
 from radar_transicao_energetica.ons import (
     build_ons_generation_url,
     load_ons_generation,
+    ons_generation_source_metadata,
     parse_ons_period,
 )
 
@@ -49,6 +50,14 @@ class OnsLoadingTest(unittest.TestCase):
             "https://ons-aws-prod-opendata.s3.amazonaws.com/"
             "dataset/geracao_usina_2_ho/GERACAO_USINA-2_2026_01.csv",
         )
+
+    def test_ons_generation_source_metadata_identifies_dataset_and_resource(self) -> None:
+        metadata = ons_generation_source_metadata(2026, 1)
+
+        self.assertEqual(metadata.kind, "ons")
+        self.assertEqual(metadata.period, "2026-01")
+        self.assertEqual(metadata.dataset_url, "https://dados.ons.org.br/dataset/geracao-usina-2")
+        self.assertIn("GERACAO_USINA-2_2026_01.csv", metadata.resource_url or "")
 
     def test_build_ons_generation_url_rejects_older_yearly_format(self) -> None:
         with self.assertRaisesRegex(ValueError, "2022 em diante"):

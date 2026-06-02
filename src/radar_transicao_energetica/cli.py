@@ -7,7 +7,7 @@ from typing import Sequence
 
 from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.charts import render_share_trend, render_source_chart
-from radar_transicao_energetica.data import GenerationDataError
+from radar_transicao_energetica.data import DataSourceMetadata, GenerationDataError
 from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
 from radar_transicao_energetica.ons import parse_ons_period
 from radar_transicao_energetica.serialization import analysis_payload
@@ -48,6 +48,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     alert=result.alert,
                     baseline=result.baseline,
                     cache_path=result.cache_path,
+                    data_source=result.data_source,
                 ),
                 ensure_ascii=False,
                 indent=2,
@@ -60,6 +61,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 result.period_summaries,
                 result.alert.message,
                 result.baseline.predicted_renewable_share,
+                result.data_source,
             )
         )
         if result.cache_path:
@@ -111,6 +113,7 @@ def render_report(
     period_summaries: list[PeriodRenewableSummary],
     alert_message: str,
     baseline_prediction: float | None,
+    data_source: DataSourceMetadata | None = None,
 ) -> str:
     share_text = "sem dados" if summary.renewable_share is None else f"{summary.renewable_share:.1%}"
     baseline_text = (
@@ -121,6 +124,7 @@ def render_report(
     lines = [
         "Radar da Transicao Energetica",
         "=" * 31,
+        f"Fonte: {_format_data_source(data_source)}",
         f"Periodo: {summary.period_start:%Y-%m-%d %H:%M} -> {summary.period_end:%Y-%m-%d %H:%M}",
         f"Geracao total: {summary.total_generation_mw:,.2f} MW",
         f"Geracao renovavel: {summary.renewable_generation_mw:,.2f} MW",
@@ -140,3 +144,13 @@ def render_report(
         ]
     )
     return "\n".join(lines)
+
+
+def _format_data_source(data_source: DataSourceMetadata | None) -> str:
+    if data_source is None:
+        return "nao informada"
+    if data_source.kind == "ons" and data_source.period:
+        return f"{data_source.label} ({data_source.period})"
+    if data_source.kind == "arquivo" and data_source.path:
+        return f"{data_source.label}: {data_source.path}"
+    return data_source.label

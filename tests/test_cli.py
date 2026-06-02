@@ -35,6 +35,7 @@ class CliTest(unittest.TestCase):
         self.assertIn("alert", payload)
         self.assertIn("baseline", payload)
         self.assertIn("period_summaries", payload)
+        self.assertEqual(payload["data_source"]["kind"], "exemplo")
 
     def test_cli_writes_cache_when_enabled(self) -> None:
         env = os.environ.copy()
@@ -62,6 +63,7 @@ class CliTest(unittest.TestCase):
 
         self.assertIn("summary", payload)
         self.assertIn("alert", payload)
+        self.assertEqual(payload["data_source"]["kind"], "exemplo")
 
     def test_cli_json_includes_cache_path_when_cache_is_enabled(self) -> None:
         env = os.environ.copy()
@@ -88,6 +90,7 @@ class CliTest(unittest.TestCase):
             payload = json.loads(result.stdout)
 
         self.assertEqual(payload["cache_path"], str(cache_path))
+        self.assertEqual(payload["data_source"]["kind"], "exemplo")
 
     def test_cli_reports_invalid_file_with_nonzero_exit(self) -> None:
         env = os.environ.copy()
@@ -164,6 +167,7 @@ class CliTest(unittest.TestCase):
 
         self.assertIn("Fontes nao classificadas na V0: biomassa", result.stdout)
         self.assertIn("fontes ainda nao classificadas", result.stdout)
+        self.assertIn("Fonte: CSV local", result.stdout)
 
     def test_cli_reports_missing_ons_period_without_network(self) -> None:
         env = os.environ.copy()

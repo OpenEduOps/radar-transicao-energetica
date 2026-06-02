@@ -69,6 +69,16 @@ class GenerationRecord:
     generation_mw: float
 
 
+@dataclass(frozen=True)
+class DataSourceMetadata:
+    kind: str
+    label: str
+    period: str | None = None
+    path: str | None = None
+    dataset_url: str | None = None
+    resource_url: str | None = None
+
+
 def load_sample_generation() -> list[GenerationRecord]:
     return load_generation_csv_text(SAMPLE_GENERATION_CSV)
 

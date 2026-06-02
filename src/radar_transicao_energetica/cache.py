@@ -5,6 +5,7 @@ from pathlib import Path
 
 from radar_transicao_energetica.alerts import RenewableAlert
 from radar_transicao_energetica.baseline import BaselinePrediction
+from radar_transicao_energetica.data import DataSourceMetadata
 from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
 from radar_transicao_energetica.serialization import analysis_payload
 
@@ -19,6 +20,7 @@ def write_analysis_cache(
     period_summaries: list[PeriodRenewableSummary],
     alert: RenewableAlert,
     baseline: BaselinePrediction,
+    data_source: DataSourceMetadata | None = None,
 ) -> Path:
     cache_path = Path(path)
     try:
@@ -30,6 +32,7 @@ def write_analysis_cache(
                     period_summaries=period_summaries,
                     alert=alert,
                     baseline=baseline,
+                    data_source=data_source,
                 ),
                 ensure_ascii=False,
                 indent=2,

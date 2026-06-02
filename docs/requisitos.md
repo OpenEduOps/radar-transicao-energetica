@@ -60,6 +60,7 @@ Contribuidores:
 
 - Dado um conjunto de dados público válido, quando o usuário iniciar a análise, então o sistema deve calcular a participação renovável do período.
 - Dado um período mensal ONS válido a partir de 2022, quando o usuário executar `--fonte ons --ons-periodo YYYY-MM`, então o sistema deve baixar e normalizar o CSV público correspondente.
+- Dado que a análise use exemplo, CSV local ou ONS, quando o resultado JSON ou cache for gerado, então a origem dos dados deve aparecer em `data_source`.
 - Dado que a fonte pública ONS esteja indisponível, quando a coleta for executada, então o sistema deve informar erro claro sem traceback.
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado um conjunto de dados insuficiente ou indisponível, quando a aplicação tentar carregar informações, então o sistema deve informar o problema sem quebrar o fluxo principal.

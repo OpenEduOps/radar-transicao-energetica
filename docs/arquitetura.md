@@ -74,6 +74,8 @@ radar-transicao-energetica/
 | `cache.py` | Escrita de cache JSON local. |
 | `tests` | Testes unitários, integração leve e QA automatizável. |
 
+O JSON e o cache incluem `data_source` para registrar a origem da análise. Na fonte ONS, esse bloco carrega o tipo da fonte, período mensal, URL do dataset e URL do recurso CSV usado.
+
 ## Fluxo de Dados Inicial
 
 ```text

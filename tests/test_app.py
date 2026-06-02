@@ -26,7 +26,9 @@ class AppTest(unittest.TestCase):
         self.assertGreater(len(result.records), 0)
         self.assertIsNotNone(result.summary.renewable_share)
         self.assertEqual(result.cache_path, cache_path)
+        self.assertEqual(result.data_source.kind, "exemplo")
         self.assertIn("summary", cache_payload)
+        self.assertEqual(cache_payload["data_source"]["kind"], "exemplo")
 
     def test_run_analysis_can_skip_cache(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -59,6 +61,9 @@ class AppTest(unittest.TestCase):
         )
 
         self.assertEqual(result.summary.renewable_share, 0.75)
+        self.assertEqual(result.data_source.kind, "ons")
+        self.assertEqual(result.data_source.period, "2026-01")
+        self.assertIn("GERACAO_USINA-2_2026_01.csv", result.data_source.resource_url or "")
 
     def test_run_analysis_requires_ons_period(self) -> None:
         with self.assertRaisesRegex(ValueError, "--ons-periodo"):
