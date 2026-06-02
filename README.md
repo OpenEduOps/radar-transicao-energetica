@@ -10,9 +10,16 @@ A ideia central é combinar dados abertos de geração, carga, preço de energia
 
 O projeto pode evoluir para um executável (`.exe`) com interface visual, gráficos, alertas interpretáveis e modelos simples de machine learning.
 
-## Planejamento Inicial
+## Documentação do Projeto
 
-O planejamento inicial do projeto está em [docs/planejamento-inicial.md](docs/planejamento-inicial.md). Ele organiza identidade, público-alvo, MVP, requisitos V0, critérios de aceite, testes planejados, arquitetura inicial e matriz de issues a partir deste README.
+Este README é a porta de entrada e a fonte inicial de verdade do projeto. A documentação pública de apoio está organizada em:
+
+- [Planejamento inicial](docs/planejamento-inicial.md): visão consolidada do ponto de partida.
+- [Requisitos](docs/requisitos.md): requisitos V0, critérios de aceite e testes planejados.
+- [Arquitetura](docs/arquitetura.md): estrutura, responsabilidades, fluxo de dados e decisões pendentes.
+- [Matriz de issues](docs/matriz-issues.md): sequência planejada de issues e rastreabilidade.
+- [CI/CD](docs/ci.md): estratégia inicial de automação, qualidade e release.
+- [Contribuindo](CONTRIBUTING.md): orientações para colaborar com o projeto.
 
 ## Problema
 
