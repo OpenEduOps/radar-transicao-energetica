@@ -9,6 +9,7 @@ Este documento organiza as primeiras issues planejadas para o **Radar da Transi�
 - Commits devem ser menores que a issue quando houver tópicos independentes.
 - Mudanças de documentação, domínio, dados, UI, testes e CI devem permanecer separáveis.
 - A primeira fatia funcional deve priorizar uma demonstração local antes de empacotamento.
+- O primeiro `.exe` local experimental pode existir antes da release, desde que não antecipe CI de artefato nem instalador.
 
 ## Matriz Inicial
 
@@ -38,6 +39,25 @@ Este documento organiza as primeiras issues planejadas para o **Radar da Transi�
 
 Essa ordem permite entregar valor observável antes de avançar para integração climática, comparação visual mais refinada e empacotamento.
 
+## Estado Atual da Implementação
+
+- `ISSUE-001`: implementada com comandos reais no README.
+- `ISSUE-002`: implementada com `pyproject.toml`, pacote em `src` e testes.
+- `ISSUE-003`: parcialmente implementada com carregador CSV local, aliases de colunas e exemplo offline.
+- `ISSUE-004`: parcialmente implementada com cache JSON local.
+- `ISSUE-005`: implementada com cálculo de participação renovável e testes.
+- `ISSUE-006`: parcialmente implementada com visualização textual.
+- `ISSUE-008`: parcialmente implementada com baseline por média móvel.
+- `ISSUE-010`: parcialmente implementada com alerta interpretável.
+
+Pendências principais:
+
+- consolidar fonte pública real como entrada padrão;
+- evoluir cache para SQLite ou DuckDB;
+- integrar clima;
+- criar interface desktop;
+- transformar o primeiro `.exe` local em release validada.
+
 ## Fatia Funcional Inicial
 
 A primeira fatia funcional deve se limitar a:
@@ -47,7 +67,7 @@ A primeira fatia funcional deve se limitar a:
 - `ISSUE-005`: cálculo de participação renovável;
 - testes automatizados para o cálculo e dados sintéticos.
 
-`ISSUE-006`, `ISSUE-007`, `ISSUE-008`, `ISSUE-009` e `ISSUE-010` continuam planejadas, mas devem vir depois que essa base estiver validada.
+Parte de `ISSUE-006`, `ISSUE-008` e `ISSUE-010` já foi antecipada em forma textual para viabilizar o primeiro `.exe` local. As versões completas dessas issues continuam planejadas.
 
 ## Backlog Adiado
 
@@ -62,6 +82,8 @@ Estes itens não devem entrar nas primeiras issues. Eles ficam aguardando scaffo
 - CI completa com build de artefato.
 
 Esses tópicos voltam para a matriz apenas quando o projeto já tiver um fluxo local demonstrável e comandos oficiais de execução e teste.
+
+O build local experimental do `.exe` não altera esse backlog: release, smoke test formal e CI de artefato seguem adiados.
 
 ## Template de Issue
 

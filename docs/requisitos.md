@@ -4,7 +4,7 @@ Este documento detalha os requisitos iniciais do **Radar da Transição Energét
 
 ## Objetivo da V0
 
-A V0 deve provar que uma pessoa consegue usar uma aplicação local para carregar dados públicos de geração elétrica, calcular participação renovável, visualizar geração por fonte e receber um alerta interpretável sobre a janela analisada.
+A V0 deve provar que uma pessoa consegue usar uma aplicação local para carregar dados de geração elétrica, calcular participação renovável, visualizar geração por fonte e receber um alerta interpretável sobre a janela analisada.
 
 ## Fatia Funcional Inicial
 
@@ -16,7 +16,7 @@ A primeira fatia funcional deve ser menor que a V0 completa. Ela deve entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-Integração climática, modelo baseline, interface e empacotamento ficam para etapas posteriores do MVP funcional.
+A primeira implementação já entrega essa fatia como CLI local, com cache JSON, visualização textual, baseline simples por média móvel, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Integração climática, interface desktop e empacotamento de release continuam para etapas posteriores do MVP funcional.
 
 ## Público-Alvo
 
@@ -36,25 +36,25 @@ Contribuidores:
 
 | ID | Requisito | Prioridade | Status |
 | --- | --- | --- | --- |
-| `REQ-001` | Carregar dados públicos de geração elétrica em formato tratável pela aplicação. | Alta | Planejado |
-| `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Planejado |
-| `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Planejado |
-| `REQ-004` | Exibir gráfico de geração por fonte. | Alta | Planejado |
+| `REQ-001` | Carregar dados públicos de geração elétrica em formato tratável pela aplicação. | Alta | Parcial |
+| `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Parcial |
+| `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
+| `REQ-004` | Exibir gráfico de geração por fonte. | Alta | Parcial |
 | `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Planejado |
-| `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Planejado |
-| `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Planejado |
-| `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Planejado |
-| `REQ-009` | Disponibilizar comandos claros de instalação, execução e testes. | Alta | Planejado |
+| `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Parcial |
+| `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Parcial |
+| `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Implementado |
+| `REQ-009` | Disponibilizar comandos claros de instalação, execução e testes. | Alta | Implementado |
 
 ## Requisitos Transversais
 
 | ID | Requisito | Descrição | Status |
 | --- | --- | --- | --- |
-| `NFR-001` | Execução local | O projeto deve funcionar sem credenciais privadas na primeira fatia funcional. | Planejado |
-| `NFR-002` | Reprodutibilidade | Transformações, métricas e cálculos devem ser testáveis com dados sintéticos. | Planejado |
+| `NFR-001` | Execução local | O projeto deve funcionar sem credenciais privadas na primeira fatia funcional. | Implementado |
+| `NFR-002` | Reprodutibilidade | Transformações, métricas e cálculos devem ser testáveis com dados sintéticos. | Implementado |
 | `NFR-003` | Clareza educacional | Alertas e mensagens devem usar linguagem compreensível para usuário não especialista. | Planejado |
-| `NFR-004` | Baixo atrito de contribuição | Setup, testes e escopo de issues devem ser documentados. | Planejado |
-| `NFR-005` | Cache local | Dados baixados ou processados devem poder ser reutilizados localmente. | Planejado |
+| `NFR-004` | Baixo atrito de contribuição | Setup, testes e escopo de issues devem ser documentados. | Implementado |
+| `NFR-005` | Cache local | Dados baixados ou processados devem poder ser reutilizados localmente. | Parcial |
 
 ## Critérios de Aceite do MVP
 
@@ -89,4 +89,6 @@ Contribuidores:
 - dashboard web;
 - publicação em loja de aplicativos;
 - suporte multiusuário;
-- empacotamento final como `.exe`, até que o fluxo principal esteja estável.
+- empacotamento final de release como `.exe`, até que o fluxo principal esteja estável.
+
+O primeiro `.exe` local experimental é permitido para validação técnica da versão CLI e não substitui o empacotamento final de release.

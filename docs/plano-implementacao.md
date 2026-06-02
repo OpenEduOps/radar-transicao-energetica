@@ -2,7 +2,7 @@
 
 Este plano organiza a implementação do **Radar da Transição Energética** a partir do escopo já documentado no [README](../README.md), em [requisitos](requisitos.md), [arquitetura](arquitetura.md), [matriz de issues](matriz-issues.md) e [CI/CD](ci.md).
 
-O projeto ainda está em planejamento público inicial. Este documento não inicia implementação; ele define a sequência recomendada para sair da documentação e chegar ao MVP funcional.
+O projeto saiu da fase exclusivamente documental e já possui uma primeira implementação local em Python. Este documento continua servindo como guia de evolução incremental, registrando o que foi entregue, o que segue pendente e os limites do primeiro executável local.
 
 ## Objetivo
 
@@ -42,10 +42,10 @@ Ficam fora da primeira fatia funcional e só devem voltar depois de base validad
 - `CODE_OF_CONDUCT.md`;
 - PR template formal;
 - workflow de release;
-- smoke test de executável;
+- smoke test formal de executável;
 - regras de branch protection;
 - CI completa com build de artefato;
-- empacotamento final como `.exe`.
+- empacotamento final de release como `.exe`.
 
 ## Estratégia de Implementação
 
@@ -64,6 +64,38 @@ A implementação deve seguir uma ordem incremental:
 11. adicionar comparação e alerta interpretável.
 
 Cada etapa deve gerar uma entrega revisável, com commit próprio quando representar avanço verificável.
+
+## Autocrítica do Caminho Até o Primeiro `.exe`
+
+O plano original adiava empacotamento porque ainda não havia fluxo funcional. Com a implementação inicial, faz sentido gerar um primeiro `.exe` local experimental, desde que ele seja tratado como validação técnica, não como release pública.
+
+Decisões tomadas para reduzir risco:
+
+- usar CLI em vez de interface desktop completa;
+- usar biblioteca padrão do Python na primeira entrega;
+- carregar CSV local e exemplo embutido para manter execução offline;
+- testar domínio, dados e CLI com `unittest`;
+- empacotar localmente com PyInstaller apenas depois de testes e execução manual passarem;
+- manter `dist/`, `build/` e arquivos `.spec` fora do Git.
+
+Limites assumidos:
+
+- o executável inicial não valida ainda PySide6, pandas, scikit-learn ou gráficos ricos;
+- o baseline atual é média móvel simples, não modelo de machine learning;
+- a visualização atual é textual, não desktop;
+- o cache atual é JSON, não SQLite ou DuckDB;
+- a primeira fonte pública real ainda precisa ser consolidada em uma normalização dedicada;
+- não há release workflow, checksum, assinatura, smoke test formal ou build automático de artefato.
+
+Gate mínimo para considerar o primeiro `.exe` válido:
+
+- `python -m unittest discover -s tests` passa;
+- `python -m compileall src tests scripts` passa;
+- CLI roda com exemplo embutido;
+- CLI roda com `examples/geracao_exemplo.csv`;
+- `scripts/build_exe.py` gera `dist/radar-transicao-energetica.exe`;
+- o `.exe` roda com `--sem-cache`;
+- o `.exe` roda com `--arquivo examples\geracao_exemplo.csv --json --sem-cache`.
 
 ## Fase 0: Preparação Documental
 
@@ -90,6 +122,8 @@ Validação:
 - template local de planejamento permanece ignorado pelo Git.
 
 ## Fase 1: Setup Documental e Scaffold Python Mínimo
+
+Status: concluída para a primeira implementação CLI.
 
 Rastreabilidade:
 
@@ -145,6 +179,10 @@ Commits sugeridos:
 - `Adiciona teste de sanidade do pacote`.
 
 ## Fase 2: Fonte Pública Inicial
+
+Status: parcialmente concluída.
+
+A implementação atual carrega CSV local com colunas normalizadas ou aliases comuns de dados públicos, além de incluir um exemplo embutido para execução offline. Ainda falta consolidar a primeira fonte pública real como fonte padrão de produção.
 
 Rastreabilidade:
 
@@ -209,6 +247,8 @@ Commits sugeridos:
 - `Valida normalizacao de dados de geracao`.
 
 ## Fase 3: Cálculo de Participação Renovável
+
+Status: concluída para a primeira implementação CLI.
 
 Rastreabilidade:
 
@@ -280,6 +320,8 @@ Checklist de saída da primeira fatia funcional:
 
 ## Fase 4: CI Inicial da Primeira Fatia
 
+Status: concluída como CI mínima de testes e compilação, sem build de artefato.
+
 Rastreabilidade:
 
 - Documento: [CI/CD](ci.md);
@@ -320,6 +362,10 @@ Commits sugeridos:
 
 ## Fase 5: Cache Local
 
+Status: parcialmente concluída.
+
+A implementação atual grava cache JSON local em `data/cache/ultima-analise.json`. A evolução para SQLite ou DuckDB continua planejada.
+
 Rastreabilidade:
 
 - Issue: `ISSUE-004`;
@@ -355,6 +401,10 @@ Commits sugeridos:
 - `Valida leitura e escrita de cache`.
 
 ## Fase 6: Visualização Inicial
+
+Status: parcialmente concluída.
+
+A implementação atual entrega visualização textual por fonte e tendência de participação renovável. Interface desktop e gráfico visual continuam planejados.
 
 Rastreabilidade:
 
@@ -404,6 +454,8 @@ Commits sugeridos:
 
 ## Fase 7: Variáveis Climáticas
 
+Status: pendente.
+
 Rastreabilidade:
 
 - Issue: `ISSUE-007`;
@@ -451,6 +503,10 @@ Commits sugeridos:
 
 ## Fase 8: Modelo Baseline
 
+Status: parcialmente concluída.
+
+A implementação atual usa média móvel simples como baseline interpretável. Modelos com `scikit-learn`, treino/validação mais completos e métricas seguem planejados.
+
 Rastreabilidade:
 
 - Issue: `ISSUE-008`;
@@ -497,6 +553,10 @@ Commits sugeridos:
 
 ## Fase 9: Comparação e Alerta Interpretável
 
+Status: parcialmente concluída.
+
+A implementação atual gera alerta textual com base na participação renovável calculada. Comparação visual entre real e previsto ainda está pendente.
+
 Rastreabilidade:
 
 - Issues: `ISSUE-009`, `ISSUE-010`;
@@ -539,6 +599,8 @@ Commits sugeridos:
 
 ## Fase 10: Fechamento do MVP Funcional
 
+Status: pendente.
+
 Objetivo:
 
 Consolidar a aplicação demonstrável com dados, cálculo, visualização, baseline e alerta.
@@ -560,6 +622,39 @@ Critérios de aceite:
 - testes automatizados relevantes passam;
 - documentação não promete uso operacional crítico;
 - itens adiados permanecem claramente separados.
+
+## Fase 11: Primeiro Executável Local Experimental
+
+Status: concluída quando o build local com PyInstaller for gerado e validado.
+
+Objetivo:
+
+Gerar um primeiro `.exe` local para provar que a aplicação CLI atual pode ser empacotada e executada sem instalar Python no ambiente de destino imediato.
+
+Entregáveis:
+
+- script local `scripts/build_exe.py`;
+- executável `dist/radar-transicao-energetica.exe`;
+- instruções no README;
+- validação manual do `.exe`.
+
+Critérios de aceite:
+
+- build roda com PyInstaller;
+- executável inicia sem erro;
+- executável analisa o exemplo embutido;
+- executável analisa `examples/geracao_exemplo.csv`;
+- executável retorna JSON quando chamado com `--json`;
+- artefatos de build permanecem fora do Git.
+
+Fora de escopo:
+
+- release pública;
+- upload de artefato;
+- smoke test automatizado em CI;
+- assinatura do executável;
+- instalador;
+- interface desktop final.
 
 ## Ordem Recomendada de Commits
 

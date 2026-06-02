@@ -1,10 +1,10 @@
 # Arquitetura
 
-Este documento descreve a arquitetura inicial planejada para o **Radar da Transição Energética**. As decisões abaixo partem do [README](../README.md) e devem evoluir conforme o projeto sair da fase documental para a primeira fatia funcional.
+Este documento descreve a arquitetura inicial do **Radar da Transição Energética**. As decisões abaixo partem do [README](../README.md) e devem evoluir conforme a primeira implementação CLI avançar para o MVP funcional.
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir que o projeto evolua de forma incremental: primeiro como aplicação Python local com regras testáveis, depois como interface desktop e, por fim, como executável empacotado quando o fluxo principal estiver estável.
+A arquitetura deve permitir que o projeto evolua de forma incremental: primeiro como aplicação Python local com regras testáveis e CLI empacotável, depois como interface desktop e, por fim, como executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
@@ -18,6 +18,8 @@ A arquitetura deve permitir que o projeto evolua de forma incremental: primeiro 
 | UI desktop | PySide6 | Interface desktop em Python. |
 | Gráficos | Matplotlib ou Plotly | Visualização de séries, fontes e previsões. |
 | Empacotamento | PyInstaller | Geração futura de executável. |
+
+A primeira implementação evita dependências pesadas e usa biblioteca padrão do Python. Essa escolha reduz atrito para testes e permite gerar um primeiro `.exe` local experimental antes da interface desktop.
 
 ## Estrutura Planejada
 
@@ -39,8 +41,11 @@ radar-transicao-energetica/
 │       ├── features/
 │       ├── models/
 │       ├── ui/
+│       ├── cli.py
 │       └── app.py
 ├── tests/
+├── examples/
+├── scripts/
 └── data/
     └── cache/
 ```
@@ -53,6 +58,7 @@ radar-transicao-energetica/
 | `features` | Criação de variáveis para análise e machine learning. |
 | `models` | Treino, avaliação, persistência e execução de modelos baseline. |
 | `ui` | Telas, gráficos, estados de carregamento, erros e alertas. |
+| `cli.py` | Entrada de linha de comando para a primeira versão empacotável. |
 | `app.py` | Composição da aplicação e ponto de entrada. |
 | `tests` | Testes unitários, integração leve e QA automatizável. |
 
@@ -96,7 +102,7 @@ Fonte pública
 | Rede indisponível | Fluxo interrompido | Usar cache local e mensagens claras. |
 | Modelo baseline parecer sofisticado demais | Baixa interpretabilidade | Priorizar métricas simples e explicação textual. |
 | UI crescer antes do domínio | Dificuldade de teste | Implementar cálculo e features antes de telas complexas. |
-| Empacotamento antecipado | Custo sem fluxo estável | Adiar `.exe` até MVP funcional. |
+| Empacotamento antecipado | Custo sem fluxo estável | Manter primeiro `.exe` como validação local, sem release pública. |
 
 ## Decisões Pendentes
 
@@ -104,4 +110,5 @@ Fonte pública
 - Definir SQLite ou DuckDB como cache local inicial.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
 - Definir Matplotlib ou Plotly para os primeiros gráficos.
-- Definir comandos oficiais de instalação, execução e teste no `pyproject.toml`.
+- Evoluir do CLI experimental para interface desktop.
+- Definir quando o `.exe` local poderá virar artefato de release.

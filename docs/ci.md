@@ -1,6 +1,6 @@
 # CI/CD
 
-Este documento define a estratégia inicial de CI/CD do **Radar da Transição Energética**. Como o projeto ainda está em fase documental, a CI deve começar simples e evoluir junto com o scaffold Python.
+Este documento define a estratégia inicial de CI/CD do **Radar da Transição Energética**. Como o projeto já possui uma primeira implementação CLI, a CI começa simples e evolui junto com o MVP.
 
 ## Objetivos
 
@@ -19,10 +19,10 @@ A automação deve responder, de forma incremental:
 | Fase | Quando aplicar | Saída esperada |
 | --- | --- | --- |
 | CI documental | Após definir ferramenta de validação documental | Validar estrutura básica de docs e links principais. |
-| CI Python mínima | Após `pyproject.toml` | Instalar dependências, rodar lint/typecheck quando configurados e testes unitários. |
+| CI Python mínima | Implementada | Rodar compilação e testes unitários. |
 | CI de dados | Após primeira fonte pública | Validar normalização com fixtures e cache em diretório temporário. |
 | CI de UI | Após primeira tela | Validar abertura mínima ou smoke test da aplicação. |
-| CI de release | Após fluxo principal estável | Gerar artefato, checksum e smoke test. |
+| CI de release | Após fluxo visual estável | Gerar artefato, checksum e smoke test. |
 
 ## Jobs Iniciais Recomendados
 
@@ -37,14 +37,24 @@ A automação deve responder, de forma incremental:
 
 ## Comandos Esperados
 
-Os comandos oficiais ainda serão definidos no `pyproject.toml`. Quando o scaffold existir, o projeto deve convergir para comandos simples, por exemplo:
+Os comandos oficiais iniciais são:
 
 ```text
-python -m pytest
-python -m compileall src
+python -m unittest discover -s tests
+python -m compileall src tests scripts
 ```
 
-Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
+O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
+
+Para o primeiro build local experimental:
+
+```text
+python -m pip install pyinstaller
+python scripts/build_exe.py
+dist\radar-transicao-energetica.exe --sem-cache
+```
+
+Esse build local não faz parte da CI inicial.
 
 ## Permissões
 
@@ -92,12 +102,15 @@ Os itens abaixo devem ficar fora do ciclo documental inicial e da primeira fatia
 
 Essa decisão evita antecipar governança, release e automação pesada antes de existir um fluxo funcional mínimo para validar.
 
+O primeiro `.exe` local experimental é uma validação manual e não muda a decisão de adiar release e build de artefato na CI.
+
 ## Critério Para Ativar CI Completa
 
 A CI completa deve ser criada quando o projeto tiver:
 
-- `pyproject.toml`;
-- pacote em `src/radar_transicao_energetica`;
-- pelo menos uma função de domínio testável;
-- pelo menos um teste automatizado;
-- comando documentado de execução local.
+- interface desktop inicial;
+- fluxo principal validado manualmente;
+- dependências de UI estabilizadas;
+- comando de build local repetível;
+- critério de smoke test do executável definido;
+- decisão sobre distribuição pública do artefato.

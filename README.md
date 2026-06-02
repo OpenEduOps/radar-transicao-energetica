@@ -1,4 +1,4 @@
-# Guia Inicial: Radar da Transição Energética
+# Radar da Transição Energética
 
 ## Visão Geral
 
@@ -12,7 +12,20 @@ O projeto pode evoluir para um executável (`.exe`) com interface visual, gráfi
 
 ## Estado Atual
 
-O projeto está em fase de planejamento público inicial. Ainda não há scaffold Python, implementação funcional, comandos oficiais de instalação ou pipeline de CI. A próxima etapa técnica é criar a estrutura base do projeto e entregar uma primeira fatia funcional com dados públicos, cálculo de participação renovável e testes de domínio.
+O projeto saiu da fase exclusivamente documental e possui uma primeira implementação local em Python. A versão atual entrega um CLI experimental que:
+
+- carrega dados locais de geração elétrica em CSV;
+- inclui um conjunto de dados de exemplo para execução offline;
+- normaliza fonte, período e geração;
+- calcula participação renovável;
+- grava cache JSON local;
+- exibe gráfico textual por fonte e tendência por período;
+- calcula um baseline simples por média móvel;
+- gera alerta interpretável;
+- possui testes automatizados com `unittest`;
+- pode ser empacotado em um primeiro `.exe` local experimental com PyInstaller.
+
+O primeiro `.exe` ainda não é uma release pública completa. Ele serve como validação local do fluxo principal antes de avançar para interface desktop, integração climática, empacotamento de release e smoke test formal.
 
 ## Documentação do Projeto
 
@@ -25,6 +38,63 @@ Este README é a porta de entrada e a fonte inicial de verdade do projeto. A doc
 - [Matriz de issues](docs/matriz-issues.md): sequência planejada de issues e rastreabilidade.
 - [CI/CD](docs/ci.md): estratégia inicial de automação, qualidade e itens adiados de release.
 - [Contribuindo](CONTRIBUTING.md): orientações para colaborar com o projeto.
+
+## Como Executar
+
+Requisito recomendado:
+
+- Python 3.12 ou superior.
+
+Executar a partir do código-fonte, sem instalar o pacote:
+
+```powershell
+$env:PYTHONPATH='src'
+python -m radar_transicao_energetica --sem-cache
+```
+
+Executar com o CSV de exemplo:
+
+```powershell
+$env:PYTHONPATH='src'
+python -m radar_transicao_energetica --arquivo examples\geracao_exemplo.csv --sem-cache
+```
+
+Executar retornando JSON:
+
+```powershell
+$env:PYTHONPATH='src'
+python -m radar_transicao_energetica --arquivo examples\geracao_exemplo.csv --json --sem-cache
+```
+
+Rodar testes:
+
+```powershell
+python -m unittest discover -s tests
+python -m compileall src tests scripts
+```
+
+## Primeiro Executável Local
+
+O executável local experimental é gerado com PyInstaller. Ele não é commitado no repositório e fica em `dist/`.
+
+Instalar a dependência de build no ambiente escolhido:
+
+```powershell
+python -m pip install pyinstaller
+```
+
+Gerar o `.exe`:
+
+```powershell
+python scripts\build_exe.py
+```
+
+Validar o executável:
+
+```powershell
+dist\radar-transicao-energetica.exe --sem-cache
+dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --json --sem-cache
+```
 
 ## Problema
 
@@ -122,6 +192,8 @@ Stack sugerida para o MVP funcional:
 - Matplotlib ou Plotly para gráficos;
 - PyInstaller para geração futura do executável, depois que o fluxo principal estiver estável.
 
+A primeira implementação usa apenas biblioteca padrão do Python para reduzir atrito, manter os testes offline e permitir o primeiro empacotamento local. `pandas`, `scikit-learn`, PySide6 e gráficos ricos seguem planejados para a evolução do MVP.
+
 ## Arquitetura Inicial
 
 Uma organização simples para começar:
@@ -175,15 +247,13 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 
 Próxima sequência técnica recomendada:
 
-1. Criar a estrutura base do projeto Python.
-2. Definir a primeira fonte de dados do MVP.
-3. Implementar coleta e cache local.
-4. Criar análise exploratória mínima.
-5. Definir a variável-alvo: participação renovável ou risco de pressão térmica.
-6. Implementar modelo baseline.
-7. Criar uma tela inicial com gráfico e alerta.
-8. Adicionar testes para transformação de dados e cálculo de métricas.
-9. Planejar o empacotamento futuro como executável quando o fluxo principal estiver estável.
+1. Definir a primeira fonte pública real a ser normalizada diretamente.
+2. Evoluir o cache local para SQLite ou DuckDB.
+3. Adicionar integração climática inicial.
+4. Refinar o baseline e registrar métricas de avaliação.
+5. Criar interface desktop inicial com gráfico visual.
+6. Transformar o `.exe` experimental em artefato de release apenas quando o fluxo visual estiver estável.
+7. Adicionar smoke test formal do executável e CI de build de artefato depois da primeira interface.
 
 ## Fora do Escopo Inicial
 
