@@ -2,17 +2,17 @@
 
 ## Visão Geral
 
-O **Radar da Transição Energética** é uma aplicação local em Python para monitorar dados do setor elétrico brasileiro e apoiar análises educacionais sobre a participação de fontes renováveis na matriz elétrica. Hoje, o projeto está disponível como CLI experimental e planejado para evoluir para aplicativo desktop.
+O **Radar da Transição Energética** é uma aplicação local em Python para monitorar dados do setor elétrico brasileiro e apoiar análises educacionais sobre a participação de fontes renováveis na matriz elétrica. Hoje, o projeto está disponível como CLI experimental e primeira interface desktop.
 
 A ideia central é combinar dados abertos de geração, carga, preço de energia e clima para responder uma pergunta prática:
 
 > Em quais momentos a matriz elétrica brasileira tende a ficar mais pressionada, com menor participação renovável, maior uso de térmicas ou maior sinal econômico de estresse?
 
-O projeto pode evoluir para um executável (`.exe`) com interface visual, gráficos, alertas interpretáveis e modelos simples de machine learning.
+O projeto pode evoluir para um executável (`.exe`) com interface visual mais rica, gráficos, alertas interpretáveis e modelos simples de machine learning.
 
 ## Estado Atual
 
-O projeto saiu da fase exclusivamente documental e possui uma primeira implementação local em Python. A versão atual entrega um CLI experimental que:
+O projeto saiu da fase exclusivamente documental e possui uma primeira implementação local em Python. A versão atual entrega um CLI experimental e uma interface desktop inicial que:
 
 - carrega dados locais de geração elétrica em CSV;
 - inclui um conjunto de dados de exemplo para execução offline;
@@ -23,10 +23,11 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 - exibe gráfico textual por fonte e tendência por período;
 - calcula baseline por média móvel com MAE e comparação real vs previsto;
 - gera alerta interpretável;
+- abre uma primeira interface desktop em Tkinter para visualizar fonte, período, métricas centrais, geração por fonte, alerta e comparação do baseline;
 - possui testes automatizados com `unittest`;
 - pode ser empacotado em um primeiro `.exe` local experimental com PyInstaller.
 
-O primeiro `.exe` ainda não é uma release pública completa. Ele serve como validação local do fluxo principal antes de avançar para interface desktop, integração climática, empacotamento de release e smoke test formal.
+O primeiro `.exe` ainda não é uma release pública completa. Ele serve como validação local do fluxo principal antes de avançar para integração climática, empacotamento de release e smoke test formal. A interface desktop atual é uma tela inicial, ainda sem gráficos ricos ou instalador.
 
 ## Documentação do Projeto
 
@@ -66,6 +67,22 @@ Instalar em modo editável e executar pelo comando do projeto:
 python -m pip install -e .
 radar-transicao-energetica --sem-cache
 ```
+
+Abrir a primeira interface desktop:
+
+```powershell
+python -m pip install -e .
+radar-transicao-energetica-ui
+```
+
+Também é possível abrir a interface diretamente do código-fonte:
+
+```powershell
+$env:PYTHONPATH='src'
+python -m radar_transicao_energetica.desktop
+```
+
+A interface desktop inicial permite escolher exemplo embutido, CSV local ou fonte ONS mensal. Ela mostra geração por fonte em tabela, participação renovável, geração total, geração renovável, alerta interpretável, baseline da próxima janela, MAE e última comparação real vs previsto. Quando o cache está habilitado, a tela usa o caminho padrão `data/cache/analises.sqlite`.
 
 Executar com o CSV de exemplo:
 
@@ -291,11 +308,12 @@ Stack sugerida para o MVP funcional:
 - `requests` para consumo de APIs e arquivos públicos;
 - `scikit-learn` para modelos de machine learning;
 - SQLite para cache local;
+- Tkinter para a primeira interface desktop;
 - PySide6 para interface desktop;
 - Matplotlib ou Plotly para gráficos;
 - PyInstaller para geração futura do executável, depois que o fluxo principal estiver estável.
 
-A primeira implementação usa apenas biblioteca padrão do Python para reduzir atrito, manter os testes offline e permitir o primeiro empacotamento local. `pandas`, `scikit-learn`, PySide6 e gráficos ricos seguem planejados para a evolução do MVP.
+A primeira implementação usa apenas biblioteca padrão do Python para reduzir atrito, manter os testes offline, abrir a primeira tela desktop com Tkinter e permitir o primeiro empacotamento local. `pandas`, `scikit-learn`, PySide6 e gráficos ricos seguem planejados para a evolução do MVP.
 
 ## Arquitetura Inicial
 
@@ -323,6 +341,7 @@ radar-transicao-energetica/
 │       ├── baseline.py
 │       ├── alerts.py
 │       ├── charts.py
+│       ├── desktop.py
 │       ├── serialization.py
 │       └── cache.py
 ├── tests/
@@ -334,7 +353,7 @@ radar-transicao-energetica/
 
 Responsabilidades sugeridas:
 
-- `app.py`: orquestra o fluxo de análise reutilizável por CLI ou futura UI;
+- `app.py`: orquestra o fluxo de análise reutilizável por CLI e UI;
 - `cli.py`: entrada de linha de comando;
 - `data.py`: leitura e normalização de CSV;
 - `ons.py`: construção de URL e carregamento da fonte pública ONS;
@@ -342,6 +361,7 @@ Responsabilidades sugeridas:
 - `baseline.py`: baseline por média móvel, MAE e comparação real vs previsto;
 - `alerts.py`: regras textuais de alerta;
 - `charts.py`: visualização textual inicial;
+- `desktop.py`: primeira interface desktop em Tkinter;
 - `serialization.py`: contrato JSON compartilhado por CLI e cache;
 - `cache.py`: escrita e leitura do cache SQLite local.
 
@@ -351,14 +371,14 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 
 - carregar pelo menos uma fonte pública de dados de geração elétrica;
 - calcular a participação renovável em um período selecionado;
-- exibir um gráfico claro com geração por fonte;
+- exibir geração por fonte de forma comparável, inicialmente em tabela e depois em gráfico rico;
 - executar um baseline interpretável com métrica de erro;
 - apresentar uma previsão comparável com dados reais;
 - gerar pelo menos um alerta interpretável;
 - rodar localmente sem credenciais privadas;
 - ter instruções claras para instalação, execução e testes.
 
-A CLI atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, baseline com MAE, comparação textual real vs previsto e alerta textual. O fechamento do MVP ainda depende de integração climática, comparação visual mais robusta, interface visual e decisão de release.
+A implementação atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, baseline com MAE, comparação textual real vs previsto, alerta textual e primeira interface desktop. O fechamento do MVP ainda depende de integração climática, comparação visual mais robusta, gráficos ricos e decisão de release.
 
 ## Próximos Passos
 
@@ -367,7 +387,7 @@ Próxima sequência técnica recomendada:
 1. Usar o cache SQLite como base para reuso offline da fonte ONS e consultas por período.
 2. Adicionar integração climática inicial.
 3. Evoluir a comparação real vs previsto para visualização mais clara por período.
-4. Criar interface desktop inicial com gráfico visual.
+4. Evoluir a interface desktop inicial para gráficos visuais e melhor QA manual.
 5. Transformar o `.exe` experimental em artefato de release apenas quando o fluxo visual estiver estável.
 6. Adicionar smoke test formal do executável e CI de build de artefato depois da primeira interface.
 

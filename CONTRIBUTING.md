@@ -1,6 +1,6 @@
 # Contribuindo
 
-Obrigado por considerar contribuir com o **Radar da Transição Energética**. O projeto ainda está no início, mas já possui uma primeira aplicação local em Python, com CLI, testes, cache SQLite, exemplo offline e integração com a fonte pública ONS Geração por Usina em Base Horária.
+Obrigado por considerar contribuir com o **Radar da Transição Energética**. O projeto ainda está no início, mas já possui uma primeira aplicação local em Python, com CLI, interface desktop inicial, testes, cache SQLite, exemplo offline e integração com a fonte pública ONS Geração por Usina em Base Horária.
 
 ## Antes de Começar
 
@@ -24,6 +24,7 @@ A primeira fatia funcional já foi implementada. O projeto atualmente:
 - registra a origem da análise em `data_source`;
 - grava cache SQLite local com análise e registros normalizados;
 - avalia o baseline de média móvel com MAE e comparação real vs previsto;
+- abre uma interface desktop inicial em Tkinter para exemplo embutido, CSV local ou ONS mensal;
 - executa testes automatizados com `unittest`;
 - pode gerar um `.exe` local experimental com PyInstaller.
 
@@ -34,10 +35,11 @@ Contribuições úteis agora incluem:
 - propor dados sintéticos para testes;
 - ampliar fixtures ONS para fontes ainda não classificadas na V0;
 - melhorar consultas, validações e rastreabilidade do cache SQLite;
+- melhorar estados, mensagens e QA manual da interface desktop inicial;
 - melhorar visualização e interpretação da comparação baseline;
 - revisar critérios de aceite.
 
-A próxima evolução recomendada é usar o cache SQLite como base para reuso offline da fonte ONS e consultas por período. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
+A próxima evolução recomendada é usar o cache SQLite como base para reuso offline da fonte ONS e consultas por período, em paralelo com melhorias incrementais da interface desktop. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
 
 ## Padrão de Trabalho
 
@@ -50,6 +52,7 @@ Exemplos de bons escopos:
 - adicionar fixture ONS com nova fonte ainda não classificada;
 - adicionar teste para cache ou serialização;
 - adicionar teste de comparação real vs previsto do baseline;
+- adicionar teste para modelo de apresentação da interface sem abrir janela;
 - melhorar mensagem de erro para dados indisponíveis;
 - revisar uma tabela de requisitos;
 - evoluir cache local sem depender de rede, mantendo metadados da fonte e registros normalizados rastreáveis.
@@ -123,6 +126,6 @@ Não inclua:
 
 ## Como Escolher Uma Issue
 
-Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial e cálculo de participação renovável já existem, boas contribuições agora estão em cache local, fixtures ONS, documentação de limites, integração climática e futura interface.
+Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial, cálculo de participação renovável, cache SQLite, baseline e interface desktop inicial já existem. Boas contribuições agora estão em reuso offline do cache, fixtures ONS, documentação de limites, integração climática, QA da tela e visualização mais clara do baseline.
 
 Se uma issue parecer grande demais, divida em uma etapa menor com critério de aceite próprio.
