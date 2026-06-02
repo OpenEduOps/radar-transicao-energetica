@@ -1,6 +1,6 @@
 # Contribuindo
 
-Obrigado por considerar contribuir com o **Radar da Transição Energética**. O projeto ainda está no início, mas já possui uma primeira aplicação local em Python, com CLI, testes, cache JSON, exemplo offline e integração com a fonte pública ONS Geração por Usina em Base Horária.
+Obrigado por considerar contribuir com o **Radar da Transição Energética**. O projeto ainda está no início, mas já possui uma primeira aplicação local em Python, com CLI, testes, cache SQLite, exemplo offline e integração com a fonte pública ONS Geração por Usina em Base Horária.
 
 ## Antes de Começar
 
@@ -22,7 +22,7 @@ A primeira fatia funcional já foi implementada. O projeto atualmente:
 - normaliza período, fonte e geração;
 - calcula participação renovável;
 - registra a origem da análise em `data_source`;
-- grava cache JSON local da última análise;
+- grava cache SQLite local com análise e registros normalizados;
 - executa testes automatizados com `unittest`;
 - pode gerar um `.exe` local experimental com PyInstaller.
 
@@ -32,10 +32,10 @@ Contribuições úteis agora incluem:
 - melhorar documentação de execução, limites e fontes públicas;
 - propor dados sintéticos para testes;
 - ampliar fixtures ONS para fontes ainda não classificadas na V0;
-- melhorar cache local e rastreabilidade de dados, separando resultado de análise e dados normalizados;
+- melhorar consultas, validações e rastreabilidade do cache SQLite;
 - revisar critérios de aceite.
 
-A próxima evolução recomendada é manter o JSON da última análise como saída simples e adicionar uma camada mais robusta, como SQLite ou DuckDB, para dados normalizados e metadados de coleta. Os testes devem continuar offline e sem credenciais privadas.
+A próxima evolução recomendada é usar o cache SQLite como base para reuso offline da fonte ONS e consultas por período. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
 
 ## Padrão de Trabalho
 
@@ -49,7 +49,7 @@ Exemplos de bons escopos:
 - adicionar teste para cache ou serialização;
 - melhorar mensagem de erro para dados indisponíveis;
 - revisar uma tabela de requisitos;
-- evoluir cache local sem depender de rede e sem misturar cache da análise com cache de dados.
+- evoluir cache local sem depender de rede, mantendo metadados da fonte e registros normalizados rastreáveis.
 
 Evite misturar documentação, arquitetura, UI, modelo e CI na mesma mudança quando esses tópicos puderem ser revisados separadamente.
 

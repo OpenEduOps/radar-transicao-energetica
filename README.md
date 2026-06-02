@@ -19,7 +19,7 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 - baixa dados públicos do ONS para geração por usina em base horária;
 - normaliza fonte, período e geração;
 - calcula participação renovável;
-- grava um cache JSON local da última análise;
+- grava cache SQLite local com a última análise e os registros normalizados;
 - exibe gráfico textual por fonte e tendência por período;
 - calcula um baseline simples por média móvel;
 - gera alerta interpretável;
@@ -99,6 +99,30 @@ O JSON retornado possui cinco blocos principais:
 - `baseline`: método, pontos usados e previsão simples da próxima janela.
 
 Fontes fora da classificação inicial da V0 aparecem em `unknown_sources`. Elas continuam entrando na geração total, mas não são classificadas automaticamente como renováveis.
+
+## Cache Local
+
+Por padrão, a CLI grava o cache em SQLite no caminho `data/cache/analises.sqlite`.
+
+```powershell
+$env:PYTHONPATH='src'
+python -m radar_transicao_energetica --arquivo examples\geracao_exemplo.csv
+```
+
+Para escolher outro arquivo SQLite:
+
+```powershell
+$env:PYTHONPATH='src'
+python -m radar_transicao_energetica --arquivo examples\geracao_exemplo.csv --cache C:\tmp\radar-cache.sqlite
+```
+
+O cache atual mantém:
+
+- `cache_metadata`: metadados do cache, incluindo versão do schema;
+- `analyses`: payload serializado da análise, origem dos dados, período e participação renovável;
+- `generation_records`: registros normalizados em `period`, `source` e `generation_mw`.
+
+Use `--sem-cache` quando quiser executar sem gravar esse banco local.
 
 Rodar testes:
 
@@ -205,7 +229,7 @@ Contrato de normalização da fonte ONS:
 
 As fontes reconhecidas na V0 são normalizadas para hidráulica, eólica, solar e térmica. Fontes fora dessa classificação continuam entrando no total de geração e aparecem em `unknown_sources`, para evitar classificação silenciosa.
 
-O cache JSON atual registra o resultado da última análise, incluindo `data_source`, resumo, séries por período, alerta e baseline. Ele ainda não é um cache bruto do arquivo ONS nem substitui a evolução planejada para SQLite ou DuckDB.
+O cache SQLite atual registra o resultado da última análise, incluindo `data_source`, resumo, séries por período, alerta e baseline, e também persiste os registros normalizados. Ele não salva o CSV ONS bruto.
 
 Fontes candidatas para o projeto:
 
@@ -253,7 +277,7 @@ Stack sugerida para o MVP funcional:
 - `pandas` para tratamento de dados;
 - `requests` para consumo de APIs e arquivos públicos;
 - `scikit-learn` para modelos de machine learning;
-- SQLite ou DuckDB para cache local;
+- SQLite para cache local;
 - PySide6 para interface desktop;
 - Matplotlib ou Plotly para gráficos;
 - PyInstaller para geração futura do executável, depois que o fluxo principal estiver estável.
@@ -306,7 +330,7 @@ Responsabilidades sugeridas:
 - `alerts.py`: regras textuais de alerta;
 - `charts.py`: visualização textual inicial;
 - `serialization.py`: contrato JSON compartilhado por CLI e cache;
-- `cache.py`: escrita de cache JSON local da última análise.
+- `cache.py`: escrita e leitura do cache SQLite local.
 
 ## Critérios de Sucesso do MVP
 
@@ -321,13 +345,13 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 - rodar localmente sem credenciais privadas;
 - ter instruções claras para instalação, execução e testes.
 
-A CLI atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache JSON, baseline simples e alerta textual. O fechamento do MVP ainda depende de integração climática, comparação mais robusta entre dado real e previsão, interface visual e decisão de release.
+A CLI atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, baseline simples e alerta textual. O fechamento do MVP ainda depende de integração climática, comparação mais robusta entre dado real e previsão, interface visual e decisão de release.
 
 ## Próximos Passos
 
 Próxima sequência técnica recomendada:
 
-1. Evoluir o cache local para SQLite ou DuckDB, separando cache da análise e cache dos dados normalizados.
+1. Usar o cache SQLite como base para reuso offline da fonte ONS e consultas por período.
 2. Adicionar integração climática inicial.
 3. Refinar o baseline e registrar métricas de avaliação.
 4. Criar interface desktop inicial com gráfico visual.
