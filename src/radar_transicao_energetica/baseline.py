@@ -16,6 +16,9 @@ def predict_next_renewable_share(
     summaries: list[PeriodRenewableSummary],
     window: int = 3,
 ) -> BaselinePrediction:
+    if window < 1:
+        raise ValueError("A janela do baseline deve ser maior que zero.")
+
     usable_shares = [
         summary.renewable_share
         for summary in summaries

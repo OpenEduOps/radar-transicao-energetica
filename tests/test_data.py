@@ -40,6 +40,23 @@ class DataLoadingTest(unittest.TestCase):
         self.assertEqual(records[0].source, "hidraulica")
         self.assertEqual(records[0].generation_mw, 1234.5)
 
+    def test_load_generation_csv_with_punctuated_header_and_en_number(self) -> None:
+        csv_text = "\n".join(
+            [
+                "Data;Fonte;Val Geracao (MWmed)",
+                "2026-01-01 00:00;Hidroeletrica;1,234.5",
+            ]
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "geracao.csv"
+            path.write_text(csv_text, encoding="utf-8")
+
+            records = load_generation_csv(path)
+
+        self.assertEqual(records[0].source, "hidraulica")
+        self.assertEqual(records[0].generation_mw, 1234.5)
+
     def test_missing_generation_column_raises_error(self) -> None:
         csv_text = "period,source\n2026-01-01,hidraulica\n"
 
@@ -62,6 +79,7 @@ class DataLoadingTest(unittest.TestCase):
 
     def test_normalize_source(self) -> None:
         self.assertEqual(normalize_source("Hidrelétrica"), "hidraulica")
+        self.assertEqual(normalize_source("Hidroeletrica"), "hidraulica")
         self.assertEqual(normalize_source("UFV"), "solar")
 
 

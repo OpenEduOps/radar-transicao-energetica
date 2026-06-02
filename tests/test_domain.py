@@ -75,6 +75,10 @@ class DomainTest(unittest.TestCase):
         self.assertEqual(prediction.points_used, 2)
         self.assertAlmostEqual(prediction.predicted_renewable_share or 0, 0.65)
 
+    def test_baseline_rejects_invalid_window(self) -> None:
+        with self.assertRaises(ValueError):
+            predict_next_renewable_share([], window=0)
+
 
 if __name__ == "__main__":
     unittest.main()

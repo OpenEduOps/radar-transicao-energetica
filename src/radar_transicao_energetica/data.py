@@ -32,12 +32,15 @@ GENERATION_COLUMNS = (
     "geracao",
     "val_geracao",
     "val_geracaomwmed",
+    "val_geracaomw",
+    "val_geracao_mwmed",
     "mwmed",
 )
 
 SOURCE_ALIASES = {
     "hidraulica": "hidraulica",
     "hidreletrica": "hidraulica",
+    "hidroeletrica": "hidraulica",
     "hidro": "hidraulica",
     "uhe": "hidraulica",
     "eolica": "eolica",
@@ -83,13 +86,7 @@ def _load_generation_from_text(text: str) -> list[GenerationRecord]:
     if not text.strip():
         raise GenerationDataError("Arquivo CSV vazio.")
 
-    sample = text[:2048]
-    try:
-        dialect = csv.Sniffer().sniff(sample)
-    except csv.Error:
-        dialect = csv.excel
-
-    reader = csv.DictReader(io.StringIO(text), dialect=dialect)
+    reader = csv.DictReader(io.StringIO(text), dialect=_detect_dialect(text))
     if not reader.fieldnames:
         raise GenerationDataError("CSV sem cabecalho.")
 
@@ -174,8 +171,11 @@ def _parse_float(value: str | None) -> float:
         raise GenerationDataError("valor de geracao ausente.")
 
     normalized = raw.replace(" ", "")
-    if "," in normalized and "." in normalized and normalized.rfind(",") > normalized.rfind("."):
-        normalized = normalized.replace(".", "").replace(",", ".")
+    if "," in normalized and "." in normalized:
+        if normalized.rfind(",") > normalized.rfind("."):
+            normalized = normalized.replace(".", "").replace(",", ".")
+        else:
+            normalized = normalized.replace(",", "")
     elif "," in normalized and "." not in normalized:
         normalized = normalized.replace(",", ".")
 
@@ -189,7 +189,20 @@ def _normalize_key(value: str | None) -> str:
     raw = (value or "").strip().lower()
     decomposed = unicodedata.normalize("NFD", raw)
     without_accents = "".join(char for char in decomposed if not unicodedata.combining(char))
-    normalized = without_accents.replace("-", "_").replace(" ", "_")
+    normalized = "".join(char if char.isalnum() else "_" for char in without_accents)
     while "__" in normalized:
         normalized = normalized.replace("__", "_")
     return normalized.strip("_")
+
+
+def _detect_dialect(text: str) -> csv.Dialect:
+    sample = text[:2048]
+    try:
+        return csv.Sniffer().sniff(sample, delimiters=",;\t|")
+    except csv.Error:
+        first_line = text.splitlines()[0] if text.splitlines() else ""
+        if ";" in first_line:
+            dialect = csv.excel()
+            dialect.delimiter = ";"
+            return dialect
+        return csv.excel
