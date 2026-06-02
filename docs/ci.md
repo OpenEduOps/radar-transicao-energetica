@@ -78,6 +78,19 @@ Release ainda está fora da primeira versão. Quando o fluxo principal estiver e
 - limitações conhecidas;
 - smoke test do artefato.
 
+## Itens Adiados
+
+Os itens abaixo devem ficar fora do ciclo atual. Eles só devem ser retomados depois que o projeto tiver scaffold Python, primeira fatia funcional, testes básicos e comando local documentado:
+
+- `SECURITY.md`;
+- `CODE_OF_CONDUCT.md`;
+- workflow de release;
+- smoke test de executável;
+- regras de branch protection;
+- CI completa com build de artefato.
+
+Essa decisão evita antecipar governança, release e automação pesada antes de existir um fluxo funcional mínimo para validar.
+
 ## Critério Para Ativar CI Completa
 
 A CI completa deve ser criada quando o projeto tiver:

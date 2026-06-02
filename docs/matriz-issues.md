@@ -38,6 +38,19 @@ Este documento organiza as primeiras issues planejadas para o **Radar da Transi�
 
 Essa ordem permite entregar valor observável antes de avançar para integração climática, comparação visual mais refinada e empacotamento.
 
+## Backlog Adiado
+
+Estes itens não devem entrar nas primeiras issues. Eles ficam aguardando scaffold Python, primeira fatia funcional e testes básicos:
+
+- `SECURITY.md`;
+- `CODE_OF_CONDUCT.md`;
+- workflow de release;
+- smoke test de executável;
+- regras de branch protection;
+- CI completa com build de artefato.
+
+Esses tópicos voltam para a matriz apenas quando o projeto já tiver um fluxo local demonstrável e comandos oficiais de execução e teste.
+
 ## Template de Issue
 
 ```md
