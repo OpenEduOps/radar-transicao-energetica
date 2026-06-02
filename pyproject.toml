@@ -20,6 +20,7 @@ dev = [
 
 [project.scripts]
 radar-transicao-energetica = "radar_transicao_energetica.cli:main"
+radar-transicao-energetica-ui = "radar_transicao_energetica.desktop:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
