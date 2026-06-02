@@ -253,6 +253,6 @@ Primeiras issues originalmente recomendadas:
 3. `ISSUE-003`: carregamento inicial de fonte pública.
 4. `ISSUE-005`: cálculo de participação renovável.
 
-Essas quatro issues criam a base para uma primeira demonstração funcional sem antecipar complexidade de UI, empacotamento ou modelos avançados.
+Essas quatro issues criam a base para uma primeira demonstração funcional sem antecipar complexidade visual pesada, empacotamento de release ou modelos avançados.
 
-Estado atual: `ISSUE-001`, `ISSUE-002`, `ISSUE-003`, `ISSUE-004` e `ISSUE-005` já foram implementadas para a versão CLI inicial. A próxima frente recomendada é usar o cache SQLite para reuso offline da fonte ONS e consultas por período.
+Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-008` está implementada como baseline de média móvel; `ISSUE-009` e `ISSUE-010` estão parcialmente atendidas com comparação e alerta. As próximas frentes recomendadas são reuso offline do cache SQLite, integração climática e evolução da interface para gráficos e QA manual.

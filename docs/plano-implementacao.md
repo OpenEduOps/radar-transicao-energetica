@@ -718,9 +718,9 @@ Essa ordem pode ser ajustada conforme descobertas técnicas, mas cada commit dev
 | Risco | Impacto | Mitigação |
 | --- | --- | --- |
 | Fonte pública instável | Quebra de coleta | Usar fixtures, validar schema e manter cache local. |
-| Escopo crescer antes da base | Atraso e baixa testabilidade | Encerrar primeira fatia funcional antes de UI/ML. |
+| Escopo crescer antes da base | Atraso e baixa testabilidade | Proteger domínio, dados e testes antes de ampliar UI/ML. |
 | Modelo baseline pouco confiável | Interpretação ruim | Documentar limitações e usar alerta educacional. |
-| UI antecipada demais | Regras difíceis de testar | Implementar domínio e dados antes de tela. |
+| UI complexa demais | Regras difíceis de testar | Manter a tela consumindo APIs de aplicação e modelos de apresentação testáveis. |
 | CI pesada cedo demais | Custo e manutenção | Começar com testes e importação, sem release. |
 | Empacotamento prematuro | Trabalho sem fluxo estável | Manter o `.exe` atual como experimento local e adiar release, instalador e CI de artefato. |
 
