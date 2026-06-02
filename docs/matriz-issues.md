@@ -71,6 +71,7 @@ Parte de `ISSUE-006`, `ISSUE-008` e `ISSUE-010` já foi antecipada em forma text
 Critérios já atendidos para `ISSUE-003`:
 
 - fonte ONS escolhida e documentada;
+- decisão registrada de deixar ANEEL e CCEE como fontes complementares para etapas posteriores;
 - CSV mensal público carregável por `--fonte ons --ons-periodo YYYY-MM`;
 - normalização ONS coberta por fixture offline;
 - erros de download, encoding e tamanho excessivo tratados sem traceback;
@@ -133,7 +134,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 ## Boas Candidatas Para Primeiras Contribuições
 
 - revisar documentação de setup e limites da fonte ONS;
-- adicionar teste unitário para cálculo de participação renovável;
+- ampliar testes unitários para novos casos de participação renovável;
 - criar dados sintéticos de teste;
 - melhorar mensagens de erro para dados ausentes;
 - revisar clareza de alertas educacionais;

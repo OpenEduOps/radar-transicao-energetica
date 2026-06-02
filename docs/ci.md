@@ -28,7 +28,7 @@ A automação deve responder, de forma incremental:
 
 | Job | Objetivo | Obrigatório no início |
 | --- | --- | --- |
-| Docs | Validar documentação central e links internos. | Sim, quando CI inicial for criada |
+| Docs | Validar documentação central e links internos. | Não na CI atual |
 | Format/Lint | Validar padrão de código quando ferramenta for definida. | Não na CI atual |
 | Tests | Rodar testes unitários e integração leve. | Sim, após código |
 | Security | Checar segredos e dependências vulneráveis quando dependências existirem. | Não na CI atual |
@@ -45,6 +45,8 @@ python -m unittest discover -s tests
 python -m compileall src tests scripts
 radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-cache
 ```
+
+O workflow atual executa esses comandos em Windows com Python 3.12. O pacote declara suporte a Python 3.11 ou superior, mas a validação automatizada inicial fica concentrada em uma versão para manter a CI leve.
 
 O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
 

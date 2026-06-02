@@ -78,6 +78,8 @@ Estado atual dessa fatia: a fonte pública inicial foi consolidada com o dataset
 
 A implementação atual registra a origem da análise em `data_source`, incluindo exemplo embutido, caminho do CSV local ou, no caso ONS, período mensal, URL do dataset e URL do recurso CSV usado. A coleta ONS tem limite local de 200 MB por download e permanece fora da CI obrigatória para manter a suíte determinística e sem rede.
 
+Na comparação inicial entre ONS, ANEEL e CCEE, o ONS foi escolhido por entregar série horária de geração em CSV público, sem credenciais e diretamente compatível com o cálculo de participação renovável. ANEEL e CCEE seguem no radar como fontes complementares para dados estruturais e sinais econômicos, não como substitutas da primeira base de geração.
+
 Incluído no MVP:
 
 - coleta ou carregamento de pelo menos uma fonte pública de dados de geração elétrica;

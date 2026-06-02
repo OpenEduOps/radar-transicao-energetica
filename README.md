@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O **Radar da Transição Energética** é uma proposta de aplicativo desktop em Python para monitorar dados do setor elétrico brasileiro e apoiar análises educacionais sobre a participação de fontes renováveis na matriz elétrica.
+O **Radar da Transição Energética** é uma aplicação local em Python para monitorar dados do setor elétrico brasileiro e apoiar análises educacionais sobre a participação de fontes renováveis na matriz elétrica. Hoje, o projeto está disponível como CLI experimental e planejado para evoluir para aplicativo desktop.
 
 A ideia central é combinar dados abertos de geração, carga, preço de energia e clima para responder uma pergunta prática:
 
@@ -44,7 +44,7 @@ Este README é a porta de entrada e a fonte inicial de verdade do projeto. A doc
 
 Requisito recomendado:
 
-- Python 3.12 ou superior.
+- Python 3.11 ou superior. A CI atual executa a suíte em Python 3.12.
 
 Criar e ativar um ambiente virtual no Windows:
 
@@ -181,6 +181,12 @@ Fonte pública consolidada na V0:
 
 - [ONS Geração por Usina em Base Horária](https://dados.ons.org.br/dataset/geracao-usina-2): geração verificada de usinas, conjuntos de usinas e grupos de pequenas usinas em base horária. A integração atual usa os CSVs mensais publicados no bucket público do ONS na AWS, no padrão `GERACAO_USINA-2_YYYY_MM.csv`.
 
+Decisão da V0:
+
+- ONS foi escolhido como primeira fonte real porque entrega geração horária por usina em CSV público, sem credenciais e com aderência direta ao cálculo de participação renovável.
+- ANEEL permanece como candidata para dados estruturais, como geração distribuída e cadastro de empreendimentos, mas não substitui a necessidade inicial de série horária de geração.
+- CCEE permanece como candidata para sinal econômico, como PLD horário, mas entra melhor depois que a base de geração estiver estável.
+
 Limites e decisões da integração ONS V0:
 
 - arquivos anteriores a 2022, agrupados por ano, não entram nesta primeira integração;
@@ -301,6 +307,8 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 - gerar pelo menos um alerta interpretável;
 - rodar localmente sem credenciais privadas;
 - ter instruções claras para instalação, execução e testes.
+
+A CLI atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache JSON, baseline simples e alerta textual. O fechamento do MVP ainda depende de integração climática, comparação mais robusta entre dado real e previsão, interface visual e decisão de release.
 
 ## Próximos Passos
 

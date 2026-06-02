@@ -12,7 +12,7 @@ Implementar uma aplicação Python local que carregue dados públicos de geraç�
 
 ### Primeira Fatia Funcional
 
-A primeira fatia funcional deve entregar:
+A primeira fatia funcional foi definida para entregar:
 
 - scaffold Python mínimo;
 - carregamento inicial de uma fonte pública de geração elétrica;
@@ -20,7 +20,7 @@ A primeira fatia funcional deve entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-Esta fatia não deve incluir interface desktop, integração climática, modelo de machine learning, empacotamento como executável ou CI completa.
+Essa fatia já foi concluída como CLI local com fonte ONS, cálculo de renovabilidade, testes, cache JSON e instruções de execução. O plano original não dependia de interface desktop, integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, baseline simples, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
 
 ### MVP Funcional
 
@@ -52,7 +52,7 @@ Ficam fora da primeira fatia funcional e só devem voltar depois de base validad
 A implementação deve seguir uma ordem incremental:
 
 1. criar estrutura Python mínima e documentação real de setup;
-2. escolher uma fonte pública inicial;
+2. registrar a decisão da fonte pública inicial;
 3. implementar carregamento e normalização;
 4. implementar cálculo de participação renovável;
 5. validar com dados sintéticos e testes automatizados;
@@ -186,6 +186,12 @@ Commits sugeridos:
 Status: concluída para a primeira fonte pública real.
 
 A implementação atual consolida o dataset **ONS Geração por Usina em Base Horária** como primeira fonte pública real. O CLI aceita `--fonte ons --ons-periodo YYYY-MM`, baixa o CSV mensal público do ONS na AWS, normaliza colunas de período, tipo de usina e geração em MWmed, registra a origem da análise em `data_source` e mantém CSV local/exemplo embutido como caminho offline.
+
+Decisão de fonte:
+
+- ONS foi priorizado porque oferece geração horária em CSV público, sem credenciais, com granularidade adequada para calcular participação renovável.
+- ANEEL permanece candidata para dados estruturais do setor e geração distribuída, mas não foi escolhida como primeira série operacional horária.
+- CCEE permanece candidata para sinal econômico, como PLD horário, mas entra melhor depois que o fluxo de geração e cache estiver estável.
 
 Rastreabilidade:
 
@@ -708,7 +714,7 @@ Essa ordem pode ser ajustada conforme descobertas técnicas, mas cada commit dev
 | Modelo baseline pouco confiável | Interpretação ruim | Documentar limitações e usar alerta educacional. |
 | UI antecipada demais | Regras difíceis de testar | Implementar domínio e dados antes de tela. |
 | CI pesada cedo demais | Custo e manutenção | Começar com testes e importação, sem release. |
-| Empacotamento prematuro | Trabalho sem fluxo estável | Adiar `.exe` até MVP funcional validado. |
+| Empacotamento prematuro | Trabalho sem fluxo estável | Manter o `.exe` atual como experimento local e adiar release, instalador e CI de artefato. |
 
 ## Critérios Para Avançar Entre Fases
 

@@ -18,6 +18,8 @@ A primeira fatia funcional deve ser menor que a V0 completa. Ela deve entregar:
 
 A primeira implementação já entrega essa fatia como CLI local, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache JSON, visualização textual, baseline simples por média móvel, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Integração climática, interface desktop e empacotamento de release continuam para etapas posteriores do MVP funcional.
 
+Na decisão da primeira fonte pública real, ONS foi priorizado por entregar geração horária em CSV público e sem credenciais. ANEEL e CCEE permanecem candidatas para etapas complementares: ANEEL para dados estruturais do setor e CCEE para sinais econômicos, como PLD horário.
+
 ## Público-Alvo
 
 Usuários finais:
@@ -52,7 +54,7 @@ Contribuidores:
 | --- | --- | --- | --- |
 | `NFR-001` | Execução local | O projeto deve funcionar sem credenciais privadas na primeira fatia funcional. | Implementado |
 | `NFR-002` | Reprodutibilidade | Transformações, métricas e cálculos devem ser testáveis com dados sintéticos. | Implementado |
-| `NFR-003` | Clareza educacional | Alertas e mensagens devem usar linguagem compreensível para usuário não especialista. | Planejado |
+| `NFR-003` | Clareza educacional | Alertas e mensagens devem usar linguagem compreensível para usuário não especialista. | Parcial |
 | `NFR-004` | Baixo atrito de contribuição | Setup, testes e escopo de issues devem ser documentados. | Implementado |
 | `NFR-005` | Cache local | Dados baixados ou processados devem poder ser reutilizados localmente. | Parcial |
 

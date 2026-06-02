@@ -1,29 +1,35 @@
 # Arquitetura
 
-Este documento descreve a arquitetura inicial do **Radar da Transição Energética**. As decisões abaixo partem do [README](../README.md) e devem evoluir conforme a primeira implementação CLI avançar para o MVP funcional.
+Este documento descreve a arquitetura inicial do **Radar da Transição Energética**. As decisões abaixo partem do [README](../README.md) e registram a base atual da CLI experimental, além dos caminhos planejados para o MVP funcional.
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir que o projeto evolua de forma incremental: primeiro como aplicação Python local com regras testáveis e CLI empacotável, depois como interface desktop e, por fim, como executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, fonte ONS, cache JSON, baseline simples e alerta textual. As próximas camadas devem avançar para cache mais robusto, integração climática, interface desktop e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
-| Área | Tecnologia planejada | Motivo |
+| Área | Tecnologia atual ou planejada | Motivo |
 | --- | --- | --- |
-| Linguagem | Python | Boa aderência a dados, automação, ML e desktop. |
-| Dados | `pandas` | Tratamento tabular e análise exploratória. |
-| HTTP/APIs | `requests` | Coleta simples de dados públicos. |
-| ML | `scikit-learn` | Modelos baseline, métricas e comparação inicial. |
-| Cache local | SQLite ou DuckDB | Persistência local sem serviço externo. |
-| UI desktop | PySide6 | Interface desktop em Python. |
-| Gráficos | Matplotlib ou Plotly | Visualização de séries, fontes e previsões. |
-| Empacotamento | PyInstaller | Geração futura de executável. |
+| Linguagem | Python 3.11+ | Boa aderência a dados, automação, ML e desktop. |
+| Dados | Biblioteca padrão agora; `pandas` planejado | A V0 reduz dependências; `pandas` entra quando volume e análise tabular justificarem. |
+| HTTP/APIs | `urllib` agora; `requests` planejado | Coleta ONS inicial sem dependências externas; `requests` entra se a camada de dados crescer. |
+| ML | Média móvel agora; `scikit-learn` planejado | Baseline simples primeiro; modelos e métricas mais completas depois. |
+| Cache local | JSON agora; SQLite ou DuckDB planejado | JSON valida o fluxo; banco local deve melhorar repetição e consulta. |
+| UI desktop | CLI agora; PySide6 planejado | CLI mantém domínio testável antes da tela. |
+| Gráficos | Texto agora; Matplotlib ou Plotly planejado | Visualização textual valida o conceito antes de gráficos ricos. |
+| Empacotamento | PyInstaller local experimental | Gera `.exe` local, ainda sem release pública. |
 
-A primeira implementação evita dependências pesadas e usa biblioteca padrão do Python. Essa escolha reduz atrito para testes e permite gerar um primeiro `.exe` local experimental antes da interface desktop.
+A primeira implementação evita dependências pesadas e usa biblioteca padrão do Python. Essa escolha reduz atrito para testes e permitiu gerar um primeiro `.exe` local experimental antes da interface desktop.
 
 Na fonte pública inicial, a coleta HTTP também usa biblioteca padrão (`urllib`) para manter a V0 sem dependências externas. `requests` segue planejado apenas se a camada de dados crescer o suficiente para justificar a dependência.
 
 O carregador ONS aplica um limite local de download por arquivo mensal para evitar consumo inesperado de memória quando a fonte pública muda, falha ou retorna um conteúdo fora do tamanho esperado.
+
+## Decisão da Fonte Pública Inicial
+
+A fonte pública consolidada na V0 é o dataset **ONS Geração por Usina em Base Horária**. A escolha priorizou dados horários de geração, disponibilidade pública em CSV, ausência de credenciais e aderência direta ao cálculo de participação renovável.
+
+ANEEL e CCEE continuam relevantes para evolução do produto, mas não são a primeira fonte de geração normalizada: ANEEL tende a complementar a leitura estrutural do setor, enquanto CCEE adiciona sinal econômico, como PLD horário. Essas integrações devem entrar depois que a base ONS, o cache local e as validações estiverem mais estáveis.
 
 ## Estrutura Planejada
 
