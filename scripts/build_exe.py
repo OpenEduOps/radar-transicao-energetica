@@ -42,12 +42,21 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Falha enquanto os criterios de release publica nao estiverem completos.",
     )
+    parser.add_argument(
+        "--release-status",
+        action="store_true",
+        help="Mostra o estagio atual de release sem gerar executavel.",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     release_decision = evaluate_public_release_readiness()
+
+    if args.release_status:
+        print(format_release_decision(release_decision))
+        return 0
 
     if args.public_release and not release_decision.can_publish:
         print(format_release_decision(release_decision), file=sys.stderr)

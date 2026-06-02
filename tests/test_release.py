@@ -60,6 +60,16 @@ class ReleaseTest(unittest.TestCase):
         self.assertEqual(exit_code, 2)
         self.assertIn("Release publica bloqueada.", stderr.getvalue())
 
+    def test_build_script_release_status_does_not_require_pyinstaller(self) -> None:
+        stdout = io.StringIO()
+
+        with contextlib.redirect_stdout(stdout):
+            exit_code = build_exe.main(["--release-status"])
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("Estagio do executavel: local-experimental", stdout.getvalue())
+        self.assertIn("Release publica bloqueada.", stdout.getvalue())
+
     def test_build_script_command_keeps_local_experimental_exe_name(self) -> None:
         command = build_exe.build_pyinstaller_command()
 
