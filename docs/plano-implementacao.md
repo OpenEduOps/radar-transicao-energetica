@@ -20,7 +20,7 @@ A primeira fatia funcional foi definida para entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-Essa fatia já foi concluída como CLI local com fonte ONS, cálculo de renovabilidade, testes, cache SQLite e instruções de execução. O plano original não dependia de interface desktop, integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, baseline simples, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
+Essa fatia já foi concluída como CLI local com fonte ONS, cálculo de renovabilidade, testes, cache SQLite e instruções de execução. O plano original não dependia de interface desktop, integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, baseline avaliado por MAE, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
 
 ### MVP Funcional
 
@@ -546,7 +546,7 @@ Rastreabilidade:
 
 Objetivo:
 
-Implementar um modelo baseline simples para previsão de participação renovável ou classificação de risco.
+Implementar um baseline interpretável para previsão de participação renovável ou classificação de risco.
 
 Decisão pendente:
 
@@ -600,7 +600,7 @@ Apresentar comparação entre dado real e previsão e gerar alerta compreensíve
 
 Entregáveis:
 
-- métrica ou comparação visual;
+- métrica, comparação textual ou comparação visual;
 - regra inicial de alerta;
 - mensagens educacionais;
 - teste da classificação textual;

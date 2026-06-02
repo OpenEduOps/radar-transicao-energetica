@@ -339,7 +339,7 @@ Responsabilidades sugeridas:
 - `data.py`: leitura e normalização de CSV;
 - `ons.py`: construção de URL e carregamento da fonte pública ONS;
 - `domain.py`: cálculo de participação renovável;
-- `baseline.py`: baseline simples por média móvel;
+- `baseline.py`: baseline por média móvel, MAE e comparação real vs previsto;
 - `alerts.py`: regras textuais de alerta;
 - `charts.py`: visualização textual inicial;
 - `serialization.py`: contrato JSON compartilhado por CLI e cache;
@@ -352,7 +352,7 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 - carregar pelo menos uma fonte pública de dados de geração elétrica;
 - calcular a participação renovável em um período selecionado;
 - exibir um gráfico claro com geração por fonte;
-- treinar um modelo baseline simples;
+- executar um baseline interpretável com métrica de erro;
 - apresentar uma previsão comparável com dados reais;
 - gerar pelo menos um alerta interpretável;
 - rodar localmente sem credenciais privadas;
