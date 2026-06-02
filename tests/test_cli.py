@@ -8,6 +8,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from radar_transicao_energetica.cli import parse_ons_period
+
 
 class CliTest(unittest.TestCase):
     def test_cli_runs_with_embedded_sample_json(self) -> None:
@@ -164,6 +168,57 @@ class CliTest(unittest.TestCase):
 
         self.assertIn("Fontes nao classificadas na V0: biomassa", result.stdout)
         self.assertIn("fontes ainda nao classificadas", result.stdout)
+
+    def test_cli_reports_missing_ons_period_without_network(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "radar_transicao_energetica",
+                "--fonte",
+                "ons",
+                "--sem-cache",
+            ],
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("--ons-periodo", result.stderr)
+
+    def test_cli_rejects_ons_period_for_example_source(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "radar_transicao_energetica",
+                "--ons-periodo",
+                "2026-01",
+                "--sem-cache",
+            ],
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("--ons-periodo so pode ser usado", result.stderr)
+
+    def test_parse_ons_period(self) -> None:
+        self.assertEqual(parse_ons_period("2026-01"), (2026, 1))
+
+        with self.assertRaisesRegex(ValueError, "YYYY-MM"):
+            parse_ons_period("2026")
+
+        with self.assertRaisesRegex(ValueError, "Mes ONS invalido"):
+            parse_ons_period("2026-13")
 
 
 if __name__ == "__main__":

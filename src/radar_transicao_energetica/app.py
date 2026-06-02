@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
 
 from radar_transicao_energetica.alerts import RenewableAlert, build_renewable_alert
 from radar_transicao_energetica.baseline import BaselinePrediction, predict_next_renewable_share
@@ -13,6 +14,7 @@ from radar_transicao_energetica.domain import (
     summarize_by_period,
     summarize_generation,
 )
+from radar_transicao_energetica.ons import load_ons_generation
 
 
 @dataclass(frozen=True)
@@ -29,8 +31,18 @@ def run_analysis(
     source_path: str | Path | None = None,
     cache_path: str | Path | None = None,
     write_cache: bool = True,
+    source: str = "exemplo",
+    ons_year: int | None = None,
+    ons_month: int | None = None,
+    ons_loader: Callable[[int, int], list[GenerationRecord]] | None = None,
 ) -> AnalysisResult:
-    records = load_generation_csv(source_path) if source_path else load_sample_generation()
+    records = _load_records(
+        source_path=source_path,
+        source=source,
+        ons_year=ons_year,
+        ons_month=ons_month,
+        ons_loader=ons_loader,
+    )
     summary = summarize_generation(records)
     period_summaries = summarize_by_period(records)
     alert = build_renewable_alert(summary)
@@ -54,3 +66,28 @@ def run_analysis(
         baseline=baseline,
         cache_path=written_cache_path,
     )
+
+
+def _load_records(
+    *,
+    source_path: str | Path | None,
+    source: str,
+    ons_year: int | None,
+    ons_month: int | None,
+    ons_loader: Callable[[int, int], list[GenerationRecord]] | None,
+) -> list[GenerationRecord]:
+    if source_path is not None:
+        if source != "exemplo":
+            raise ValueError("--arquivo nao pode ser combinado com --fonte ons.")
+        return load_generation_csv(source_path)
+
+    if source == "exemplo":
+        return load_sample_generation()
+
+    if source == "ons":
+        if ons_year is None or ons_month is None:
+            raise ValueError("--ons-periodo e obrigatorio quando --fonte ons.")
+        loader = ons_loader or load_ons_generation
+        return loader(ons_year, ons_month)
+
+    raise ValueError(f"Fonte de dados desconhecida: {source}")

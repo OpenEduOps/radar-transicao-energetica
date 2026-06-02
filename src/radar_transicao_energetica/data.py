@@ -44,12 +44,16 @@ SOURCE_ALIASES = {
     "hidro": "hidraulica",
     "uhe": "hidraulica",
     "eolica": "eolica",
+    "eolieletrica": "eolica",
+    "eolioeletrica": "eolica",
     "eol": "eolica",
     "solar": "solar",
     "fotovoltaica": "solar",
+    "solar_fotovoltaica": "solar",
     "ufv": "solar",
     "termica": "termica",
     "termeletrica": "termica",
+    "termoeletrica": "termica",
     "ute": "termica",
 }
 
@@ -66,7 +70,7 @@ class GenerationRecord:
 
 
 def load_sample_generation() -> list[GenerationRecord]:
-    return _load_generation_from_text(SAMPLE_GENERATION_CSV)
+    return load_generation_csv_text(SAMPLE_GENERATION_CSV)
 
 
 def load_generation_csv(path: str | Path) -> list[GenerationRecord]:
@@ -81,7 +85,7 @@ def load_generation_csv(path: str | Path) -> list[GenerationRecord]:
     except OSError as exc:
         raise GenerationDataError(f"Nao foi possivel ler o arquivo {csv_path}: {exc}") from exc
 
-    return _load_generation_from_text(text)
+    return load_generation_csv_text(text)
 
 
 def normalize_source(value: str) -> str:
@@ -89,7 +93,7 @@ def normalize_source(value: str) -> str:
     return SOURCE_ALIASES.get(normalized, normalized)
 
 
-def _load_generation_from_text(text: str) -> list[GenerationRecord]:
+def load_generation_csv_text(text: str) -> list[GenerationRecord]:
     if not text.strip():
         raise GenerationDataError("Arquivo CSV vazio.")
 

@@ -4,12 +4,14 @@ import json
 import sys
 import tempfile
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.cache import AnalysisCacheError
+from radar_transicao_energetica.data import GenerationRecord
 
 
 class AppTest(unittest.TestCase):
@@ -39,6 +41,28 @@ class AppTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             with self.assertRaises(AnalysisCacheError):
                 run_analysis(cache_path=Path(tmpdir))
+
+    def test_run_analysis_can_use_ons_loader(self) -> None:
+        def fake_ons_loader(year: int, month: int) -> list[GenerationRecord]:
+            self.assertEqual((year, month), (2026, 1))
+            return [
+                GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 75.0),
+                GenerationRecord(datetime(2026, 1, 1, 0), "termica", 25.0),
+            ]
+
+        result = run_analysis(
+            source="ons",
+            ons_year=2026,
+            ons_month=1,
+            write_cache=False,
+            ons_loader=fake_ons_loader,
+        )
+
+        self.assertEqual(result.summary.renewable_share, 0.75)
+
+    def test_run_analysis_requires_ons_period(self) -> None:
+        with self.assertRaisesRegex(ValueError, "--ons-periodo"):
+            run_analysis(source="ons")
 
 
 if __name__ == "__main__":

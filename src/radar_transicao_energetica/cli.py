@@ -20,10 +20,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
+        ons_year = None
+        ons_month = None
+        if args.ons_periodo:
+            if args.fonte != "ons":
+                raise ValueError("--ons-periodo so pode ser usado com --fonte ons.")
+            ons_year, ons_month = parse_ons_period(args.ons_periodo)
+
         result = run_analysis(
             source_path=args.arquivo,
             cache_path=args.cache,
             write_cache=not args.sem_cache,
+            source=args.fonte,
+            ons_year=ons_year,
+            ons_month=ons_month,
         )
     except (GenerationDataError, ValueError) as exc:
         parser.exit(status=1, message=f"Erro: {exc}\n")
@@ -60,7 +70,17 @@ def main(argv: Sequence[str] | None = None) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="radar-transicao-energetica",
-        description="Analisa participacao renovavel em dados locais de geracao eletrica.",
+        description="Analisa participacao renovavel em dados de geracao eletrica.",
+    )
+    parser.add_argument(
+        "--fonte",
+        choices=("exemplo", "ons"),
+        default="exemplo",
+        help="Fonte de dados usada quando --arquivo nao for informado. Padrao: exemplo.",
+    )
+    parser.add_argument(
+        "--ons-periodo",
+        help="Periodo mensal da fonte ONS no formato YYYY-MM. Obrigatorio com --fonte ons.",
     )
     parser.add_argument(
         "--arquivo",
@@ -83,6 +103,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="Imprime resultado resumido em JSON.",
     )
     return parser
+
+
+def parse_ons_period(value: str) -> tuple[int, int]:
+    parts = value.strip().split("-")
+    if len(parts) != 2:
+        raise ValueError("Periodo ONS invalido. Use o formato YYYY-MM.")
+
+    try:
+        year = int(parts[0])
+        month = int(parts[1])
+    except ValueError as exc:
+        raise ValueError("Periodo ONS invalido. Use o formato YYYY-MM.") from exc
+
+    if year < 2022:
+        raise ValueError("A fonte ONS V0 aceita arquivos mensais de 2022 em diante.")
+    if month < 1 or month > 12:
+        raise ValueError("Mes ONS invalido. Use um valor entre 1 e 12.")
+    return year, month
 
 
 def render_report(
