@@ -20,7 +20,7 @@ A primeira fatia funcional foi definida para entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-Essa fatia já foi concluída como CLI local com fonte ONS, cálculo de renovabilidade, testes, cache SQLite e instruções de execução. O plano original não dependia de interface desktop, integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, baseline avaliado por MAE, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
+Essa fatia já foi concluída como CLI local e interface desktop inicial, com fonte ONS, cálculo de renovabilidade, testes, cache SQLite e instruções de execução. O plano original não dependia de integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, tela Tkinter, baseline avaliado por MAE, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
 
 ### MVP Funcional
 
@@ -71,7 +71,7 @@ O plano original adiava empacotamento porque ainda não havia fluxo funcional. C
 
 Decisões tomadas para reduzir risco:
 
-- usar CLI em vez de interface desktop completa;
+- usar CLI como base testável e Tkinter para a primeira tela desktop;
 - usar biblioteca padrão do Python na primeira entrega;
 - carregar CSV local e exemplo embutido para manter execução offline;
 - testar domínio, dados e CLI com `unittest`;
@@ -82,7 +82,7 @@ Limites assumidos:
 
 - o executável inicial não valida ainda PySide6, pandas, scikit-learn ou gráficos ricos;
 - o baseline atual é média móvel avaliada por MAE, não modelo de machine learning com `scikit-learn`;
-- a visualização atual é textual, não desktop;
+- a visualização atual combina CLI textual e tela desktop inicial em tabela, ainda sem gráfico rico;
 - o cache atual é SQLite, com análise, metadados, versão de schema e registros normalizados;
 - a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
 - não há release workflow, checksum, assinatura, smoke test formal ou build automático de artefato.
@@ -435,7 +435,7 @@ Commits sugeridos:
 
 Status: parcialmente concluída.
 
-A implementação atual entrega visualização textual por fonte e tendência de participação renovável. Interface desktop e gráfico visual continuam planejados.
+A implementação atual entrega visualização textual por fonte, tendência de participação renovável e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, geração por fonte em tabela, alerta interpretável, baseline da próxima janela, MAE e comparação real vs previsto. Gráfico visual rico, estados visuais mais completos e QA manual continuam planejados.
 
 Rastreabilidade:
 
@@ -449,15 +449,16 @@ Criar a primeira visualização de geração por fonte.
 
 Entregáveis:
 
-- gráfico de geração por fonte;
+- tabela desktop de geração por fonte;
+- modelo de apresentação testável sem abrir janela;
 - estado sem dados;
 - estado de erro;
 - QA manual documentado.
 
 Escopo:
 
-- visualização local simples;
-- gráfico legível;
+- visualização local simples por CLI e desktop;
+- tabela legível por fonte;
 - dados reais ou sintéticos normalizados;
 - sem fluxo visual complexo.
 - permitir uma visualização inicial simples antes de uma interface PySide6 completa.
@@ -472,15 +473,17 @@ Fora de escopo:
 
 Critérios de aceite:
 
-- gráfico mostra fontes de forma comparável;
+- tabela mostra fontes de forma comparável;
 - dados ausentes não quebram a visualização;
 - usuário entende o período e as fontes exibidas;
+- testes automatizados validam o modelo de apresentação sem abrir janela;
 - QA manual registra o cenário validado.
 
 Commits sugeridos:
 
 - `Cria visualizacao inicial por fonte`;
 - `Adiciona estados basicos de visualizacao`;
+- `Cria interface desktop inicial`;
 - `Documenta QA da visualizacao inicial`.
 
 ## Fase 7: Variáveis Climáticas
@@ -586,7 +589,7 @@ Commits sugeridos:
 
 Status: parcialmente concluída.
 
-A implementação atual gera alerta textual com base na participação renovável calculada e exibe comparação textual real vs previsto do baseline. Comparação visual entre real e previsto ainda está pendente.
+A implementação atual gera alerta textual com base na participação renovável calculada e exibe comparação real vs previsto do baseline no CLI, no JSON e na interface desktop inicial. Comparação visual mais rica entre real e previsto ainda está pendente.
 
 Rastreabilidade:
 
@@ -630,11 +633,11 @@ Commits sugeridos:
 
 ## Fase 10: Fechamento do MVP Funcional
 
-Status: pendente.
+Status: parcialmente atendida, ainda pendente para fechamento do MVP.
 
 Objetivo:
 
-Consolidar a aplicação demonstrável com dados, cálculo, visualização, baseline e alerta.
+Consolidar a aplicação demonstrável com dados, cálculo, visualização desktop, baseline e alerta.
 
 Entregáveis:
 
@@ -649,7 +652,7 @@ Critérios de aceite:
 
 - fluxo principal roda localmente;
 - usuário consegue carregar dados ou cache;
-- gráfico e alerta são exibidos;
+- geração por fonte, baseline e alerta são exibidos;
 - testes automatizados relevantes passam;
 - documentação não promete uso operacional crítico;
 - itens adiados permanecem claramente separados.
@@ -701,11 +704,12 @@ Fora de escopo:
 10. `Adiciona CI Python inicial`.
 11. `Implementa cache local de dados`.
 12. `Cria visualizacao inicial por fonte`.
-13. `Define variaveis climaticas iniciais`.
-14. `Implementa carregamento climatico`.
-15. `Implementa baseline por media movel`.
-16. `Exibe comparacao textual entre real e previsto`.
-17. `Implementa alerta de renovabilidade`.
+13. `Cria interface desktop inicial`.
+14. `Define variaveis climaticas iniciais`.
+15. `Implementa carregamento climatico`.
+16. `Implementa baseline por media movel`.
+17. `Exibe comparacao textual entre real e previsto`.
+18. `Implementa alerta de renovabilidade`.
 
 Essa ordem pode ser ajustada conforme descobertas técnicas, mas cada commit deve manter um tópico verificável.
 

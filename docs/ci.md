@@ -21,7 +21,7 @@ A automação deve responder, de forma incremental:
 | CI documental | Após definir ferramenta de validação documental | Validar estrutura básica de docs e links principais. |
 | CI Python mínima | Implementada | Rodar compilação e testes unitários. |
 | CI de dados | Implementada parcialmente | Validar normalização com fixtures e cache em diretório temporário. |
-| CI de UI | Após primeira tela | Validar abertura mínima ou smoke test da aplicação. |
+| CI de UI | Iniciada sem abrir janela | Validar entry point e modelo de apresentação da tela. |
 | CI de release | Após fluxo visual estável | Gerar artefato, checksum e smoke test. |
 
 ## Jobs Iniciais Recomendados
@@ -51,6 +51,8 @@ O workflow atual executa esses comandos em Windows com Python 3.12. O pacote dec
 O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
 
 A integração ONS é validada na suíte por fixture offline, cobrindo o contrato `din_instante` -> `period`, `nom_tipousina` -> `source` e `val_geracaomwmed` -> `generation_mw`. A suíte também valida `data_source`, erro de download, payload não UTF-8 e limite local de tamanho. O comando real com `--fonte ons --ons-periodo YYYY-MM` é uma validação manual com rede e não faz parte da CI obrigatória.
+
+A interface desktop inicial é validada de forma automatizada sem abrir janela. A suíte testa o modelo de apresentação, a seleção de fonte, o status com cache e o entry point `radar-transicao-energetica-ui`. A abertura real da janela continua como QA manual, porque a CI inicial não deve depender de ambiente gráfico.
 
 Para o primeiro build local experimental:
 
@@ -83,6 +85,7 @@ Permissões adicionais só devem aparecer em jobs que realmente publiquem releas
 - Não depender de download real do ONS para aprovar a suíte automatizada.
 - Usar cache local apenas em diretórios temporários dentro da CI.
 - Validar o cache SQLite com schema versionado, metadados de análise e registros normalizados.
+- Testar a interface desktop por funções puras e entry point, sem exigir janela gráfica na CI inicial.
 
 ## Estratégia de Release
 
@@ -116,7 +119,7 @@ O primeiro `.exe` local experimental é uma validação manual e não muda a dec
 
 A CI completa deve ser criada quando o projeto tiver:
 
-- interface desktop inicial;
+- interface desktop inicial com QA manual registrado;
 - fluxo principal validado manualmente;
 - dependências de UI estabilizadas;
 - comando de build local repetível;

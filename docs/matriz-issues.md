@@ -46,7 +46,7 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 - `ISSUE-003`: implementada para a primeira fonte real com ONS Geração por Usina em Base Horária, mantendo carregador CSV local, aliases de colunas, exemplo offline, limite local de download e `data_source`.
 - `ISSUE-004`: implementada com cache SQLite local que registra payload da análise, origem dos dados, versão de schema e registros normalizados.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
-- `ISSUE-006`: parcialmente implementada com visualização textual.
+- `ISSUE-006`: parcialmente implementada com visualização textual e primeira interface desktop em Tkinter com tabela de geração por fonte.
 - `ISSUE-008`: implementada com baseline por média móvel, MAE e comparação walk-forward.
 - `ISSUE-009`: parcialmente implementada com comparação textual e JSON entre real e previsto.
 - `ISSUE-010`: parcialmente implementada com alerta interpretável.
@@ -55,7 +55,7 @@ Pendências principais:
 
 - usar cache SQLite para reuso offline da fonte ONS e consultas por período;
 - integrar clima;
-- criar interface desktop;
+- evoluir a interface desktop inicial para gráficos ricos, estados visuais e QA manual;
 - transformar o primeiro `.exe` local em release validada.
 
 ## Fatia Funcional Inicial
@@ -67,7 +67,7 @@ A primeira fatia funcional foi planejada para se limitar a:
 - `ISSUE-005`: cálculo de participação renovável;
 - testes automatizados para o cálculo e dados sintéticos.
 
-Parte de `ISSUE-006`, `ISSUE-009` e `ISSUE-010` já foi antecipada em forma textual para viabilizar o primeiro `.exe` local. As versões completas dessas issues continuam planejadas.
+Parte de `ISSUE-006`, `ISSUE-009` e `ISSUE-010` já foi antecipada para viabilizar o primeiro `.exe` local e a primeira tela desktop. As versões completas dessas issues continuam planejadas porque ainda faltam gráficos ricos, QA manual e comparação visual mais clara.
 
 Critérios já atendidos para `ISSUE-003`:
 
@@ -91,7 +91,7 @@ Estes itens continuam fora do escopo atual. Eles ficam aguardando um fluxo mais 
 - regras de branch protection;
 - CI completa com build de artefato.
 
-Esses tópicos voltam para a matriz quando o projeto tiver fluxo local demonstrável mais estável, interface inicial ou decisão clara de release.
+Esses tópicos voltam para a matriz quando o projeto tiver fluxo local demonstrável mais estável, interface visual mais madura ou decisão clara de release.
 
 O build local experimental do `.exe` não altera esse backlog: release, smoke test formal e CI de artefato seguem adiados.
 
@@ -141,6 +141,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - criar dados sintéticos de teste;
 - melhorar mensagens de erro para dados ausentes;
 - revisar clareza de alertas educacionais;
+- melhorar estados e QA manual da interface desktop inicial;
 - validar links de dados públicos e instruções do README;
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
 - adicionar consulta do cache SQLite por período como próxima evolução de dados.

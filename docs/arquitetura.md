@@ -1,10 +1,10 @@
 # Arquitetura
 
-Este documento descreve a arquitetura inicial do **Radar da Transição Energética**. As decisões abaixo partem do [README](../README.md) e registram a base atual da CLI experimental, além dos caminhos planejados para o MVP funcional.
+Este documento descreve a arquitetura inicial do **Radar da Transição Energética**. As decisões abaixo partem do [README](../README.md) e registram a base atual da CLI experimental e da interface desktop inicial, além dos caminhos planejados para o MVP funcional.
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, fonte ONS, cache SQLite, baseline por média móvel com MAE, comparação textual real vs previsto e alerta textual. As próximas camadas devem avançar para reuso offline do cache, integração climática, interface desktop e executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite, baseline por média móvel com MAE, comparação real vs previsto e alerta textual. As próximas camadas devem avançar para reuso offline do cache, integração climática, gráficos ricos e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
@@ -15,11 +15,11 @@ A arquitetura deve permitir evolução incremental: a base atual é uma aplicaç
 | HTTP/APIs | `urllib` agora; `requests` planejado | Coleta ONS inicial sem dependências externas; `requests` entra se a camada de dados crescer. |
 | ML | Média móvel avaliada; `scikit-learn` planejado | Baseline interpretável com MAE antes de modelos mais complexos. |
 | Cache local | SQLite | Banco local sem dependência externa para análise, metadados e registros normalizados. |
-| UI desktop | CLI agora; PySide6 planejado | CLI mantém domínio testável antes da tela. |
-| Gráficos | Texto agora; Matplotlib ou Plotly planejado | Visualização textual valida o conceito antes de gráficos ricos. |
+| UI desktop | Tkinter inicial; PySide6 planejado | Tkinter permite a primeira tela sem dependências novas; PySide6 fica para uma experiência mais rica. |
+| Gráficos | Texto e tabela agora; Matplotlib ou Plotly planejado | Visualização textual e tabela desktop validam o conceito antes de gráficos ricos. |
 | Empacotamento | PyInstaller local experimental | Gera `.exe` local, ainda sem release pública. |
 
-A primeira implementação evita dependências pesadas e usa biblioteca padrão do Python. Essa escolha reduz atrito para testes e permitiu gerar um primeiro `.exe` local experimental antes da interface desktop.
+A primeira implementação evita dependências pesadas e usa biblioteca padrão do Python. Essa escolha reduz atrito para testes, permitiu gerar um primeiro `.exe` local experimental e abriu a primeira interface desktop com Tkinter.
 
 Na fonte pública inicial, a coleta HTTP também usa biblioteca padrão (`urllib`) para manter a V0 sem dependências externas. `requests` segue planejado apenas se a camada de dados crescer o suficiente para justificar a dependência.
 
@@ -55,6 +55,7 @@ radar-transicao-energetica/
 │       ├── baseline.py
 │       ├── alerts.py
 │       ├── charts.py
+│       ├── desktop.py
 │       ├── serialization.py
 │       └── cache.py
 ├── tests/
@@ -68,7 +69,7 @@ radar-transicao-energetica/
 
 | Camada | Responsabilidade |
 | --- | --- |
-| `app.py` | Orquestra o fluxo de análise reutilizável por CLI ou futura UI. |
+| `app.py` | Orquestra o fluxo de análise reutilizável por CLI e UI. |
 | `cli.py` | Entrada de linha de comando para a primeira versão empacotável. |
 | `data.py` | Leitura, normalização e validação de dados de geração. |
 | `ons.py` | Construção da URL pública e carregamento do dataset ONS Geração por Usina em Base Horária. |
@@ -76,6 +77,7 @@ radar-transicao-energetica/
 | `baseline.py` | Baseline por média móvel, MAE e comparação walk-forward real vs previsto. |
 | `alerts.py` | Regras textuais de alerta educacional. |
 | `charts.py` | Visualização textual inicial. |
+| `desktop.py` | Interface desktop inicial em Tkinter e modelo de apresentação testável sem abrir janela. |
 | `serialization.py` | Contrato JSON compartilhado entre CLI e cache. |
 | `cache.py` | Escrita e leitura do cache SQLite local. |
 | `tests` | Testes unitários, integração leve e QA automatizável. |
@@ -108,7 +110,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 -> cálculo de participação renovável
 -> criação de features
 -> modelo baseline
--> gráfico e alerta interpretável
+-> visualização por CLI ou desktop, baseline e alerta interpretável
 ```
 
 ## Princípios
@@ -125,7 +127,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 
 | Origem | Destino permitido | Observação |
 | --- | --- | --- |
-| UI | `data`, `features`, `models` por APIs públicas do pacote | A tela não deve esconder regra de domínio. |
+| UI | `app.py` e modelos de apresentação próprios | A tela não deve esconder regra de domínio nem chamar coleta, cache ou cálculo diretamente. |
 | `features` | dados normalizados | Features devem ser testáveis sem UI. |
 | `models` | features e alvo | Modelo não deve depender de fonte externa diretamente. |
 | `data` | fontes públicas e normalização | Rede e persistência ficam isoladas de domínio e UI. |
@@ -147,6 +149,6 @@ Fonte pública ONS, CSV local ou exemplo embutido
 - Evoluir a fonte ONS para filtros de período e agregações mais eficientes quando o volume de dados exigir.
 - Usar o cache SQLite para reuso offline da fonte ONS e consultas por período.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
-- Definir Matplotlib ou Plotly para os primeiros gráficos.
-- Evoluir do CLI experimental para interface desktop.
+- Definir Matplotlib ou Plotly para os primeiros gráficos ricos.
+- Evoluir a interface Tkinter inicial para uma experiência desktop mais completa.
 - Definir quando o `.exe` local poderá virar artefato de release.

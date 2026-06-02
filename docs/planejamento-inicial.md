@@ -82,11 +82,13 @@ Na comparação inicial entre ONS, ANEEL e CCEE, o ONS foi escolhido por entrega
 
 O contrato normalizado da primeira fonte pública usa `period`, `source` e `generation_mw`, derivados dos campos ONS `din_instante`, `nom_tipousina` e `val_geracaomwmed`. O cache atual usa SQLite para registrar a análise, metadados da fonte, versão de schema e registros normalizados.
 
+A primeira interface desktop usa Tkinter e reutiliza o fluxo de análise existente. Ela mostra fonte, período, métricas centrais, geração por fonte em tabela, alerta interpretável e comparação do baseline sem duplicar regras de domínio na camada visual.
+
 Incluído no MVP:
 
 - coleta ou carregamento de pelo menos uma fonte pública de dados de geração elétrica;
 - cálculo da participação renovável em um período selecionado;
-- gráfico de geração por fonte;
+- visualização comparável de geração por fonte;
 - modelo baseline para previsão de participação renovável ou classificação de risco de pressão térmica;
 - comparação entre dado real e previsão;
 - alerta interpretável com linguagem educacional;
@@ -122,7 +124,7 @@ Fluxo esperado da primeira experiência útil:
 3. O sistema carrega dados públicos de geração elétrica ou usa cache local.
 4. O usuário seleciona ou confirma o período de análise.
 5. O sistema calcula geração por fonte e participação renovável.
-6. O sistema exibe gráfico com geração hidráulica, térmica, eólica e solar.
+6. O sistema exibe geração hidráulica, térmica, eólica e solar de forma comparável.
 7. O sistema executa um modelo baseline para previsão ou classificação.
 8. O sistema compara resultado real e estimado quando houver dados suficientes.
 9. O sistema exibe um alerta interpretável sobre a janela analisada.
@@ -138,7 +140,7 @@ Linha de corte:
 | `REQ-001` | Carregar dados públicos de geração elétrica em formato tratável pela aplicação. | Alta | Implementado |
 | `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Parcial |
 | `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
-| `REQ-004` | Exibir gráfico de geração por fonte. | Alta | Parcial |
+| `REQ-004` | Exibir geração por fonte de forma comparável. | Alta | Parcial |
 | `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Planejado |
 | `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Implementado |
 | `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Parcial |
@@ -169,7 +171,7 @@ Critérios mínimos do MVP:
 | `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, cache SQLite e diretório temporário. |
 | `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE e comparação walk-forward do baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
-| `TEST-006` | QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Verificar se gráfico, comparação e alerta são compreensíveis. |
+| `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela e verificar se geração por fonte, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
 
 ## Arquitetura Inicial
@@ -198,6 +200,7 @@ radar-transicao-energetica/
 │       ├── baseline.py
 │       ├── alerts.py
 │       ├── charts.py
+│       ├── desktop.py
 │       ├── serialization.py
 │       └── cache.py
 ├── tests/
@@ -213,6 +216,7 @@ Responsabilidades:
 - `baseline.py`: baseline por média móvel, MAE e comparação real vs previsto;
 - `alerts.py`: alerta interpretável;
 - `charts.py`: visualização textual inicial;
+- `desktop.py`: interface desktop inicial em Tkinter;
 - `cache.py`: cache SQLite local;
 - `serialization.py`: contrato JSON compartilhado entre CLI e cache, incluindo `data_source`;
 - `app.py`: composição da aplicação;
