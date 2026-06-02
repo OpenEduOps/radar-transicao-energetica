@@ -23,6 +23,7 @@ A primeira fatia funcional já foi implementada. O projeto atualmente:
 - calcula participação renovável;
 - registra a origem da análise em `data_source`;
 - grava cache SQLite local com análise e registros normalizados;
+- avalia o baseline de média móvel com MAE e comparação real vs previsto;
 - executa testes automatizados com `unittest`;
 - pode gerar um `.exe` local experimental com PyInstaller.
 
@@ -33,6 +34,7 @@ Contribuições úteis agora incluem:
 - propor dados sintéticos para testes;
 - ampliar fixtures ONS para fontes ainda não classificadas na V0;
 - melhorar consultas, validações e rastreabilidade do cache SQLite;
+- melhorar visualização e interpretação da comparação baseline;
 - revisar critérios de aceite.
 
 A próxima evolução recomendada é usar o cache SQLite como base para reuso offline da fonte ONS e consultas por período. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
@@ -47,6 +49,7 @@ Exemplos de bons escopos:
 - documentar o contrato de normalização entre campos ONS e campos internos;
 - adicionar fixture ONS com nova fonte ainda não classificada;
 - adicionar teste para cache ou serialização;
+- adicionar teste de comparação real vs previsto do baseline;
 - melhorar mensagem de erro para dados indisponíveis;
 - revisar uma tabela de requisitos;
 - evoluir cache local sem depender de rede, mantendo metadados da fonte e registros normalizados rastreáveis.

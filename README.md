@@ -21,7 +21,7 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 - calcula participação renovável;
 - grava cache SQLite local com a última análise e os registros normalizados;
 - exibe gráfico textual por fonte e tendência por período;
-- calcula um baseline simples por média móvel;
+- calcula baseline por média móvel com MAE e comparação real vs previsto;
 - gera alerta interpretável;
 - possui testes automatizados com `unittest`;
 - pode ser empacotado em um primeiro `.exe` local experimental com PyInstaller.
@@ -96,7 +96,7 @@ O JSON retornado possui cinco blocos principais:
 - `summary`: totais, período analisado, participação renovável e geração por fonte;
 - `period_summaries`: participação renovável agregada por período;
 - `alert`: nível e mensagem interpretável;
-- `baseline`: método, pontos usados e previsão simples da próxima janela.
+- `baseline`: método, janela, pontos usados, previsão simples da próxima janela, MAE e comparações real vs previsto.
 
 Quando o cache está habilitado, o JSON também inclui `cache_path` com o caminho do banco SQLite gravado.
 
@@ -125,6 +125,17 @@ O cache atual mantém:
 - `generation_records`: registros normalizados em `period`, `source` e `generation_mw`.
 
 Use `--sem-cache` quando quiser executar sem gravar esse banco local.
+
+## Baseline e Avaliação
+
+O baseline atual ainda é uma média móvel simples, sem `scikit-learn`. A melhoria desta etapa é que a aplicação agora avalia o próprio baseline com comparação walk-forward:
+
+- usa os pontos anteriores de participação renovável para prever o próximo ponto disponível;
+- compara previsão e valor real por período;
+- calcula MAE, em pontos percentuais no relatório textual;
+- mantém a previsão da próxima janela para demonstração.
+
+No JSON, o bloco `baseline` inclui `error_metric`, `mean_absolute_error`, `evaluated_points` e `comparisons`. No relatório textual, a CLI mostra `Baseline MAE` e a última comparação real vs previsto.
 
 Rodar testes:
 
@@ -347,7 +358,7 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 - rodar localmente sem credenciais privadas;
 - ter instruções claras para instalação, execução e testes.
 
-A CLI atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, baseline simples e alerta textual. O fechamento do MVP ainda depende de integração climática, comparação mais robusta entre dado real e previsão, interface visual e decisão de release.
+A CLI atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, baseline com MAE, comparação textual real vs previsto e alerta textual. O fechamento do MVP ainda depende de integração climática, comparação visual mais robusta, interface visual e decisão de release.
 
 ## Próximos Passos
 
@@ -355,7 +366,7 @@ Próxima sequência técnica recomendada:
 
 1. Usar o cache SQLite como base para reuso offline da fonte ONS e consultas por período.
 2. Adicionar integração climática inicial.
-3. Refinar o baseline e registrar métricas de avaliação.
+3. Evoluir a comparação real vs previsto para visualização mais clara por período.
 4. Criar interface desktop inicial com gráfico visual.
 5. Transformar o `.exe` experimental em artefato de release apenas quando o fluxo visual estiver estável.
 6. Adicionar smoke test formal do executável e CI de build de artefato depois da primeira interface.
