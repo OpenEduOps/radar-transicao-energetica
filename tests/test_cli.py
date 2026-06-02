@@ -191,6 +191,7 @@ class CliTest(unittest.TestCase):
         )
 
         self.assertIn("Baseline MAE:", result.stdout)
+        self.assertIn("p.p.", result.stdout)
         self.assertIn("Ultima comparacao baseline:", result.stdout)
         self.assertIn("real", result.stdout)
         self.assertIn("previsto", result.stdout)

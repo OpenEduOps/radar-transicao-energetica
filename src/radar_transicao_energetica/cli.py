@@ -125,7 +125,7 @@ def render_report(
     baseline_error_text = (
         "sem dados"
         if baseline.mean_absolute_error is None
-        else f"{baseline.mean_absolute_error:.1%}"
+        else f"{baseline.mean_absolute_error * 100:.1f} p.p."
     )
     lines = [
         "Radar da Transicao Energetica",
