@@ -113,7 +113,7 @@ Stack sugerida para o primeiro ciclo:
 - SQLite ou DuckDB para cache local;
 - PySide6 para interface desktop;
 - Matplotlib ou Plotly para gráficos;
-- PyInstaller para geração do executável.
+- PyInstaller para geração futura do executável, depois que o fluxo principal estiver estável.
 
 ## Arquitetura Inicial
 
@@ -122,6 +122,13 @@ Uma organização simples para começar:
 ```text
 radar-transicao-energetica/
 ├── README.md
+├── CONTRIBUTING.md
+├── docs/
+│   ├── arquitetura.md
+│   ├── ci.md
+│   ├── matriz-issues.md
+│   ├── planejamento-inicial.md
+│   └── requisitos.md
 ├── pyproject.toml
 ├── src/
 │   └── radar_transicao_energetica/
@@ -168,7 +175,7 @@ Primeira sequência recomendada:
 6. Implementar modelo baseline.
 7. Criar uma tela inicial com gráfico e alerta.
 8. Adicionar testes para transformação de dados e cálculo de métricas.
-9. Empacotar o app como executável quando o fluxo principal estiver estável.
+9. Planejar o empacotamento futuro como executável quando o fluxo principal estiver estável.
 
 ## Fora do Escopo Inicial
 

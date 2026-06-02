@@ -18,7 +18,7 @@ A automação deve responder, de forma incremental:
 
 | Fase | Quando aplicar | Saída esperada |
 | --- | --- | --- |
-| CI documental | Agora | Validar estrutura básica de docs e links principais quando ferramenta for definida. |
+| CI documental | Após definir ferramenta de validação documental | Validar estrutura básica de docs e links principais. |
 | CI Python mínima | Após `pyproject.toml` | Instalar dependências, rodar lint/typecheck quando configurados e testes unitários. |
 | CI de dados | Após primeira fonte pública | Validar normalização com fixtures e cache em diretório temporário. |
 | CI de UI | Após primeira tela | Validar abertura mínima ou smoke test da aplicação. |
@@ -28,7 +28,7 @@ A automação deve responder, de forma incremental:
 
 | Job | Objetivo | Obrigatório no início |
 | --- | --- | --- |
-| Docs | Validar documentação central e links internos. | Sim |
+| Docs | Validar documentação central e links internos. | Sim, quando CI inicial for criada |
 | Format/Lint | Validar padrão de código quando o scaffold existir. | Sim, após código |
 | Tests | Rodar testes unitários e integração leve. | Sim, após código |
 | Security | Checar segredos e dependências vulneráveis quando dependências existirem. | Sim, após scaffold |

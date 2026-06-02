@@ -166,8 +166,13 @@ Estrutura planejada:
 ```text
 radar-transicao-energetica/
 ├── README.md
+├── CONTRIBUTING.md
 ├── docs/
-│   └── planejamento-inicial.md
+│   ├── arquitetura.md
+│   ├── ci.md
+│   ├── matriz-issues.md
+│   ├── planejamento-inicial.md
+│   └── requisitos.md
 ├── pyproject.toml
 ├── src/
 │   └── radar_transicao_energetica/
