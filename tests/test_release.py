@@ -40,6 +40,7 @@ class ReleaseTest(unittest.TestCase):
         decision = evaluate_public_release_readiness(requirements)
 
         self.assertTrue(decision.can_publish)
+        self.assertEqual(decision.stage, "public-ready")
         self.assertEqual(decision.missing_requirements, ())
 
     def test_release_decision_format_lists_missing_requirements(self) -> None:

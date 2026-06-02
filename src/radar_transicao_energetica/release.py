@@ -22,6 +22,7 @@ class ReleaseDecision:
 
 
 CURRENT_RELEASE_STAGE = "local-experimental"
+PUBLIC_READY_STAGE = "public-ready"
 
 CURRENT_RELEASE_REQUIREMENTS = (
     ReleaseRequirement(
@@ -56,8 +57,9 @@ def evaluate_public_release_readiness(
     requirements: tuple[ReleaseRequirement, ...] = CURRENT_RELEASE_REQUIREMENTS,
 ) -> ReleaseDecision:
     missing = tuple(requirement for requirement in requirements if not requirement.satisfied)
+    stage = CURRENT_RELEASE_STAGE if missing else PUBLIC_READY_STAGE
     return ReleaseDecision(
-        stage=CURRENT_RELEASE_STAGE,
+        stage=stage,
         can_publish=not missing,
         requirements=requirements,
     )
