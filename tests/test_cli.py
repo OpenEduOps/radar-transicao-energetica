@@ -131,6 +131,40 @@ class CliTest(unittest.TestCase):
         self.assertIn("Nao foi possivel gravar o cache", result.stderr)
         self.assertNotIn("Traceback", result.stderr)
 
+    def test_cli_reports_unknown_sources_in_text_output(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+        csv_text = "\n".join(
+            [
+                "period,source,generation_mw",
+                "2026-01-01 00:00,hidraulica,50",
+                "2026-01-01 00:00,biomassa,25",
+                "2026-01-01 00:00,termica,25",
+            ]
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "geracao.csv"
+            path.write_text(csv_text, encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "radar_transicao_energetica",
+                    "--arquivo",
+                    str(path),
+                    "--sem-cache",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+
+        self.assertIn("Fontes nao classificadas na V0: biomassa", result.stdout)
+        self.assertIn("fontes ainda nao classificadas", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

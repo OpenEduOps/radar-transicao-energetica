@@ -37,6 +37,18 @@ class DomainTest(unittest.TestCase):
 
         self.assertIsNone(summary.renewable_share)
 
+    def test_summarize_generation_exposes_unknown_sources(self) -> None:
+        records = [
+            GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 50.0),
+            GenerationRecord(datetime(2026, 1, 1, 0), "biomassa", 25.0),
+            GenerationRecord(datetime(2026, 1, 1, 0), "termica", 25.0),
+        ]
+
+        summary = summarize_generation(records)
+
+        self.assertEqual(summary.unknown_sources, ("biomassa",))
+        self.assertEqual(summary.renewable_share, 0.5)
+
     def test_summarize_by_period_sorts_periods(self) -> None:
         records = [
             GenerationRecord(datetime(2026, 1, 1, 1), "hidraulica", 40.0),
@@ -49,6 +61,7 @@ class DomainTest(unittest.TestCase):
         self.assertEqual([item.period.hour for item in summaries], [0, 1])
         self.assertEqual(summaries[0].renewable_share, 0.5)
         self.assertEqual(summaries[1].renewable_share, 1.0)
+        self.assertEqual(summaries[0].unknown_sources, ())
 
     def test_alert_levels_are_interpretable(self) -> None:
         records = [

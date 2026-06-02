@@ -77,6 +77,11 @@ class DataLoadingTest(unittest.TestCase):
             with self.assertRaises(GenerationDataError):
                 load_generation_csv(path)
 
+    def test_directory_path_raises_clear_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.assertRaisesRegex(GenerationDataError, "nao e um arquivo CSV"):
+                load_generation_csv(tmpdir)
+
     def test_normalize_source(self) -> None:
         self.assertEqual(normalize_source("Hidrelétrica"), "hidraulica")
         self.assertEqual(normalize_source("Hidroeletrica"), "hidraulica")

@@ -105,11 +105,17 @@ def render_report(
         f"Geracao renovavel: {summary.renewable_generation_mw:,.2f} MW",
         f"Participacao renovavel: {share_text}",
         f"Baseline proxima janela: {baseline_text}",
-        "",
-        render_source_chart(summary),
-        "",
-        render_share_trend(period_summaries),
-        "",
-        f"Alerta: {alert_message}",
     ]
+    if summary.unknown_sources:
+        lines.append("Fontes nao classificadas na V0: " + ", ".join(summary.unknown_sources))
+    lines.extend(
+        [
+            "",
+            render_source_chart(summary),
+            "",
+            render_share_trend(period_summaries),
+            "",
+            f"Alerta: {alert_message}",
+        ]
+    )
     return "\n".join(lines)

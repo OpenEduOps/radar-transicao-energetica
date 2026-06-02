@@ -73,8 +73,15 @@ def load_generation_csv(path: str | Path) -> list[GenerationRecord]:
     csv_path = Path(path)
     if not csv_path.exists():
         raise GenerationDataError(f"Arquivo nao encontrado: {csv_path}")
+    if not csv_path.is_file():
+        raise GenerationDataError(f"Caminho informado nao e um arquivo CSV: {csv_path}")
 
-    return _load_generation_from_text(csv_path.read_text(encoding="utf-8-sig"))
+    try:
+        text = csv_path.read_text(encoding="utf-8-sig")
+    except OSError as exc:
+        raise GenerationDataError(f"Nao foi possivel ler o arquivo {csv_path}: {exc}") from exc
+
+    return _load_generation_from_text(text)
 
 
 def normalize_source(value: str) -> str:

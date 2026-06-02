@@ -8,6 +8,8 @@ from radar_transicao_energetica.data import GenerationRecord
 
 
 RENEWABLE_SOURCES = frozenset({"hidraulica", "eolica", "solar"})
+NON_RENEWABLE_SOURCES = frozenset({"termica"})
+KNOWN_SOURCES = RENEWABLE_SOURCES | NON_RENEWABLE_SOURCES
 
 
 @dataclass(frozen=True)
@@ -18,6 +20,7 @@ class RenewableSummary:
     renewable_generation_mw: float
     renewable_share: float | None
     generation_by_source: dict[str, float]
+    unknown_sources: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -26,6 +29,7 @@ class PeriodRenewableSummary:
     total_generation_mw: float
     renewable_generation_mw: float
     renewable_share: float | None
+    unknown_sources: tuple[str, ...]
 
 
 def summarize_generation(records: list[GenerationRecord]) -> RenewableSummary:
@@ -45,6 +49,9 @@ def summarize_generation(records: list[GenerationRecord]) -> RenewableSummary:
     renewable_share = (
         renewable_generation_mw / total_generation_mw if total_generation_mw > 0 else None
     )
+    unknown_sources = tuple(
+        source for source in sorted(generation_by_source) if source not in KNOWN_SOURCES
+    )
 
     periods = [record.period for record in records]
     return RenewableSummary(
@@ -54,6 +61,7 @@ def summarize_generation(records: list[GenerationRecord]) -> RenewableSummary:
         renewable_generation_mw=renewable_generation_mw,
         renewable_share=renewable_share,
         generation_by_source=dict(sorted(generation_by_source.items())),
+        unknown_sources=unknown_sources,
     )
 
 
@@ -71,6 +79,7 @@ def summarize_by_period(records: list[GenerationRecord]) -> list[PeriodRenewable
                 total_generation_mw=summary.total_generation_mw,
                 renewable_generation_mw=summary.renewable_generation_mw,
                 renewable_share=summary.renewable_share,
+                unknown_sources=summary.unknown_sources,
             )
         )
     return summaries

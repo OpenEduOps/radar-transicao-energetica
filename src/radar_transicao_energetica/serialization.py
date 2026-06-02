@@ -34,6 +34,7 @@ def summary_to_dict(summary: RenewableSummary) -> dict[str, Any]:
         "renewable_generation_mw": summary.renewable_generation_mw,
         "renewable_share": summary.renewable_share,
         "generation_by_source": summary.generation_by_source,
+        "unknown_sources": list(summary.unknown_sources),
     }
 
 
@@ -43,6 +44,7 @@ def period_summary_to_dict(summary: PeriodRenewableSummary) -> dict[str, Any]:
         "total_generation_mw": summary.total_generation_mw,
         "renewable_generation_mw": summary.renewable_generation_mw,
         "renewable_share": summary.renewable_share,
+        "unknown_sources": list(summary.unknown_sources),
     }
 
 
