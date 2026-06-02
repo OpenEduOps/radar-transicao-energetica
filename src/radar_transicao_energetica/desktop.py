@@ -6,9 +6,18 @@ from tkinter import filedialog, messagebox, ttk
 import tkinter as tk
 
 from radar_transicao_energetica.app import AnalysisResult, run_analysis
+from radar_transicao_energetica.baseline import BaselineComparison
 from radar_transicao_energetica.cli import DEFAULT_CACHE_PATH
 from radar_transicao_energetica.data import GenerationDataError
 from radar_transicao_energetica.ons import parse_ons_period
+
+
+@dataclass(frozen=True)
+class DesktopAnalysisOptions:
+    source_path: Path | None = None
+    source: str = "exemplo"
+    ons_year: int | None = None
+    ons_month: int | None = None
 
 
 @dataclass(frozen=True)
@@ -57,6 +66,28 @@ def build_desktop_view_data(result: AnalysisResult) -> DesktopViewData:
         alert=f"{result.alert.level}: {result.alert.message}",
         baseline_comparison=_format_baseline_comparison(latest_comparison),
     )
+
+
+def build_desktop_analysis_options(
+    *,
+    source: str,
+    csv_path: str = "",
+    ons_period: str = "",
+) -> DesktopAnalysisOptions:
+    if source == "csv":
+        path = csv_path.strip()
+        if not path:
+            raise ValueError("Selecione um arquivo CSV.")
+        return DesktopAnalysisOptions(source_path=Path(path))
+
+    if source == "ons":
+        year, month = parse_ons_period(ons_period)
+        return DesktopAnalysisOptions(source="ons", ons_year=year, ons_month=month)
+
+    if source == "exemplo":
+        return DesktopAnalysisOptions()
+
+    raise ValueError(f"Fonte de dados desconhecida: {source}")
 
 
 class RadarDesktopApp:
@@ -219,24 +250,18 @@ class RadarDesktopApp:
         self.status_var.set("Analise atualizada")
 
     def _run_selected_source(self) -> AnalysisResult:
-        source = self.source_var.get()
-        if source == "csv":
-            csv_path = self.csv_path_var.get().strip()
-            if not csv_path:
-                raise ValueError("Selecione um arquivo CSV.")
-            return run_analysis(
-                source_path=Path(csv_path),
-                cache_path=DEFAULT_CACHE_PATH,
-            )
-        if source == "ons":
-            year, month = parse_ons_period(self.ons_period_var.get())
-            return run_analysis(
-                source="ons",
-                ons_year=year,
-                ons_month=month,
-                cache_path=DEFAULT_CACHE_PATH,
-            )
-        return run_analysis(cache_path=DEFAULT_CACHE_PATH)
+        options = build_desktop_analysis_options(
+            source=self.source_var.get(),
+            csv_path=self.csv_path_var.get(),
+            ons_period=self.ons_period_var.get(),
+        )
+        return run_analysis(
+            source_path=options.source_path,
+            source=options.source,
+            ons_year=options.ons_year,
+            ons_month=options.ons_month,
+            cache_path=DEFAULT_CACHE_PATH,
+        )
 
     def _render_result(self, data: DesktopViewData) -> None:
         self.source_label_var.set(data.source)
@@ -283,13 +308,14 @@ def _format_points(value: float | None) -> str:
     return f"{value * 100:.1f} p.p."
 
 
-def _format_baseline_comparison(comparison: object | None) -> str:
+def _format_baseline_comparison(comparison: BaselineComparison | None) -> str:
     if comparison is None:
         return "sem dados suficientes"
-    actual = getattr(comparison, "actual_renewable_share")
-    predicted = getattr(comparison, "predicted_renewable_share")
-    error = getattr(comparison, "absolute_error")
-    return f"real {_format_percent(actual)} vs previsto {_format_percent(predicted)}; erro {_format_points(error)}"
+    return (
+        f"real {_format_percent(comparison.actual_renewable_share)} vs "
+        f"previsto {_format_percent(comparison.predicted_renewable_share)}; "
+        f"erro {_format_points(comparison.absolute_error)}"
+    )
 
 
 if __name__ == "__main__":

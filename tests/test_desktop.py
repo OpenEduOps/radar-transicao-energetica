@@ -7,7 +7,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from radar_transicao_energetica.app import run_analysis
-from radar_transicao_energetica.desktop import build_desktop_view_data
+from radar_transicao_energetica.desktop import (
+    build_desktop_analysis_options,
+    build_desktop_view_data,
+)
 
 
 class DesktopTest(unittest.TestCase):
@@ -35,6 +38,23 @@ class DesktopTest(unittest.TestCase):
             [row.source for row in view_data.generation_rows],
             ["eolica", "hidraulica", "solar", "termica"],
         )
+
+    def test_build_desktop_analysis_options_accepts_csv_source(self) -> None:
+        options = build_desktop_analysis_options(source="csv", csv_path=" examples/dados.csv ")
+
+        self.assertEqual(str(options.source_path), "examples\\dados.csv")
+        self.assertEqual(options.source, "exemplo")
+
+    def test_build_desktop_analysis_options_parses_ons_source(self) -> None:
+        options = build_desktop_analysis_options(source="ons", ons_period="2026-01")
+
+        self.assertEqual(options.source, "ons")
+        self.assertEqual(options.ons_year, 2026)
+        self.assertEqual(options.ons_month, 1)
+
+    def test_build_desktop_analysis_options_rejects_unknown_source(self) -> None:
+        with self.assertRaisesRegex(ValueError, "Fonte de dados desconhecida"):
+            build_desktop_analysis_options(source="invalida")
 
 
 if __name__ == "__main__":
