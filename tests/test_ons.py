@@ -10,6 +10,7 @@ from radar_transicao_energetica.data import GenerationDataError
 from radar_transicao_energetica.ons import (
     build_ons_generation_url,
     load_ons_generation,
+    parse_ons_period,
 )
 
 
@@ -26,6 +27,18 @@ class FakeResponse:
 
 
 class OnsLoadingTest(unittest.TestCase):
+    def test_parse_ons_period_requires_year_month_format(self) -> None:
+        self.assertEqual(parse_ons_period("2026-01"), (2026, 1))
+
+        with self.assertRaisesRegex(ValueError, "YYYY-MM"):
+            parse_ons_period("2026")
+
+        with self.assertRaisesRegex(ValueError, "YYYY-MM"):
+            parse_ons_period("2026-1")
+
+        with self.assertRaisesRegex(ValueError, "Mes ONS invalido"):
+            parse_ons_period("2026-13")
+
     def test_build_ons_generation_url_uses_monthly_public_csv_path(self) -> None:
         url = build_ons_generation_url(2026, 1)
 

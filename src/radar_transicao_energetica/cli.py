@@ -9,6 +9,7 @@ from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.charts import render_share_trend, render_source_chart
 from radar_transicao_energetica.data import GenerationDataError
 from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
+from radar_transicao_energetica.ons import parse_ons_period
 from radar_transicao_energetica.serialization import analysis_payload
 
 
@@ -103,24 +104,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Imprime resultado resumido em JSON.",
     )
     return parser
-
-
-def parse_ons_period(value: str) -> tuple[int, int]:
-    parts = value.strip().split("-")
-    if len(parts) != 2:
-        raise ValueError("Periodo ONS invalido. Use o formato YYYY-MM.")
-
-    try:
-        year = int(parts[0])
-        month = int(parts[1])
-    except ValueError as exc:
-        raise ValueError("Periodo ONS invalido. Use o formato YYYY-MM.") from exc
-
-    if year < 2022:
-        raise ValueError("A fonte ONS V0 aceita arquivos mensais de 2022 em diante.")
-    if month < 1 or month > 12:
-        raise ValueError("Mes ONS invalido. Use um valor entre 1 e 12.")
-    return year, month
 
 
 def render_report(

@@ -8,10 +8,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-
-from radar_transicao_energetica.cli import parse_ons_period
-
 
 class CliTest(unittest.TestCase):
     def test_cli_runs_with_embedded_sample_json(self) -> None:
@@ -211,14 +207,28 @@ class CliTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("--ons-periodo so pode ser usado", result.stderr)
 
-    def test_parse_ons_period(self) -> None:
-        self.assertEqual(parse_ons_period("2026-01"), (2026, 1))
+    def test_cli_rejects_malformed_ons_period_without_network(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
 
-        with self.assertRaisesRegex(ValueError, "YYYY-MM"):
-            parse_ons_period("2026")
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "radar_transicao_energetica",
+                "--fonte",
+                "ons",
+                "--ons-periodo",
+                "2026-1",
+                "--sem-cache",
+            ],
+            capture_output=True,
+            text=True,
+            env=env,
+        )
 
-        with self.assertRaisesRegex(ValueError, "Mes ONS invalido"):
-            parse_ons_period("2026-13")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("YYYY-MM", result.stderr)
 
 
 if __name__ == "__main__":

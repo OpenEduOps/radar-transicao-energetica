@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any, Callable
 from urllib.request import Request, urlopen
 
@@ -15,6 +16,19 @@ ONS_GENERATION_BY_PLANT_AWS_BASE_URL = (
     "https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/geracao_usina_2_ho"
 )
 ONS_USER_AGENT = "radar-transicao-energetica/0.1"
+ONS_PERIOD_PATTERN = re.compile(r"^\d{4}-\d{2}$")
+
+
+def parse_ons_period(value: str) -> tuple[int, int]:
+    period = value.strip()
+    if not ONS_PERIOD_PATTERN.fullmatch(period):
+        raise ValueError("Periodo ONS invalido. Use o formato YYYY-MM.")
+
+    year_text, month_text = period.split("-")
+    year = int(year_text)
+    month = int(month_text)
+    _validate_ons_period(year, month)
+    return year, month
 
 
 def build_ons_generation_url(year: int, month: int) -> str:

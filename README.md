@@ -88,7 +88,7 @@ $env:PYTHONPATH='src'
 python -m radar_transicao_energetica --fonte ons --ons-periodo 2026-01 --json --sem-cache
 ```
 
-O argumento `--ons-periodo` usa o formato `YYYY-MM`. A integração ONS V0 trabalha com os arquivos mensais publicados a partir de 2022. Essa execução depende de acesso à internet; os testes automatizados continuam usando fixtures offline.
+O argumento `--ons-periodo` usa o formato `YYYY-MM`, com mês em dois dígitos. A integração ONS V0 trabalha com os arquivos mensais publicados a partir de 2022. Essa execução depende de acesso à internet e pode baixar arquivos com dezenas de MB; os testes automatizados continuam usando fixtures offline.
 
 O JSON retornado possui quatro blocos principais:
 
