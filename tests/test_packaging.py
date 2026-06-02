@@ -19,6 +19,20 @@ class PackagingTest(unittest.TestCase):
             "radar_transicao_energetica.desktop:main",
         )
 
+    def test_ci_does_not_build_or_upload_exe_artifacts_yet(self) -> None:
+        workflow = Path(".github/workflows/ci.yml").read_text(encoding="utf-8").lower()
+
+        self.assertNotIn("scripts/build_exe.py", workflow)
+        self.assertNotIn("actions/upload-artifact", workflow)
+        self.assertNotIn("checksum", workflow)
+
+    def test_gitignore_keeps_local_exe_artifacts_out_of_git(self) -> None:
+        ignored_patterns = set(Path(".gitignore").read_text(encoding="utf-8").splitlines())
+
+        self.assertIn("build/", ignored_patterns)
+        self.assertIn("dist/", ignored_patterns)
+        self.assertIn("*.spec", ignored_patterns)
+
 
 if __name__ == "__main__":
     unittest.main()
