@@ -58,6 +58,7 @@ def write_analysis_cache(
 
 def read_latest_analysis_cache(path: str | Path) -> dict[str, Any]:
     cache_path = Path(path)
+    _validate_existing_cache_path(cache_path)
     try:
         with closing(sqlite3.connect(str(cache_path))) as connection:
             _ensure_schema(connection)
@@ -78,6 +79,7 @@ def read_latest_analysis_cache(path: str | Path) -> dict[str, Any]:
 
 def read_latest_generation_records(path: str | Path) -> list[GenerationRecord]:
     cache_path = Path(path)
+    _validate_existing_cache_path(cache_path)
     try:
         with closing(sqlite3.connect(str(cache_path))) as connection:
             _ensure_schema(connection)
@@ -107,6 +109,13 @@ def read_latest_generation_records(path: str | Path) -> list[GenerationRecord]:
         )
         for period, source, generation_mw in rows
     ]
+
+
+def _validate_existing_cache_path(cache_path: Path) -> None:
+    if not cache_path.exists():
+        raise AnalysisCacheError(f"Cache nao encontrado: {cache_path}")
+    if not cache_path.is_file():
+        raise AnalysisCacheError(f"Caminho do cache nao e um arquivo SQLite: {cache_path}")
 
 
 def _ensure_schema(connection: sqlite3.Connection) -> None:
