@@ -20,7 +20,7 @@ A automação deve responder, de forma incremental:
 | --- | --- | --- |
 | CI documental | Após definir ferramenta de validação documental | Validar estrutura básica de docs e links principais. |
 | CI Python mínima | Implementada | Rodar compilação e testes unitários. |
-| CI de dados | Após primeira fonte pública | Validar normalização com fixtures e cache em diretório temporário. |
+| CI de dados | Implementada parcialmente | Validar normalização com fixtures e cache em diretório temporário. |
 | CI de UI | Após primeira tela | Validar abertura mínima ou smoke test da aplicação. |
 | CI de release | Após fluxo visual estável | Gerar artefato, checksum e smoke test. |
 
@@ -47,6 +47,8 @@ radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-c
 ```
 
 O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
+
+A integração ONS é validada na suíte por fixture offline, cobrindo o formato `din_instante`, `nom_tipousina` e `val_geracaomwmed`. O comando real com `--fonte ons --ons-periodo YYYY-MM` é uma validação manual com rede e não faz parte da CI obrigatória.
 
 Para o primeiro build local experimental:
 
@@ -76,6 +78,7 @@ Permissões adicionais só devem aparecer em jobs que realmente publiquem releas
 - Manter metadados públicos focados em produto, comportamento ou engenharia.
 - Evitar CI cara enquanto o projeto ainda estiver validando o MVP.
 - Preferir fixtures e dados sintéticos para testes de domínio.
+- Não depender de download real do ONS para aprovar a suíte automatizada.
 - Usar cache local apenas em diretórios temporários dentro da CI.
 
 ## Estratégia de Release

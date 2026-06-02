@@ -43,7 +43,7 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 
 - `ISSUE-001`: implementada com comandos reais no README.
 - `ISSUE-002`: implementada com `pyproject.toml`, pacote em `src` e testes.
-- `ISSUE-003`: parcialmente implementada com carregador CSV local, aliases de colunas e exemplo offline.
+- `ISSUE-003`: implementada para a primeira fonte real com ONS Geração por Usina em Base Horária, mantendo carregador CSV local, aliases de colunas e exemplo offline.
 - `ISSUE-004`: parcialmente implementada com cache JSON local.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
 - `ISSUE-006`: parcialmente implementada com visualização textual.
@@ -52,7 +52,6 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 
 Pendências principais:
 
-- consolidar fonte pública real como entrada padrão;
 - evoluir cache para SQLite ou DuckDB;
 - integrar clima;
 - criar interface desktop;
@@ -131,6 +130,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - melhorar mensagens de erro para dados ausentes;
 - revisar clareza de alertas educacionais;
 - validar links de dados públicos e instruções do README.
+- ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
 
 ## Evitar Como Primeira Issue
 

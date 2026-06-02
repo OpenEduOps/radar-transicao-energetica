@@ -84,7 +84,7 @@ Limites assumidos:
 - o baseline atual é média móvel simples, não modelo de machine learning;
 - a visualização atual é textual, não desktop;
 - o cache atual é JSON, não SQLite ou DuckDB;
-- a primeira fonte pública real ainda precisa ser consolidada em uma normalização dedicada;
+- a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, mas a execução com rede ainda é manual e fora da CI obrigatória;
 - não há release workflow, checksum, assinatura, smoke test formal ou build automático de artefato.
 
 Gate mínimo para considerar o primeiro `.exe` válido:
@@ -183,9 +183,9 @@ Commits sugeridos:
 
 ## Fase 2: Fonte Pública Inicial
 
-Status: parcialmente concluída.
+Status: concluída para a primeira fonte pública real.
 
-A implementação atual carrega CSV local com colunas normalizadas ou aliases comuns de dados públicos, além de incluir um exemplo embutido para execução offline. Ainda falta consolidar a primeira fonte pública real como fonte padrão de produção.
+A implementação atual consolida o dataset **ONS Geração por Usina em Base Horária** como primeira fonte pública real. O CLI aceita `--fonte ons --ons-periodo YYYY-MM`, baixa o CSV mensal público do ONS na AWS, normaliza colunas de período, tipo de usina e geração em MWmed, e mantém CSV local/exemplo embutido como caminho offline.
 
 Rastreabilidade:
 
@@ -200,10 +200,10 @@ Escolher e implementar o carregamento inicial de uma fonte pública de geração
 Entregáveis:
 
 - decisão registrada sobre a fonte escolhida;
-- função ou classe de carregamento;
+- módulo `ons.py` para URL pública mensal e carregamento;
 - normalização mínima para formato tabular;
-- fixtures ou dados sintéticos equivalentes;
-- teste de carregamento/normalização.
+- fixtures ONS sintéticas equivalentes;
+- teste de carregamento/normalização e falha de download.
 
 Critérios para escolher a fonte:
 
@@ -242,6 +242,13 @@ Testes esperados:
 - fixture com coluna ausente;
 - fixture com valor inválido;
 - teste de tratamento de erro.
+
+Validação implementada:
+
+- testes unitários de URL ONS mensal;
+- fixture offline com colunas `din_instante`, `nom_tipousina` e `val_geracaomwmed`;
+- teste de erro controlado quando a fonte pública não pode ser baixada;
+- suíte automatizada sem dependência de rede.
 
 Commits sugeridos:
 
@@ -708,4 +715,4 @@ Uma fase só deve avançar quando:
 
 ## Próxima Ação Recomendada
 
-Iniciar por `ISSUE-001` e `ISSUE-002` em conjunto: criar scaffold Python mínimo com `pyproject.toml`, pacote em `src/radar_transicao_energetica`, diretório `tests`, teste de sanidade e comandos básicos documentados.
+Evoluir `ISSUE-004`: substituir ou complementar o cache JSON por SQLite ou DuckDB, mantendo cache em diretório local ignorado pelo Git e testes em diretório temporário.

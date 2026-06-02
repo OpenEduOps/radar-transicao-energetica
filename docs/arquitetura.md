@@ -21,6 +21,8 @@ A arquitetura deve permitir que o projeto evolua de forma incremental: primeiro 
 
 A primeira implementação evita dependências pesadas e usa biblioteca padrão do Python. Essa escolha reduz atrito para testes e permite gerar um primeiro `.exe` local experimental antes da interface desktop.
 
+Na fonte pública inicial, a coleta HTTP também usa biblioteca padrão (`urllib`) para manter a V0 sem dependências externas. `requests` segue planejado apenas se a camada de dados crescer o suficiente para justificar a dependência.
+
 ## Estrutura Planejada
 
 ```text
@@ -40,6 +42,7 @@ radar-transicao-energetica/
 │       ├── app.py
 │       ├── cli.py
 │       ├── data.py
+│       ├── ons.py
 │       ├── domain.py
 │       ├── baseline.py
 │       ├── alerts.py
@@ -60,6 +63,7 @@ radar-transicao-energetica/
 | `app.py` | Orquestra o fluxo de análise reutilizável por CLI ou futura UI. |
 | `cli.py` | Entrada de linha de comando para a primeira versão empacotável. |
 | `data.py` | Leitura, normalização e validação de dados de geração. |
+| `ons.py` | Construção da URL pública e carregamento do dataset ONS Geração por Usina em Base Horária. |
 | `domain.py` | Cálculo de participação renovável e agregações por período. |
 | `baseline.py` | Baseline simples e interpretável para a próxima janela. |
 | `alerts.py` | Regras textuais de alerta educacional. |
@@ -71,7 +75,7 @@ radar-transicao-energetica/
 ## Fluxo de Dados Inicial
 
 ```text
-Fonte pública
+Fonte pública ONS, CSV local ou exemplo embutido
 -> carregamento
 -> normalização
 -> cache local
@@ -112,7 +116,7 @@ Fonte pública
 
 ## Decisões Pendentes
 
-- Escolher a primeira fonte pública de geração elétrica para o MVP.
+- Evoluir a fonte ONS para filtros de período e agregações mais eficientes quando o volume de dados exigir.
 - Definir SQLite ou DuckDB como cache local inicial.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
 - Definir Matplotlib ou Plotly para os primeiros gráficos.

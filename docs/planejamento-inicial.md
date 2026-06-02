@@ -74,6 +74,8 @@ O MVP deve provar que uma pessoa consegue abrir o aplicativo, carregar dados pú
 
 Antes do MVP completo, a primeira fatia funcional deve provar uma base menor: carregar uma fonte pública de geração elétrica, calcular participação renovável e validar esse cálculo com testes automatizados.
 
+Estado atual dessa fatia: a fonte pública inicial foi consolidada com o dataset **ONS Geração por Usina em Base Horária**, consumido por CSV mensal público, enquanto o exemplo embutido e o CSV local seguem disponíveis para execução offline.
+
 Incluído no MVP:
 
 - coleta ou carregamento de pelo menos uma fonte pública de dados de geração elétrica;
@@ -127,15 +129,15 @@ Linha de corte:
 
 | ID | Requisito | Prioridade | Status |
 | --- | --- | --- | --- |
-| `REQ-001` | Carregar dados públicos de geração elétrica em formato tratável pela aplicação. | Alta | Planejado |
-| `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Planejado |
-| `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Planejado |
-| `REQ-004` | Exibir gráfico de geração por fonte. | Alta | Planejado |
+| `REQ-001` | Carregar dados públicos de geração elétrica em formato tratável pela aplicação. | Alta | Implementado |
+| `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Parcial |
+| `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
+| `REQ-004` | Exibir gráfico de geração por fonte. | Alta | Parcial |
 | `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Planejado |
-| `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Planejado |
-| `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Planejado |
-| `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Planejado |
-| `REQ-009` | Disponibilizar comandos claros de instalação, execução e testes. | Alta | Planejado |
+| `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Parcial |
+| `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Parcial |
+| `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Implementado |
+| `REQ-009` | Disponibilizar comandos claros de instalação, execução e testes. | Alta | Implementado |
 
 ## Critérios de Aceite
 
@@ -179,11 +181,16 @@ radar-transicao-energetica/
 ├── pyproject.toml
 ├── src/
 │   └── radar_transicao_energetica/
-│       ├── data/
-│       ├── features/
-│       ├── models/
-│       ├── ui/
-│       └── app.py
+│       ├── app.py
+│       ├── cli.py
+│       ├── data.py
+│       ├── ons.py
+│       ├── domain.py
+│       ├── baseline.py
+│       ├── alerts.py
+│       ├── charts.py
+│       ├── serialization.py
+│       └── cache.py
 ├── tests/
 └── data/
     └── cache/
@@ -191,11 +198,15 @@ radar-transicao-energetica/
 
 Responsabilidades:
 
-- `data`: coleta, normalização, validação e cache de dados públicos;
-- `features`: criação de variáveis para análise e machine learning;
-- `models`: treino, avaliação e previsão;
-- `ui`: telas, gráficos, estados de carregamento e mensagens de alerta;
-- `app.py`: composição da aplicação e ponto de entrada;
+- `data.py`: leitura, normalização e validação de CSV;
+- `ons.py`: carregamento do dataset público ONS Geração por Usina em Base Horária;
+- `domain.py`: cálculo de participação renovável;
+- `baseline.py`: baseline simples por média móvel;
+- `alerts.py`: alerta interpretável;
+- `charts.py`: visualização textual inicial;
+- `cache.py`: cache JSON local;
+- `app.py`: composição da aplicação;
+- `cli.py`: ponto de entrada de linha de comando;
 - `tests`: testes unitários, integração leve e validação de regras.
 
 Princípios iniciais:

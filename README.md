@@ -16,6 +16,7 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 
 - carrega dados locais de geração elétrica em CSV;
 - inclui um conjunto de dados de exemplo para execução offline;
+- baixa dados públicos do ONS para geração por usina em base horária;
 - normaliza fonte, período e geração;
 - calcula participação renovável;
 - grava cache JSON local;
@@ -79,6 +80,15 @@ Executar retornando JSON:
 $env:PYTHONPATH='src'
 python -m radar_transicao_energetica --arquivo examples\geracao_exemplo.csv --json --sem-cache
 ```
+
+Executar com a primeira fonte pública real consolidada, usando o dataset **ONS Geração por Usina em Base Horária**:
+
+```powershell
+$env:PYTHONPATH='src'
+python -m radar_transicao_energetica --fonte ons --ons-periodo 2026-01 --json --sem-cache
+```
+
+O argumento `--ons-periodo` usa o formato `YYYY-MM`. A integração ONS V0 trabalha com os arquivos mensais publicados a partir de 2022. Essa execução depende de acesso à internet; os testes automatizados continuam usando fixtures offline.
 
 O JSON retornado possui quatro blocos principais:
 
@@ -153,6 +163,8 @@ Para manter o projeto viável como ponto de partida, o MVP funcional deve mirar 
 
 Antes dessa previsão completa, a primeira fatia funcional deve ser menor: carregar uma fonte pública de geração elétrica, calcular participação renovável e validar o cálculo com testes.
 
+Essa primeira fonte pública real foi consolidada com o dataset **ONS Geração por Usina em Base Horária**, mantendo o CSV local e o exemplo embutido como caminhos de desenvolvimento e demonstração offline.
+
 Esse recorte é forte para portfólio porque combina:
 
 - dados públicos reais;
@@ -163,6 +175,10 @@ Esse recorte é forte para portfólio porque combina:
 - tema atual e relevante para educação, energia e tecnologia.
 
 ## Fontes de Dados
+
+Fonte pública consolidada na V0:
+
+- [ONS Geração por Usina em Base Horária](https://dados.ons.org.br/dataset/geracao-usina-2): geração verificada de usinas, conjuntos de usinas e grupos de pequenas usinas em base horária. A integração atual usa os CSVs mensais publicados no bucket público do ONS na AWS, no padrão `GERACAO_USINA-2_YYYY_MM.csv`.
 
 Fontes candidatas para o projeto:
 
@@ -238,10 +254,12 @@ radar-transicao-energetica/
 │       ├── app.py
 │       ├── cli.py
 │       ├── data.py
+│       ├── ons.py
 │       ├── domain.py
 │       ├── baseline.py
 │       ├── alerts.py
 │       ├── charts.py
+│       ├── serialization.py
 │       └── cache.py
 ├── tests/
 ├── examples/
@@ -255,10 +273,12 @@ Responsabilidades sugeridas:
 - `app.py`: orquestra o fluxo de análise reutilizável por CLI ou futura UI;
 - `cli.py`: entrada de linha de comando;
 - `data.py`: leitura e normalização de CSV;
+- `ons.py`: construção de URL e carregamento da fonte pública ONS;
 - `domain.py`: cálculo de participação renovável;
 - `baseline.py`: baseline simples por média móvel;
 - `alerts.py`: regras textuais de alerta;
 - `charts.py`: visualização textual inicial;
+- `serialization.py`: contrato JSON compartilhado por CLI e cache;
 - `cache.py`: escrita de cache JSON local.
 
 ## Critérios de Sucesso do MVP
@@ -278,13 +298,12 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 
 Próxima sequência técnica recomendada:
 
-1. Definir a primeira fonte pública real a ser normalizada diretamente.
-2. Evoluir o cache local para SQLite ou DuckDB.
-3. Adicionar integração climática inicial.
-4. Refinar o baseline e registrar métricas de avaliação.
-5. Criar interface desktop inicial com gráfico visual.
-6. Transformar o `.exe` experimental em artefato de release apenas quando o fluxo visual estiver estável.
-7. Adicionar smoke test formal do executável e CI de build de artefato depois da primeira interface.
+1. Evoluir o cache local para SQLite ou DuckDB.
+2. Adicionar integração climática inicial.
+3. Refinar o baseline e registrar métricas de avaliação.
+4. Criar interface desktop inicial com gráfico visual.
+5. Transformar o `.exe` experimental em artefato de release apenas quando o fluxo visual estiver estável.
+6. Adicionar smoke test formal do executável e CI de build de artefato depois da primeira interface.
 
 ## Fora do Escopo Inicial
 
