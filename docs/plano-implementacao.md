@@ -291,6 +291,7 @@ Critérios de aceite:
 - cálculo retorna percentual ou razão consistente;
 - total zero não causa divisão inválida;
 - fontes ausentes são tratadas explicitamente;
+- fontes desconhecidas aparecem explicitamente na saída e no JSON;
 - testes cobrem fluxo feliz e casos de exceção;
 - regra não depende de UI nem de rede.
 

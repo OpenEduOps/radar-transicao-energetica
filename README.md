@@ -87,6 +87,8 @@ O JSON retornado possui quatro blocos principais:
 - `alert`: nível e mensagem interpretável;
 - `baseline`: método, pontos usados e previsão simples da próxima janela.
 
+Fontes fora da classificação inicial da V0 aparecem em `unknown_sources`. Elas continuam entrando na geração total, mas não são classificadas automaticamente como renováveis.
+
 Rodar testes:
 
 ```powershell

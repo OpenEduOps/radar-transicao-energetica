@@ -61,6 +61,7 @@ Contribuidores:
 - Dado um conjunto de dados público válido, quando o usuário iniciar a análise, então o sistema deve calcular a participação renovável do período.
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado um conjunto de dados insuficiente ou indisponível, quando a aplicação tentar carregar informações, então o sistema deve informar o problema sem quebrar o fluxo principal.
+- Dado um conjunto com fonte ainda não classificada na V0, quando a análise for concluída, então a fonte deve aparecer explicitamente como não classificada em vez de ficar implícita no cálculo.
 - Dado um modelo baseline treinado, quando houver dados de avaliação, então o sistema deve apresentar ao menos uma métrica de erro ou comparação visual.
 - Dado um resultado de participação renovável ou risco, quando o alerta for exibido, então a mensagem deve ser compreensível para usuário não especialista.
 - Dado que o projeto não deve depender de credenciais privadas, quando o ambiente for preparado, então a execução local deve funcionar apenas com dados públicos ou cache.
