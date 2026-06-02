@@ -8,6 +8,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from radar_transicao_energetica.cache import read_latest_analysis_cache
+
 
 class CliTest(unittest.TestCase):
     def test_cli_runs_with_embedded_sample_json(self) -> None:
@@ -42,7 +46,7 @@ class CliTest(unittest.TestCase):
         env["PYTHONPATH"] = str(Path.cwd() / "src")
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            cache_path = Path(tmpdir) / "cache.json"
+            cache_path = Path(tmpdir) / "cache.sqlite"
 
             subprocess.run(
                 [
@@ -59,7 +63,7 @@ class CliTest(unittest.TestCase):
                 env=env,
             )
 
-            payload = json.loads(cache_path.read_text(encoding="utf-8"))
+            payload = read_latest_analysis_cache(cache_path)
 
         self.assertIn("summary", payload)
         self.assertIn("alert", payload)
@@ -70,7 +74,7 @@ class CliTest(unittest.TestCase):
         env["PYTHONPATH"] = str(Path.cwd() / "src")
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            cache_path = Path(tmpdir) / "cache.json"
+            cache_path = Path(tmpdir) / "cache.sqlite"
 
             result = subprocess.run(
                 [

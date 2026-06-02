@@ -58,6 +58,7 @@ def run_analysis(
     if write_cache and cache_path is not None:
         written_cache_path = write_analysis_cache(
             cache_path,
+            records=records,
             summary=summary,
             period_summaries=period_summaries,
             alert=alert,

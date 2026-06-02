@@ -19,7 +19,7 @@ class SerializationTest(unittest.TestCase):
             period_summaries=result.period_summaries,
             alert=result.alert,
             baseline=result.baseline,
-            cache_path="data/cache/ultima-analise.json",
+            cache_path="data/cache/analises.sqlite",
             data_source=result.data_source,
         )
 
@@ -29,7 +29,7 @@ class SerializationTest(unittest.TestCase):
         self.assertIn("baseline", payload)
         self.assertIn("data_source", payload)
         self.assertEqual(payload["data_source"]["kind"], "exemplo")
-        self.assertEqual(payload["cache_path"], "data/cache/ultima-analise.json")
+        self.assertEqual(payload["cache_path"], "data/cache/analises.sqlite")
         self.assertIn("renewable_share", payload["summary"])
         self.assertIn("unknown_sources", payload["summary"])
         self.assertIn("unknown_sources", payload["period_summaries"][0])

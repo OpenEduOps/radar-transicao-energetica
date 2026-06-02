@@ -13,7 +13,7 @@ from radar_transicao_energetica.ons import parse_ons_period
 from radar_transicao_energetica.serialization import analysis_payload
 
 
-DEFAULT_CACHE_PATH = Path("data/cache/ultima-analise.json")
+DEFAULT_CACHE_PATH = Path("data/cache/analises.sqlite")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -93,7 +93,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--cache",
         default=DEFAULT_CACHE_PATH,
         type=Path,
-        help=f"Caminho do cache JSON. Padrao: {DEFAULT_CACHE_PATH}",
+        help=f"Caminho do cache SQLite. Padrao: {DEFAULT_CACHE_PATH}",
     )
     parser.add_argument(
         "--sem-cache",

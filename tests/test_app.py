@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import sys
 import tempfile
 import unittest
@@ -10,18 +9,23 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from radar_transicao_energetica.app import run_analysis
-from radar_transicao_energetica.cache import AnalysisCacheError
+from radar_transicao_energetica.cache import (
+    AnalysisCacheError,
+    read_latest_analysis_cache,
+    read_latest_generation_records,
+)
 from radar_transicao_energetica.data import GenerationRecord
 
 
 class AppTest(unittest.TestCase):
     def test_run_analysis_reuses_core_flow_and_writes_cache(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            cache_path = Path(tmpdir) / "analise.json"
+            cache_path = Path(tmpdir) / "analise.sqlite"
 
             result = run_analysis(cache_path=cache_path)
 
-            cache_payload = json.loads(cache_path.read_text(encoding="utf-8"))
+            cache_payload = read_latest_analysis_cache(cache_path)
+            cached_records = read_latest_generation_records(cache_path)
 
         self.assertGreater(len(result.records), 0)
         self.assertIsNotNone(result.summary.renewable_share)
@@ -29,10 +33,13 @@ class AppTest(unittest.TestCase):
         self.assertEqual(result.data_source.kind, "exemplo")
         self.assertIn("summary", cache_payload)
         self.assertEqual(cache_payload["data_source"]["kind"], "exemplo")
+        self.assertEqual(cache_payload["cache_path"], str(cache_path))
+        self.assertEqual(len(cached_records), len(result.records))
+        self.assertEqual(cached_records[0].source, "eolica")
 
     def test_run_analysis_can_skip_cache(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            cache_path = Path(tmpdir) / "analise.json"
+            cache_path = Path(tmpdir) / "analise.sqlite"
 
             result = run_analysis(cache_path=cache_path, write_cache=False)
 
