@@ -31,6 +31,8 @@ class SerializationTest(unittest.TestCase):
         self.assertEqual(payload["data_source"]["kind"], "exemplo")
         self.assertEqual(payload["cache_path"], "data/cache/analises.sqlite")
         self.assertIn("mean_absolute_error", payload["baseline"])
+        self.assertEqual(payload["baseline"]["error_metric"], "mae")
+        self.assertEqual(payload["baseline"]["window"], 3)
         self.assertIn("evaluated_points", payload["baseline"])
         self.assertIn("comparisons", payload["baseline"])
         self.assertGreater(payload["baseline"]["evaluated_points"], 0)

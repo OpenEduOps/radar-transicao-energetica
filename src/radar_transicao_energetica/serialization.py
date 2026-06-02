@@ -80,7 +80,9 @@ def baseline_to_dict(baseline: BaselinePrediction) -> dict[str, Any]:
     return {
         "method": baseline.method,
         "points_used": baseline.points_used,
+        "window": baseline.window,
         "predicted_renewable_share": baseline.predicted_renewable_share,
+        "error_metric": baseline.error_metric,
         "mean_absolute_error": baseline.mean_absolute_error,
         "evaluated_points": baseline.evaluated_points,
         "comparisons": [

@@ -89,6 +89,8 @@ class DomainTest(unittest.TestCase):
 
         self.assertEqual(prediction.method, "media_movel")
         self.assertEqual(prediction.points_used, 2)
+        self.assertEqual(prediction.window, 2)
+        self.assertEqual(prediction.error_metric, "mae")
         self.assertAlmostEqual(prediction.predicted_renewable_share or 0, 0.65)
         self.assertEqual(prediction.evaluated_points, 1)
         self.assertAlmostEqual(prediction.mean_absolute_error or 0, 0.3)

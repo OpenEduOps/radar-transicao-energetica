@@ -18,6 +18,8 @@ class BaselinePrediction:
     predicted_renewable_share: float | None
     points_used: int
     method: str
+    window: int
+    error_metric: str = "mae"
     mean_absolute_error: float | None = None
     evaluated_points: int = 0
     comparisons: tuple[BaselineComparison, ...] = ()
@@ -42,6 +44,7 @@ def predict_next_renewable_share(
             predicted_renewable_share=None,
             points_used=0,
             method="media_movel",
+            window=window,
             mean_absolute_error=mean_absolute_error,
             evaluated_points=len(comparisons),
             comparisons=tuple(comparisons),
@@ -52,6 +55,7 @@ def predict_next_renewable_share(
         predicted_renewable_share=sum(window_values) / len(window_values),
         points_used=len(window_values),
         method="media_movel",
+        window=window,
         mean_absolute_error=mean_absolute_error,
         evaluated_points=len(comparisons),
         comparisons=tuple(comparisons),
