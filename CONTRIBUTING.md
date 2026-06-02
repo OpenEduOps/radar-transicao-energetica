@@ -26,7 +26,8 @@ A primeira fatia funcional já foi implementada. O projeto atualmente:
 - avalia o baseline de média móvel com MAE e comparação real vs previsto;
 - abre uma interface desktop inicial em Tkinter para exemplo embutido, CSV local ou ONS mensal;
 - executa testes automatizados com `unittest`;
-- pode gerar um `.exe` local experimental com PyInstaller.
+- pode gerar um `.exe` local experimental com PyInstaller;
+- bloqueia release pública do `.exe` enquanto UI estável, smoke test formal, checksum, build automático na CI e workflow de release estiverem pendentes.
 
 Contribuições úteis agora incluem:
 
@@ -37,6 +38,7 @@ Contribuições úteis agora incluem:
 - melhorar consultas, validações e rastreabilidade do cache SQLite;
 - melhorar estados, mensagens e QA manual da interface desktop inicial;
 - melhorar visualização e interpretação da comparação baseline;
+- evoluir critérios de release do `.exe` sem publicar artefato antes do gate;
 - revisar critérios de aceite.
 
 A próxima evolução recomendada é usar o cache SQLite como base para reuso offline da fonte ONS e consultas por período, em paralelo com melhorias incrementais da interface desktop. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
@@ -53,6 +55,7 @@ Exemplos de bons escopos:
 - adicionar teste para cache ou serialização;
 - adicionar teste de comparação real vs previsto do baseline;
 - adicionar teste para modelo de apresentação da interface sem abrir janela;
+- adicionar teste para critérios de release ou packaging;
 - melhorar mensagem de erro para dados indisponíveis;
 - revisar uma tabela de requisitos;
 - evoluir cache local sem depender de rede, mantendo metadados da fonte e registros normalizados rastreáveis.

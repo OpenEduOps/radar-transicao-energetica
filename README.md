@@ -165,6 +165,8 @@ python -m compileall src tests scripts
 
 O executável local experimental é gerado com PyInstaller. Ele não é commitado no repositório e fica em `dist/`.
 
+Esse `.exe` continua sendo apenas uma validação local. Release pública, smoke test formal, checksum e build automático na CI ficam adiados até a interface desktop inicial estar estável e validada manualmente.
+
 Instalar as dependências de desenvolvimento no ambiente escolhido:
 
 ```powershell
@@ -176,6 +178,26 @@ Gerar o `.exe`:
 ```powershell
 python scripts\build_exe.py
 ```
+
+Consultar o estágio atual de release sem gerar artefato:
+
+```powershell
+python scripts\build_exe.py --release-status
+```
+
+Tentar tratar o build como release pública antes dos critérios mínimos deve falhar:
+
+```powershell
+python scripts\build_exe.py --public-release
+```
+
+O gate atual bloqueia release pública enquanto estes itens estiverem pendentes:
+
+- interface desktop inicial estável e validada manualmente;
+- smoke test formal do executável;
+- checksum do artefato;
+- build automático de artefato na CI;
+- workflow de release pública documentado e aprovado.
 
 Validar o executável:
 
