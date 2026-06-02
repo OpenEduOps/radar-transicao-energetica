@@ -16,7 +16,7 @@ A primeira fatia funcional deve ser menor que a V0 completa. Ela deve entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-A primeira implementação já entrega essa fatia como CLI local, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache JSON da última análise, visualização textual, baseline simples por média móvel, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Integração climática, interface desktop, cache persistente de dados normalizados e empacotamento de release continuam para etapas posteriores do MVP funcional.
+A primeira implementação já entrega essa fatia como CLI local, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache SQLite, visualização textual, baseline simples por média móvel, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Integração climática, interface desktop, reuso offline do cache e empacotamento de release continuam para etapas posteriores do MVP funcional.
 
 Na decisão da primeira fonte pública real, ONS foi priorizado por entregar geração horária em CSV público e sem credenciais. ANEEL e CCEE permanecem candidatas para etapas complementares: ANEEL para dados estruturais do setor e CCEE para sinais econômicos, como PLD horário.
 
@@ -58,7 +58,7 @@ Contribuidores:
 | `NFR-004` | Baixo atrito de contribuição | Setup, testes e escopo de issues devem ser documentados. | Implementado |
 | `NFR-005` | Cache local | Dados baixados ou processados devem poder ser reutilizados localmente. | Parcial |
 
-Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava o resultado da última análise em JSON, incluindo `data_source`. Ela ainda não persiste o CSV bruto do ONS nem uma tabela normalizada reutilizável entre execuções. Essa diferença é intencional na V0 e deve ser resolvida na evolução para SQLite ou DuckDB.
+Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQLite em `data/cache/analises.sqlite`, com payload da análise, metadados da fonte, versão de schema e registros normalizados. Ela ainda não usa esse banco para evitar novo download ONS automaticamente; esse reuso offline fica como próxima evolução.
 
 ## Critérios de Aceite do MVP
 
@@ -80,7 +80,7 @@ Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava o result
 | --- | --- | --- | --- |
 | `TEST-001` | Unitário | `REQ-003` | Validar cálculo de participação renovável com dados sintéticos. |
 | `TEST-002` | Unitário | `REQ-003` | Validar tratamento de fontes ausentes ou valores zerados. |
-| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download e escrita do cache JSON da última análise. |
+| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, escrita do cache SQLite e persistência de registros normalizados em diretório temporário. |
 | `TEST-004` | Unitário | `REQ-006` | Validar treino e predição do modelo baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Verificar se gráfico, comparação e alerta são compreensíveis. |

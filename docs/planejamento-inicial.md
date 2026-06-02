@@ -80,7 +80,7 @@ A implementação atual registra a origem da análise em `data_source`, incluind
 
 Na comparação inicial entre ONS, ANEEL e CCEE, o ONS foi escolhido por entregar série horária de geração em CSV público, sem credenciais e diretamente compatível com o cálculo de participação renovável. ANEEL e CCEE seguem no radar como fontes complementares para dados estruturais e sinais econômicos, não como substitutas da primeira base de geração.
 
-O contrato normalizado da primeira fonte pública usa `period`, `source` e `generation_mw`, derivados dos campos ONS `din_instante`, `nom_tipousina` e `val_geracaomwmed`. O cache JSON atual registra a última análise, mas ainda não persiste uma base normalizada reutilizável.
+O contrato normalizado da primeira fonte pública usa `period`, `source` e `generation_mw`, derivados dos campos ONS `din_instante`, `nom_tipousina` e `val_geracaomwmed`. O cache atual usa SQLite para registrar a análise, metadados da fonte, versão de schema e registros normalizados.
 
 Incluído no MVP:
 
@@ -90,7 +90,7 @@ Incluído no MVP:
 - modelo baseline para previsão de participação renovável ou classificação de risco de pressão térmica;
 - comparação entre dado real e previsão;
 - alerta interpretável com linguagem educacional;
-- cache local para reduzir retrabalho de coleta, começando por resultado da análise e evoluindo para dados normalizados;
+- cache SQLite local para registrar resultado da análise, metadados e dados normalizados;
 - instruções de instalação, execução e testes.
 
 Resultado observável:
@@ -166,7 +166,7 @@ Critérios mínimos do MVP:
 | --- | --- | --- | --- |
 | `TEST-001` | Unitário | `REQ-003` | Validar cálculo de participação renovável com dados sintéticos. |
 | `TEST-002` | Unitário | `REQ-003` | Validar tratamento de fontes ausentes ou valores zerados. |
-| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download e escrita do cache JSON da última análise. |
+| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, cache SQLite e diretório temporário. |
 | `TEST-004` | Unitário | `REQ-006` | Validar treino e predição do modelo baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Verificar se gráfico, comparação e alerta são compreensíveis. |
@@ -213,7 +213,7 @@ Responsabilidades:
 - `baseline.py`: baseline simples por média móvel;
 - `alerts.py`: alerta interpretável;
 - `charts.py`: visualização textual inicial;
-- `cache.py`: cache JSON local da última análise;
+- `cache.py`: cache SQLite local;
 - `serialization.py`: contrato JSON compartilhado entre CLI e cache, incluindo `data_source`;
 - `app.py`: composição da aplicação;
 - `cli.py`: ponto de entrada de linha de comando;
@@ -251,4 +251,4 @@ Primeiras issues originalmente recomendadas:
 
 Essas quatro issues criam a base para uma primeira demonstração funcional sem antecipar complexidade de UI, empacotamento ou modelos avançados.
 
-Estado atual: `ISSUE-001`, `ISSUE-002`, `ISSUE-003` e `ISSUE-005` já foram implementadas para a versão CLI inicial. A próxima frente recomendada é evoluir `ISSUE-004`, mantendo o cache JSON da última análise e adicionando SQLite ou DuckDB para dados normalizados e metadados de coleta.
+Estado atual: `ISSUE-001`, `ISSUE-002`, `ISSUE-003`, `ISSUE-004` e `ISSUE-005` já foram implementadas para a versão CLI inicial. A próxima frente recomendada é usar o cache SQLite para reuso offline da fonte ONS e consultas por período.

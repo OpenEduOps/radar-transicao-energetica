@@ -82,7 +82,7 @@ Permissões adicionais só devem aparecer em jobs que realmente publiquem releas
 - Preferir fixtures e dados sintéticos para testes de domínio.
 - Não depender de download real do ONS para aprovar a suíte automatizada.
 - Usar cache local apenas em diretórios temporários dentro da CI.
-- Tratar o JSON atual como resultado da análise; cache persistente de dados normalizados deve ter testes próprios quando for implementado.
+- Validar o cache SQLite com schema versionado, metadados de análise e registros normalizados.
 
 ## Estratégia de Release
 

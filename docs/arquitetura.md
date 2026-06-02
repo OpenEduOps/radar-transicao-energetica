@@ -4,7 +4,7 @@ Este documento descreve a arquitetura inicial do **Radar da Transição Energét
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, fonte ONS, cache JSON, baseline simples e alerta textual. As próximas camadas devem avançar para cache mais robusto, integração climática, interface desktop e executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, fonte ONS, cache SQLite, baseline simples e alerta textual. As próximas camadas devem avançar para reuso offline do cache, integração climática, interface desktop e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
@@ -14,7 +14,7 @@ A arquitetura deve permitir evolução incremental: a base atual é uma aplicaç
 | Dados | Biblioteca padrão agora; `pandas` planejado | A V0 reduz dependências; `pandas` entra quando volume e análise tabular justificarem. |
 | HTTP/APIs | `urllib` agora; `requests` planejado | Coleta ONS inicial sem dependências externas; `requests` entra se a camada de dados crescer. |
 | ML | Média móvel agora; `scikit-learn` planejado | Baseline simples primeiro; modelos e métricas mais completas depois. |
-| Cache local | JSON da última análise agora; SQLite ou DuckDB planejado | JSON valida o fluxo; banco local deve separar análise, dados normalizados e repetição de consulta. |
+| Cache local | SQLite | Banco local sem dependência externa para análise, metadados e registros normalizados. |
 | UI desktop | CLI agora; PySide6 planejado | CLI mantém domínio testável antes da tela. |
 | Gráficos | Texto agora; Matplotlib ou Plotly planejado | Visualização textual valida o conceito antes de gráficos ricos. |
 | Empacotamento | PyInstaller local experimental | Gera `.exe` local, ainda sem release pública. |
@@ -77,7 +77,7 @@ radar-transicao-energetica/
 | `alerts.py` | Regras textuais de alerta educacional. |
 | `charts.py` | Visualização textual inicial. |
 | `serialization.py` | Contrato JSON compartilhado entre CLI e cache. |
-| `cache.py` | Escrita de cache JSON local. |
+| `cache.py` | Escrita e leitura do cache SQLite local. |
 | `tests` | Testes unitários, integração leve e QA automatizável. |
 
 O JSON e o cache incluem `data_source` para registrar a origem da análise. Na fonte ONS, esse bloco carrega o tipo da fonte, período mensal, URL do dataset e URL do recurso CSV usado.
@@ -96,7 +96,7 @@ Essa normalização fica em `data.py`, enquanto `ons.py` fica responsável por U
 
 Fontes reconhecidas na V0 entram em hidráulica, eólica, solar ou térmica. Fontes não reconhecidas continuam no total de geração e são expostas em `unknown_sources`, preservando rastreabilidade sem assumir classificação indevida.
 
-O cache JSON atual é um cache de resultado da análise. Ele não persiste o CSV ONS bruto nem uma tabela normalizada reutilizável. A evolução para SQLite ou DuckDB deve decidir como armazenar dados normalizados, metadados da coleta e resultados derivados sem misturar essas responsabilidades.
+O cache SQLite atual salva metadados do schema em `cache_metadata`, o payload serializado da análise em `analyses` e registros normalizados em `generation_records`. Ele não persiste o CSV ONS bruto. A próxima evolução deve usar essas tabelas para reuso offline da fonte ONS e consultas por período.
 
 ## Fluxo de Dados Inicial
 
@@ -129,7 +129,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 | `features` | dados normalizados | Features devem ser testáveis sem UI. |
 | `models` | features e alvo | Modelo não deve depender de fonte externa diretamente. |
 | `data` | fontes públicas e normalização | Rede e persistência ficam isoladas de domínio e UI. |
-| `cache` | resultado de análise e cache persistente futuro | Cache atual salva a última análise; cache futuro deve persistir dados normalizados. |
+| `cache` | resultado de análise e registros normalizados | Cache atual usa SQLite e mantém schema versionado. |
 
 ## Riscos e Mitigações
 
@@ -145,7 +145,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 ## Decisões Pendentes
 
 - Evoluir a fonte ONS para filtros de período e agregações mais eficientes quando o volume de dados exigir.
-- Definir SQLite ou DuckDB como cache local inicial para dados normalizados, não apenas para o resultado da análise.
+- Usar o cache SQLite para reuso offline da fonte ONS e consultas por período.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
 - Definir Matplotlib ou Plotly para os primeiros gráficos.
 - Evoluir do CLI experimental para interface desktop.

@@ -44,7 +44,7 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 - `ISSUE-001`: implementada com comandos reais no README.
 - `ISSUE-002`: implementada com `pyproject.toml`, pacote em `src` e testes.
 - `ISSUE-003`: implementada para a primeira fonte real com ONS Geração por Usina em Base Horária, mantendo carregador CSV local, aliases de colunas, exemplo offline, limite local de download e `data_source`.
-- `ISSUE-004`: parcialmente implementada com cache JSON local que registra o payload da última análise e a origem dos dados.
+- `ISSUE-004`: implementada com cache SQLite local que registra payload da análise, origem dos dados, versão de schema e registros normalizados.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
 - `ISSUE-006`: parcialmente implementada com visualização textual.
 - `ISSUE-008`: parcialmente implementada com baseline por média móvel.
@@ -52,7 +52,7 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 
 Pendências principais:
 
-- evoluir cache para SQLite ou DuckDB;
+- usar cache SQLite para reuso offline da fonte ONS e consultas por período;
 - integrar clima;
 - criar interface desktop;
 - transformar o primeiro `.exe` local em release validada.
@@ -142,6 +142,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - revisar clareza de alertas educacionais;
 - validar links de dados públicos e instruções do README;
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
+- adicionar consulta do cache SQLite por período como próxima evolução de dados.
 
 ## Evitar Como Primeira Issue
 
