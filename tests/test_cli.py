@@ -61,6 +61,26 @@ class CliTest(unittest.TestCase):
         self.assertIn("summary", payload)
         self.assertIn("alert", payload)
 
+    def test_cli_reports_invalid_file_with_nonzero_exit(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "radar_transicao_energetica",
+                "--arquivo",
+                "arquivo-inexistente.csv",
+            ],
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Arquivo nao encontrado", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

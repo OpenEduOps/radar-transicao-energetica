@@ -5,16 +5,10 @@ import json
 from pathlib import Path
 from typing import Sequence
 
-from radar_transicao_energetica.alerts import build_renewable_alert
-from radar_transicao_energetica.baseline import predict_next_renewable_share
-from radar_transicao_energetica.cache import write_analysis_cache
+from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.charts import render_share_trend, render_source_chart
-from radar_transicao_energetica.data import (
-    GenerationDataError,
-    load_generation_csv,
-    load_sample_generation,
-)
-from radar_transicao_energetica.domain import summarize_by_period, summarize_generation
+from radar_transicao_energetica.data import GenerationDataError
+from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
 
 
 DEFAULT_CACHE_PATH = Path("data/cache/ultima-analise.json")
@@ -25,41 +19,39 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        records = load_generation_csv(args.arquivo) if args.arquivo else load_sample_generation()
-        summary = summarize_generation(records)
-        period_summaries = summarize_by_period(records)
-        alert = build_renewable_alert(summary)
-        baseline = predict_next_renewable_share(period_summaries)
+        result = run_analysis(
+            source_path=args.arquivo,
+            cache_path=args.cache,
+            write_cache=not args.sem_cache,
+        )
     except (GenerationDataError, ValueError) as exc:
-        parser.exit(status=2, message=f"Erro: {exc}\n")
+        parser.exit(status=1, message=f"Erro: {exc}\n")
 
     if args.json:
         print(
             json.dumps(
                 {
-                    "renewable_share": summary.renewable_share,
-                    "total_generation_mw": summary.total_generation_mw,
-                    "renewable_generation_mw": summary.renewable_generation_mw,
-                    "alert": alert.level,
-                    "baseline_prediction": baseline.predicted_renewable_share,
+                    "renewable_share": result.summary.renewable_share,
+                    "total_generation_mw": result.summary.total_generation_mw,
+                    "renewable_generation_mw": result.summary.renewable_generation_mw,
+                    "alert": result.alert.level,
+                    "baseline_prediction": result.baseline.predicted_renewable_share,
                 },
                 ensure_ascii=False,
                 indent=2,
             )
         )
     else:
-        print(render_report(summary, period_summaries, alert.message, baseline.predicted_renewable_share))
-
-    if not args.sem_cache:
-        cache_path = write_analysis_cache(
-            args.cache,
-            summary=summary,
-            period_summaries=period_summaries,
-            alert=alert,
-            baseline=baseline,
+        print(
+            render_report(
+                result.summary,
+                result.period_summaries,
+                result.alert.message,
+                result.baseline.predicted_renewable_share,
+            )
         )
-        if not args.json:
-            print(f"\nCache gravado em: {cache_path}")
+        if result.cache_path:
+            print(f"\nCache gravado em: {result.cache_path}")
 
     return 0
 
@@ -93,8 +85,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def render_report(
-    summary,
-    period_summaries,
+    summary: RenewableSummary,
+    period_summaries: list[PeriodRenewableSummary],
     alert_message: str,
     baseline_prediction: float | None,
 ) -> str:
