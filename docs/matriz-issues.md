@@ -44,7 +44,7 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 - `ISSUE-001`: implementada com comandos reais no README.
 - `ISSUE-002`: implementada com `pyproject.toml`, pacote em `src` e testes.
 - `ISSUE-003`: implementada para a primeira fonte real com ONS Geração por Usina em Base Horária, mantendo carregador CSV local, aliases de colunas, exemplo offline, limite local de download e `data_source`.
-- `ISSUE-004`: parcialmente implementada com cache JSON local que registra o payload da análise e a origem dos dados.
+- `ISSUE-004`: parcialmente implementada com cache JSON local que registra o payload da última análise e a origem dos dados.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
 - `ISSUE-006`: parcialmente implementada com visualização textual.
 - `ISSUE-008`: parcialmente implementada com baseline por média móvel.
@@ -73,6 +73,7 @@ Critérios já atendidos para `ISSUE-003`:
 - fonte ONS escolhida e documentada;
 - decisão registrada de deixar ANEEL e CCEE como fontes complementares para etapas posteriores;
 - CSV mensal público carregável por `--fonte ons --ons-periodo YYYY-MM`;
+- contrato de normalização documentado: `din_instante`, `nom_tipousina` e `val_geracaomwmed` para `period`, `source` e `generation_mw`;
 - normalização ONS coberta por fixture offline;
 - erros de download, encoding e tamanho excessivo tratados sem traceback;
 - origem da análise registrada em `data_source` no JSON e cache.
@@ -134,6 +135,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 ## Boas Candidatas Para Primeiras Contribuições
 
 - revisar documentação de setup e limites da fonte ONS;
+- documentar decisões de cache entre última análise e dados normalizados;
 - ampliar testes unitários para novos casos de participação renovável;
 - criar dados sintéticos de teste;
 - melhorar mensagens de erro para dados ausentes;

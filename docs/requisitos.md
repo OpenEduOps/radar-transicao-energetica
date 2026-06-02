@@ -16,7 +16,7 @@ A primeira fatia funcional deve ser menor que a V0 completa. Ela deve entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-A primeira implementação já entrega essa fatia como CLI local, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache JSON, visualização textual, baseline simples por média móvel, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Integração climática, interface desktop e empacotamento de release continuam para etapas posteriores do MVP funcional.
+A primeira implementação já entrega essa fatia como CLI local, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache JSON da última análise, visualização textual, baseline simples por média móvel, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Integração climática, interface desktop, cache persistente de dados normalizados e empacotamento de release continuam para etapas posteriores do MVP funcional.
 
 Na decisão da primeira fonte pública real, ONS foi priorizado por entregar geração horária em CSV público e sem credenciais. ANEEL e CCEE permanecem candidatas para etapas complementares: ANEEL para dados estruturais do setor e CCEE para sinais econômicos, como PLD horário.
 
@@ -58,15 +58,17 @@ Contribuidores:
 | `NFR-004` | Baixo atrito de contribuição | Setup, testes e escopo de issues devem ser documentados. | Implementado |
 | `NFR-005` | Cache local | Dados baixados ou processados devem poder ser reutilizados localmente. | Parcial |
 
+Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava o resultado da última análise em JSON, incluindo `data_source`. Ela ainda não persiste o CSV bruto do ONS nem uma tabela normalizada reutilizável entre execuções. Essa diferença é intencional na V0 e deve ser resolvida na evolução para SQLite ou DuckDB.
+
 ## Critérios de Aceite do MVP
 
 - Dado um conjunto de dados público válido, quando o usuário iniciar a análise, então o sistema deve calcular a participação renovável do período.
-- Dado um período mensal ONS válido a partir de 2022, quando o usuário executar `--fonte ons --ons-periodo YYYY-MM`, então o sistema deve baixar e normalizar o CSV público correspondente.
+- Dado um período mensal ONS válido a partir de 2022, quando o usuário executar `--fonte ons --ons-periodo YYYY-MM`, então o sistema deve baixar o CSV público correspondente e normalizar `din_instante`, `nom_tipousina` e `val_geracaomwmed` para o contrato interno.
 - Dado que a análise use exemplo, CSV local ou ONS, quando o resultado JSON ou cache for gerado, então a origem dos dados deve aparecer em `data_source`.
+- Dado que qualquer origem publique uma fonte não classificada na V0, quando a análise for concluída, então essa fonte deve aparecer em `unknown_sources` sem ser marcada automaticamente como renovável.
 - Dado que a fonte pública ONS esteja indisponível, acima do limite local ou com encoding inválido, quando a coleta for executada, então o sistema deve informar erro claro sem traceback.
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado um conjunto de dados insuficiente ou indisponível, quando a aplicação tentar carregar informações, então o sistema deve informar o problema sem quebrar o fluxo principal.
-- Dado um conjunto com fonte ainda não classificada na V0, quando a análise for concluída, então a fonte deve aparecer explicitamente como não classificada em vez de ficar implícita no cálculo.
 - Dado um modelo baseline treinado, quando houver dados de avaliação, então o sistema deve apresentar ao menos uma métrica de erro ou comparação visual.
 - Dado um resultado de participação renovável ou risco, quando o alerta for exibido, então a mensagem deve ser compreensível para usuário não especialista.
 - Dado que o projeto não deve depender de credenciais privadas, quando o ambiente for preparado, então a execução local deve funcionar apenas com dados públicos ou cache.
@@ -78,7 +80,7 @@ Contribuidores:
 | --- | --- | --- | --- |
 | `TEST-001` | Unitário | `REQ-003` | Validar cálculo de participação renovável com dados sintéticos. |
 | `TEST-002` | Unitário | `REQ-003` | Validar tratamento de fontes ausentes ou valores zerados. |
-| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download e escrita/leitura de cache local. |
+| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download e escrita do cache JSON da última análise. |
 | `TEST-004` | Unitário | `REQ-006` | Validar treino e predição do modelo baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Verificar se gráfico, comparação e alerta são compreensíveis. |

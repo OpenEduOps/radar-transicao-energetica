@@ -14,7 +14,7 @@ A arquitetura deve permitir evolução incremental: a base atual é uma aplicaç
 | Dados | Biblioteca padrão agora; `pandas` planejado | A V0 reduz dependências; `pandas` entra quando volume e análise tabular justificarem. |
 | HTTP/APIs | `urllib` agora; `requests` planejado | Coleta ONS inicial sem dependências externas; `requests` entra se a camada de dados crescer. |
 | ML | Média móvel agora; `scikit-learn` planejado | Baseline simples primeiro; modelos e métricas mais completas depois. |
-| Cache local | JSON agora; SQLite ou DuckDB planejado | JSON valida o fluxo; banco local deve melhorar repetição e consulta. |
+| Cache local | JSON da última análise agora; SQLite ou DuckDB planejado | JSON valida o fluxo; banco local deve separar análise, dados normalizados e repetição de consulta. |
 | UI desktop | CLI agora; PySide6 planejado | CLI mantém domínio testável antes da tela. |
 | Gráficos | Texto agora; Matplotlib ou Plotly planejado | Visualização textual valida o conceito antes de gráficos ricos. |
 | Empacotamento | PyInstaller local experimental | Gera `.exe` local, ainda sem release pública. |
@@ -82,6 +82,22 @@ radar-transicao-energetica/
 
 O JSON e o cache incluem `data_source` para registrar a origem da análise. Na fonte ONS, esse bloco carrega o tipo da fonte, período mensal, URL do dataset e URL do recurso CSV usado.
 
+## Contrato de Normalização ONS
+
+A integração ONS V0 converte o CSV público mensal para o mesmo contrato usado pelo exemplo embutido e por CSV local:
+
+| Campo ONS | Campo interno | Responsabilidade |
+| --- | --- | --- |
+| `din_instante` | `period` | converter o instante da medição para data/hora. |
+| `nom_tipousina` | `source` | normalizar acentos, caixa e aliases para classificação de fonte. |
+| `val_geracaomwmed` | `generation_mw` | converter geração para número e rejeitar valores inválidos ou negativos. |
+
+Essa normalização fica em `data.py`, enquanto `ons.py` fica responsável por URL, período, download limitado e metadados da fonte. Assim, novas fontes públicas podem reutilizar o contrato interno sem acoplar regra de domínio ao formato específico do ONS.
+
+Fontes reconhecidas na V0 entram em hidráulica, eólica, solar ou térmica. Fontes não reconhecidas continuam no total de geração e são expostas em `unknown_sources`, preservando rastreabilidade sem assumir classificação indevida.
+
+O cache JSON atual é um cache de resultado da análise. Ele não persiste o CSV ONS bruto nem uma tabela normalizada reutilizável. A evolução para SQLite ou DuckDB deve decidir como armazenar dados normalizados, metadados da coleta e resultados derivados sem misturar essas responsabilidades.
+
 ## Fluxo de Dados Inicial
 
 ```text
@@ -112,7 +128,8 @@ Fonte pública ONS, CSV local ou exemplo embutido
 | UI | `data`, `features`, `models` por APIs públicas do pacote | A tela não deve esconder regra de domínio. |
 | `features` | dados normalizados | Features devem ser testáveis sem UI. |
 | `models` | features e alvo | Modelo não deve depender de fonte externa diretamente. |
-| `data` | fontes públicas e cache local | Rede e persistência ficam isoladas nesta camada. |
+| `data` | fontes públicas e normalização | Rede e persistência ficam isoladas de domínio e UI. |
+| `cache` | resultado de análise e cache persistente futuro | Cache atual salva a última análise; cache futuro deve persistir dados normalizados. |
 
 ## Riscos e Mitigações
 
@@ -128,7 +145,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 ## Decisões Pendentes
 
 - Evoluir a fonte ONS para filtros de período e agregações mais eficientes quando o volume de dados exigir.
-- Definir SQLite ou DuckDB como cache local inicial.
+- Definir SQLite ou DuckDB como cache local inicial para dados normalizados, não apenas para o resultado da análise.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
 - Definir Matplotlib ou Plotly para os primeiros gráficos.
 - Evoluir do CLI experimental para interface desktop.

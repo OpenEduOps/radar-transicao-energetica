@@ -19,7 +19,7 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 - baixa dados públicos do ONS para geração por usina em base horária;
 - normaliza fonte, período e geração;
 - calcula participação renovável;
-- grava cache JSON local;
+- grava um cache JSON local da última análise;
 - exibe gráfico textual por fonte e tendência por período;
 - calcula um baseline simples por média móvel;
 - gera alerta interpretável;
@@ -190,9 +190,22 @@ Decisão da V0:
 Limites e decisões da integração ONS V0:
 
 - arquivos anteriores a 2022, agrupados por ano, não entram nesta primeira integração;
+- os dados publicados pelo ONS podem passar por atualização após a publicação, então o resultado local deve ser lido como retrato do momento de coleta;
 - a suíte automatizada usa fixtures offline e não baixa dados reais do ONS;
 - o resultado JSON e o cache registram a origem da análise em `data_source`;
 - a coleta manual com rede possui limite local de 200 MB por arquivo mensal.
+
+Contrato de normalização da fonte ONS:
+
+| Campo ONS | Campo interno | Uso |
+| --- | --- | --- |
+| `din_instante` | `period` | período da medição horária |
+| `nom_tipousina` | `source` | tipo de fonte usado na classificação |
+| `val_geracaomwmed` | `generation_mw` | geração usada no cálculo de participação |
+
+As fontes reconhecidas na V0 são normalizadas para hidráulica, eólica, solar e térmica. Fontes fora dessa classificação continuam entrando no total de geração e aparecem em `unknown_sources`, para evitar classificação silenciosa.
+
+O cache JSON atual registra o resultado da última análise, incluindo `data_source`, resumo, séries por período, alerta e baseline. Ele ainda não é um cache bruto do arquivo ONS nem substitui a evolução planejada para SQLite ou DuckDB.
 
 Fontes candidatas para o projeto:
 
@@ -293,7 +306,7 @@ Responsabilidades sugeridas:
 - `alerts.py`: regras textuais de alerta;
 - `charts.py`: visualização textual inicial;
 - `serialization.py`: contrato JSON compartilhado por CLI e cache;
-- `cache.py`: escrita de cache JSON local.
+- `cache.py`: escrita de cache JSON local da última análise.
 
 ## Critérios de Sucesso do MVP
 
@@ -314,7 +327,7 @@ A CLI atual já atende parte desses critérios com dados de exemplo, CSV local, 
 
 Próxima sequência técnica recomendada:
 
-1. Evoluir o cache local para SQLite ou DuckDB.
+1. Evoluir o cache local para SQLite ou DuckDB, separando cache da análise e cache dos dados normalizados.
 2. Adicionar integração climática inicial.
 3. Refinar o baseline e registrar métricas de avaliação.
 4. Criar interface desktop inicial com gráfico visual.

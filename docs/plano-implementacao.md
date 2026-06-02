@@ -20,7 +20,7 @@ A primeira fatia funcional foi definida para entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-Essa fatia já foi concluída como CLI local com fonte ONS, cálculo de renovabilidade, testes, cache JSON e instruções de execução. O plano original não dependia de interface desktop, integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, baseline simples, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
+Essa fatia já foi concluída como CLI local com fonte ONS, cálculo de renovabilidade, testes, cache JSON da última análise e instruções de execução. O plano original não dependia de interface desktop, integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, baseline simples, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
 
 ### MVP Funcional
 
@@ -83,7 +83,7 @@ Limites assumidos:
 - o executável inicial não valida ainda PySide6, pandas, scikit-learn ou gráficos ricos;
 - o baseline atual é média móvel simples, não modelo de machine learning;
 - a visualização atual é textual, não desktop;
-- o cache atual é JSON, não SQLite ou DuckDB;
+- o cache atual é JSON da última análise, não cache bruto ou normalizado da fonte ONS;
 - a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
 - não há release workflow, checksum, assinatura, smoke test formal ou build automático de artefato.
 
@@ -208,6 +208,7 @@ Entregáveis:
 - decisão registrada sobre a fonte escolhida;
 - módulo `ons.py` para URL pública mensal e carregamento;
 - normalização mínima para formato tabular;
+- contrato interno `period`, `source` e `generation_mw` derivado de `din_instante`, `nom_tipousina` e `val_geracaomwmed`;
 - metadados `data_source` com origem da análise;
 - limite local de download por arquivo ONS;
 - fixtures ONS sintéticas equivalentes;
@@ -260,6 +261,7 @@ Validação implementada:
 - teste de erro controlado quando a fonte pública não pode ser baixada;
 - teste de limite local de download;
 - teste de payload não UTF-8;
+- teste de contrato de normalização ONS para período, fonte e geração;
 - teste de `data_source` para exemplo, CSV local e ONS;
 - suíte automatizada sem dependência de rede.
 
@@ -391,7 +393,7 @@ Commits sugeridos:
 
 Status: parcialmente concluída.
 
-A implementação atual grava cache JSON local em `data/cache/ultima-analise.json`. A evolução para SQLite ou DuckDB continua planejada.
+A implementação atual grava cache JSON local em `data/cache/ultima-analise.json` com o resultado da última análise. A evolução para SQLite ou DuckDB continua planejada para persistir dados normalizados e metadados de coleta, além dos resultados derivados.
 
 Rastreabilidade:
 
@@ -404,18 +406,20 @@ Objetivo:
 
 Persistir dados carregados ou normalizados para reduzir dependência de rede e facilitar demonstrações.
 
-Esta fase transforma o fluxo validado localmente em um fluxo mais repetível. Ela não deve alterar a regra de participação renovável já validada na primeira fatia funcional.
+Esta fase transforma o fluxo validado localmente em um fluxo mais repetível. Ela deve separar o cache de resultado da análise, já existente em JSON, do cache persistente de dados normalizados. Ela não deve alterar a regra de participação renovável já validada na primeira fatia funcional.
 
 Entregáveis:
 
 - escolha entre SQLite e DuckDB;
-- camada de cache local;
+- camada de cache local para dados normalizados;
+- metadados de fonte, período, URL do recurso e momento de coleta;
 - leitura e escrita em diretório controlado;
 - testes usando diretório temporário.
 
 Critérios de aceite:
 
 - dados podem ser salvos e recuperados;
+- cache de dados normalizados não se confunde com o JSON da última análise;
 - cache não exige serviço externo;
 - testes não escrevem fora de diretório temporário;
 - falha de cache não apaga dados do usuário sem confirmação.
@@ -729,4 +733,4 @@ Uma fase só deve avançar quando:
 
 ## Próxima Ação Recomendada
 
-Evoluir `ISSUE-004`: substituir ou complementar o cache JSON por SQLite ou DuckDB, mantendo cache em diretório local ignorado pelo Git e testes em diretório temporário.
+Evoluir `ISSUE-004`: manter o JSON da última análise como saída simples e adicionar SQLite ou DuckDB para dados normalizados, metadados de coleta e reuso offline da fonte ONS.

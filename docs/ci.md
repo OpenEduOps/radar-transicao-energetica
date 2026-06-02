@@ -50,7 +50,7 @@ O workflow atual executa esses comandos em Windows com Python 3.12. O pacote dec
 
 O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
 
-A integração ONS é validada na suíte por fixture offline, cobrindo o formato `din_instante`, `nom_tipousina` e `val_geracaomwmed`. A suíte também valida `data_source`, erro de download, payload não UTF-8 e limite local de tamanho. O comando real com `--fonte ons --ons-periodo YYYY-MM` é uma validação manual com rede e não faz parte da CI obrigatória.
+A integração ONS é validada na suíte por fixture offline, cobrindo o contrato `din_instante` -> `period`, `nom_tipousina` -> `source` e `val_geracaomwmed` -> `generation_mw`. A suíte também valida `data_source`, erro de download, payload não UTF-8 e limite local de tamanho. O comando real com `--fonte ons --ons-periodo YYYY-MM` é uma validação manual com rede e não faz parte da CI obrigatória.
 
 Para o primeiro build local experimental:
 
@@ -82,6 +82,7 @@ Permissões adicionais só devem aparecer em jobs que realmente publiquem releas
 - Preferir fixtures e dados sintéticos para testes de domínio.
 - Não depender de download real do ONS para aprovar a suíte automatizada.
 - Usar cache local apenas em diretórios temporários dentro da CI.
+- Tratar o JSON atual como resultado da análise; cache persistente de dados normalizados deve ter testes próprios quando for implementado.
 
 ## Estratégia de Release
 
