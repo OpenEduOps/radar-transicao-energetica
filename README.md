@@ -10,6 +10,10 @@ A ideia central é combinar dados abertos de geração, carga, preço de energia
 
 O projeto pode evoluir para um executável (`.exe`) com interface visual, gráficos, alertas interpretáveis e modelos simples de machine learning.
 
+## Planejamento Inicial
+
+O planejamento inicial do projeto está em [docs/planejamento-inicial.md](docs/planejamento-inicial.md). Ele organiza identidade, público-alvo, MVP, requisitos V0, critérios de aceite, testes planejados, arquitetura inicial e matriz de issues a partir deste README.
+
 ## Problema
 
 A transição energética brasileira depende cada vez mais da integração entre fontes hidráulicas, eólicas, solares e térmicas. Como vento, radiação solar, temperatura, carga e disponibilidade hídrica variam ao longo do tempo, a operação do sistema pode passar por janelas de maior ou menor renovabilidade.
