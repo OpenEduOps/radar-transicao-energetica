@@ -6,7 +6,7 @@ Este documento organiza a primeira rodada de planejamento do **Radar da Transiç
 
 O template local de planejamento foi usado como checklist interno, sem ser publicado no repositório. A adoção fica dividida em duas etapas:
 
-Etapa 1, concluída neste ciclo:
+Etapa 1, concluída no ciclo documental inicial:
 
 - transformar o README em pacote mínimo de planejamento público;
 - documentar requisitos V0, critérios de aceite e testes planejados;
@@ -71,6 +71,8 @@ Problema principal:
 ## MVP
 
 O MVP deve provar que uma pessoa consegue abrir o aplicativo, carregar dados públicos, visualizar geração por fonte, entender a participação renovável em um período e receber um alerta interpretável.
+
+Antes do MVP completo, a primeira fatia funcional deve provar uma base menor: carregar uma fonte pública de geração elétrica, calcular participação renovável e validar esse cálculo com testes automatizados.
 
 Incluído no MVP:
 

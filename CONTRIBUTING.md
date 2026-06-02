@@ -15,7 +15,7 @@ Leia estes documentos:
 
 ## Estado Atual
 
-O projeto ainda está em fase de planejamento e documentação. O scaffold Python, os comandos oficiais de instalação e a primeira implementação funcional serão definidos nas próximas issues.
+O projeto ainda está em fase de planejamento e documentação. O scaffold Python, os comandos oficiais de instalação e a primeira implementação funcional serão definidos a partir da matriz de issues planejadas.
 
 Enquanto isso, contribuições úteis incluem:
 
@@ -25,6 +25,8 @@ Enquanto isso, contribuições úteis incluem:
 - validar fontes públicas de dados;
 - preparar issues pequenas e rastreáveis;
 - revisar critérios de aceite.
+
+A primeira fatia funcional deve priorizar scaffold Python, carregamento inicial de uma fonte pública, cálculo de participação renovável e testes automatizados de domínio.
 
 ## Padrão de Trabalho
 
@@ -93,7 +95,7 @@ Antes de abrir uma PR, confira:
 
 ## Dados e Segurança
 
-O projeto deve usar dados públicos ou dados sintéticos no primeiro ciclo.
+O projeto deve usar dados públicos ou dados sintéticos na primeira fatia funcional.
 
 Não inclua:
 

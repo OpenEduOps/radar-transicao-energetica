@@ -8,7 +8,7 @@ Este documento organiza as primeiras issues planejadas para o **Radar da Transi�
 - Cada issue implementável deve apontar para requisito ou teste planejado.
 - Commits devem ser menores que a issue quando houver tópicos independentes.
 - Mudanças de documentação, domínio, dados, UI, testes e CI devem permanecer separáveis.
-- O primeiro ciclo deve priorizar uma demonstração funcional local antes de empacotamento.
+- A primeira fatia funcional deve priorizar uma demonstração local antes de empacotamento.
 
 ## Matriz Inicial
 
@@ -37,6 +37,17 @@ Este documento organiza as primeiras issues planejadas para o **Radar da Transi�
 8. `ISSUE-010`: alerta interpretável.
 
 Essa ordem permite entregar valor observável antes de avançar para integração climática, comparação visual mais refinada e empacotamento.
+
+## Fatia Funcional Inicial
+
+A primeira fatia funcional deve se limitar a:
+
+- `ISSUE-002`: scaffold Python mínimo;
+- `ISSUE-003`: carregamento inicial de fonte pública;
+- `ISSUE-005`: cálculo de participação renovável;
+- testes automatizados para o cálculo e dados sintéticos.
+
+`ISSUE-006`, `ISSUE-007`, `ISSUE-008`, `ISSUE-009` e `ISSUE-010` continuam planejadas, mas devem vir depois que essa base estiver validada.
 
 ## Backlog Adiado
 

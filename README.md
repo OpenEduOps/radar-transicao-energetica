@@ -10,6 +10,10 @@ A ideia central é combinar dados abertos de geração, carga, preço de energia
 
 O projeto pode evoluir para um executável (`.exe`) com interface visual, gráficos, alertas interpretáveis e modelos simples de machine learning.
 
+## Estado Atual
+
+O projeto está em fase de planejamento público inicial. Ainda não há scaffold Python, implementação funcional, comandos oficiais de instalação ou pipeline de CI. A próxima etapa técnica é criar a estrutura base do projeto e entregar uma primeira fatia funcional com dados públicos, cálculo de participação renovável e testes de domínio.
+
 ## Documentação do Projeto
 
 Este README é a porta de entrada e a fonte inicial de verdade do projeto. A documentação pública de apoio está organizada em:
@@ -37,7 +41,7 @@ O projeto busca tornar esse comportamento mais visível e compreensível, ajudan
 
 O aplicativo deve funcionar como um painel educacional-operacional. Ele não substitui ferramentas oficiais do setor elétrico, mas organiza dados públicos de forma prática para estudo, demonstração técnica e exploração analítica.
 
-Funcionalidades desejadas no primeiro ciclo:
+Funcionalidades desejadas no MVP funcional:
 
 - carregar dados públicos do setor elétrico brasileiro;
 - exibir geração por fonte: hidráulica, térmica, eólica e solar;
@@ -49,9 +53,11 @@ Funcionalidades desejadas no primeiro ciclo:
 
 ## Recorte Inicial Recomendado
 
-Para manter o projeto viável como ponto de partida, o MVP deve focar em uma pergunta principal:
+Para manter o projeto viável como ponto de partida, o MVP funcional deve mirar uma pergunta principal:
 
 **Prever a participação renovável nas próximas 24 ou 48 horas usando dados históricos de geração e variáveis climáticas simples.**
+
+Antes dessa previsão completa, a primeira fatia funcional deve ser menor: carregar uma fonte pública de geração elétrica, calcular participação renovável e validar o cálculo com testes.
 
 Esse recorte é forte para portfólio porque combina:
 
@@ -104,7 +110,7 @@ Métricas recomendadas:
 
 ## Stack Técnica
 
-Stack sugerida para o primeiro ciclo:
+Stack sugerida para o MVP funcional:
 
 - Python;
 - `pandas` para tratamento de dados;
@@ -152,7 +158,7 @@ Responsabilidades sugeridas:
 
 ## Critérios de Sucesso do MVP
 
-O primeiro marco do projeto será considerado bem-sucedido quando conseguir:
+O MVP funcional será considerado bem-sucedido quando conseguir:
 
 - carregar pelo menos uma fonte pública de dados de geração elétrica;
 - calcular a participação renovável em um período selecionado;
@@ -165,7 +171,7 @@ O primeiro marco do projeto será considerado bem-sucedido quando conseguir:
 
 ## Próximos Passos
 
-Primeira sequência recomendada:
+Próxima sequência técnica recomendada:
 
 1. Criar a estrutura base do projeto Python.
 2. Definir a primeira fonte de dados do MVP.
@@ -179,7 +185,7 @@ Primeira sequência recomendada:
 
 ## Fora do Escopo Inicial
 
-Para evitar complexidade prematura, o primeiro ciclo não deve depender de:
+Para evitar complexidade prematura, a primeira fatia funcional não deve depender de:
 
 - credenciais privadas;
 - banco de dados remoto;
@@ -190,6 +196,6 @@ Para evitar complexidade prematura, o primeiro ciclo não deve depender de:
 
 ## Resultado Esperado
 
-Ao final do primeiro ciclo, o projeto deve entregar um aplicativo desktop demonstrável que monitora dados vivos ou atualizáveis da transição energética brasileira e usa machine learning para prever janelas de maior ou menor participação renovável.
+Ao final do MVP funcional, o projeto deve entregar um aplicativo desktop demonstrável que monitora dados vivos ou atualizáveis da transição energética brasileira e usa machine learning para prever janelas de maior ou menor participação renovável.
 
 O valor do projeto está em unir educação, dados públicos, visualização, modelagem e interpretação técnica em uma ferramenta prática para estudo e portfólio.

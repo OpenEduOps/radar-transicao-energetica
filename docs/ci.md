@@ -80,7 +80,7 @@ Release ainda está fora da primeira versão. Quando o fluxo principal estiver e
 
 ## Itens Adiados
 
-Os itens abaixo devem ficar fora do ciclo atual. Eles só devem ser retomados depois que o projeto tiver scaffold Python, primeira fatia funcional, testes básicos e comando local documentado:
+Os itens abaixo devem ficar fora do ciclo documental inicial e da primeira fatia funcional. Eles só devem ser retomados depois que o projeto tiver scaffold Python, primeira fatia funcional, testes básicos e comando local documentado:
 
 - `SECURITY.md`;
 - `CODE_OF_CONDUCT.md`;

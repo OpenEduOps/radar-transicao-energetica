@@ -6,6 +6,18 @@ Este documento detalha os requisitos iniciais do **Radar da Transição Energét
 
 A V0 deve provar que uma pessoa consegue usar uma aplicação local para carregar dados públicos de geração elétrica, calcular participação renovável, visualizar geração por fonte e receber um alerta interpretável sobre a janela analisada.
 
+## Fatia Funcional Inicial
+
+A primeira fatia funcional deve ser menor que a V0 completa. Ela deve entregar:
+
+- scaffold Python mínimo;
+- carregamento inicial de uma fonte pública de geração elétrica;
+- cálculo de participação renovável;
+- testes automatizados para o cálculo;
+- instruções básicas de execução e teste.
+
+Integração climática, modelo baseline, interface e empacotamento ficam para etapas posteriores do MVP funcional.
+
 ## Público-Alvo
 
 Usuários finais:
@@ -38,7 +50,7 @@ Contribuidores:
 
 | ID | Requisito | Descrição | Status |
 | --- | --- | --- | --- |
-| `NFR-001` | Execução local | O projeto deve funcionar sem credenciais privadas no primeiro ciclo. | Planejado |
+| `NFR-001` | Execução local | O projeto deve funcionar sem credenciais privadas na primeira fatia funcional. | Planejado |
 | `NFR-002` | Reprodutibilidade | Transformações, métricas e cálculos devem ser testáveis com dados sintéticos. | Planejado |
 | `NFR-003` | Clareza educacional | Alertas e mensagens devem usar linguagem compreensível para usuário não especialista. | Planejado |
 | `NFR-004` | Baixo atrito de contribuição | Setup, testes e escopo de issues devem ser documentados. | Planejado |
