@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.cache import (
     AnalysisCacheError,
+    CACHE_SCHEMA_VERSION,
     read_latest_analysis_cache,
 )
 
@@ -42,11 +43,19 @@ class CacheTest(unittest.TestCase):
                 record_count = connection.execute(
                     "SELECT COUNT(*) FROM generation_records"
                 ).fetchone()[0]
+                schema_version = connection.execute(
+                    """
+                    SELECT value
+                    FROM cache_metadata
+                    WHERE key = 'schema_version'
+                    """
+                ).fetchone()[0]
 
         self.assertEqual(analysis_row[0], "exemplo")
         self.assertEqual(analysis_row[1], "Exemplo embutido")
         self.assertEqual(analysis_row[2], result.summary.renewable_share)
         self.assertEqual(record_count, len(result.records))
+        self.assertEqual(schema_version, CACHE_SCHEMA_VERSION)
 
 
 if __name__ == "__main__":

@@ -14,6 +14,9 @@ from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableS
 from radar_transicao_energetica.serialization import analysis_payload
 
 
+CACHE_SCHEMA_VERSION = "1"
+
+
 class AnalysisCacheError(ValueError):
     """Raised when the local analysis cache cannot be read or written."""
 
@@ -119,6 +122,22 @@ def _validate_existing_cache_path(cache_path: Path) -> None:
 
 
 def _ensure_schema(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        """
+        CREATE TABLE IF NOT EXISTS cache_metadata (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )
+        """
+    )
+    connection.execute(
+        """
+        INSERT INTO cache_metadata (key, value)
+        VALUES ('schema_version', ?)
+        ON CONFLICT(key) DO NOTHING
+        """,
+        (CACHE_SCHEMA_VERSION,),
+    )
     connection.execute(
         """
         CREATE TABLE IF NOT EXISTS analyses (
