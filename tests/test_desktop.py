@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.desktop import (
     build_desktop_analysis_options,
     build_desktop_view_data,
+    format_desktop_status,
 )
 
 
@@ -55,6 +57,13 @@ class DesktopTest(unittest.TestCase):
     def test_build_desktop_analysis_options_rejects_unknown_source(self) -> None:
         with self.assertRaisesRegex(ValueError, "Fonte de dados desconhecida"):
             build_desktop_analysis_options(source="invalida")
+
+    def test_format_desktop_status_includes_cache_path_when_available(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "analises.sqlite"
+            result = run_analysis(cache_path=cache_path)
+
+        self.assertEqual(format_desktop_status(result), f"Analise atualizada; cache: {cache_path}")
 
 
 if __name__ == "__main__":

@@ -90,6 +90,12 @@ def build_desktop_analysis_options(
     raise ValueError(f"Fonte de dados desconhecida: {source}")
 
 
+def format_desktop_status(result: AnalysisResult) -> str:
+    if result.cache_path is None:
+        return "Analise atualizada"
+    return f"Analise atualizada; cache: {result.cache_path}"
+
+
 class RadarDesktopApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
@@ -240,6 +246,8 @@ class RadarDesktopApp:
             self.csv_path_var.set(selected)
 
     def run_current_analysis(self) -> None:
+        self.status_var.set("Executando analise...")
+        self.root.update_idletasks()
         try:
             result = self._run_selected_source()
         except (GenerationDataError, ValueError) as exc:
@@ -247,7 +255,7 @@ class RadarDesktopApp:
             messagebox.showerror("Erro", str(exc))
             return
         self._render_result(build_desktop_view_data(result))
-        self.status_var.set("Analise atualizada")
+        self.status_var.set(format_desktop_status(result))
 
     def _run_selected_source(self) -> AnalysisResult:
         options = build_desktop_analysis_options(
