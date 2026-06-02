@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "radar-transicao-energetica"
+version = "0.1.0"
+description = "Aplicacao local para analisar participacao renovavel na geracao eletrica."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "OpenEduOps" }
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pyinstaller>=6.0"
+]
+
+[project.scripts]
+radar-transicao-energetica = "radar_transicao_energetica.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
