@@ -173,6 +173,7 @@ radar-transicao-energetica/
 │   ├── arquitetura.md
 │   ├── ci.md
 │   ├── matriz-issues.md
+│   ├── plano-implementacao.md
 │   ├── planejamento-inicial.md
 │   └── requisitos.md
 ├── pyproject.toml

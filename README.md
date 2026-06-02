@@ -19,6 +19,7 @@ O projeto está em fase de planejamento público inicial. Ainda não há scaffol
 Este README é a porta de entrada e a fonte inicial de verdade do projeto. A documentação pública de apoio está organizada em:
 
 - [Planejamento inicial](docs/planejamento-inicial.md): visão consolidada do ponto de partida.
+- [Plano de implementação](docs/plano-implementacao.md): fases, entregáveis, critérios de aceite e sequência de implementação.
 - [Requisitos](docs/requisitos.md): requisitos V0, critérios de aceite e testes planejados.
 - [Arquitetura](docs/arquitetura.md): estrutura, responsabilidades, fluxo de dados e decisões pendentes.
 - [Matriz de issues](docs/matriz-issues.md): sequência planejada de issues e rastreabilidade.
@@ -133,6 +134,7 @@ radar-transicao-energetica/
 │   ├── arquitetura.md
 │   ├── ci.md
 │   ├── matriz-issues.md
+│   ├── plano-implementacao.md
 │   ├── planejamento-inicial.md
 │   └── requisitos.md
 ├── pyproject.toml
