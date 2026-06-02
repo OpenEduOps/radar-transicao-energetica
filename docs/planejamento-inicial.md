@@ -121,7 +121,7 @@ Fora da primeira versão:
 
 Fluxo esperado da primeira experiência útil:
 
-1. O usuário instala as dependências ou baixa um artefato local quando disponível.
+1. O usuário instala as dependências ou executa um `.exe` experimental gerado localmente.
 2. O usuário abre o aplicativo.
 3. O sistema carrega dados públicos de geração elétrica ou usa cache local.
 4. O usuário seleciona ou confirma o período de análise.

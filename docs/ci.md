@@ -115,7 +115,7 @@ Os itens abaixo devem ficar fora do ciclo documental inicial e da primeira fatia
 - regras de branch protection;
 - CI completa com build de artefato.
 
-Essa decisão evita antecipar governança, release e automação pesada antes de existir um fluxo funcional mínimo para validar.
+Essa decisão evita antecipar governança, release e automação pesada antes de a UI inicial e o fluxo visual estarem estáveis.
 
 O primeiro `.exe` local experimental é uma validação manual e não muda a decisão de adiar release e build de artefato na CI. O gate técnico apenas torna essa decisão verificável por teste e pelo comando `python scripts/build_exe.py --release-status`.
 

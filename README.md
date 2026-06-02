@@ -333,7 +333,7 @@ Stack sugerida para o MVP funcional:
 - Tkinter para a primeira interface desktop;
 - PySide6 para interface desktop;
 - Matplotlib ou Plotly para gráficos;
-- PyInstaller para geração futura do executável, depois que o fluxo principal estiver estável.
+- PyInstaller para build local experimental e futura geração de artefato de release.
 
 A primeira implementação usa apenas biblioteca padrão do Python para reduzir atrito, manter os testes offline, abrir a primeira tela desktop com Tkinter e permitir o primeiro empacotamento local. `pandas`, `scikit-learn`, PySide6 e gráficos ricos seguem planejados para a evolução do MVP.
 
