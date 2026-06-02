@@ -625,7 +625,7 @@ Critérios de aceite:
 
 ## Fase 11: Primeiro Executável Local Experimental
 
-Status: concluída quando o build local com PyInstaller for gerado e validado.
+Status: concluída localmente para a primeira versão CLI experimental.
 
 Objetivo:
 
