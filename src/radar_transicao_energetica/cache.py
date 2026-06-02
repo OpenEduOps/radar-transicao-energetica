@@ -15,7 +15,7 @@ from radar_transicao_energetica.serialization import analysis_payload
 
 
 class AnalysisCacheError(ValueError):
-    """Raised when the local analysis cache cannot be written."""
+    """Raised when the local analysis cache cannot be read or written."""
 
 
 def write_analysis_cache(
