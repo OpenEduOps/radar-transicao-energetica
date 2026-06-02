@@ -23,6 +23,8 @@ A primeira implementação evita dependências pesadas e usa biblioteca padrão 
 
 Na fonte pública inicial, a coleta HTTP também usa biblioteca padrão (`urllib`) para manter a V0 sem dependências externas. `requests` segue planejado apenas se a camada de dados crescer o suficiente para justificar a dependência.
 
+O carregador ONS aplica um limite local de download por arquivo mensal para evitar consumo inesperado de memória quando a fonte pública muda, falha ou retorna um conteúdo fora do tamanho esperado.
+
 ## Estrutura Planejada
 
 ```text
@@ -109,6 +111,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 | Risco | Impacto | Mitigação inicial |
 | --- | --- | --- |
 | Fonte pública muda formato | Quebra de coleta | Validar schema e cobrir normalização com testes. |
+| Arquivo público cresce além do esperado | Consumo excessivo de memória | Limitar download por arquivo na V0 e evoluir para processamento incremental quando necessário. |
 | Rede indisponível | Fluxo interrompido | Usar cache local e mensagens claras. |
 | Modelo baseline parecer sofisticado demais | Baixa interpretabilidade | Priorizar métricas simples e explicação textual. |
 | UI crescer antes do domínio | Dificuldade de teste | Implementar cálculo e features antes de telas complexas. |

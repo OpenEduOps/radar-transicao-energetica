@@ -19,8 +19,10 @@ class FakeResponse:
         self.payload = payload
         self.closed = False
 
-    def read(self) -> bytes:
-        return self.payload
+    def read(self, size: int | None = None) -> bytes:
+        if size is None:
+            return self.payload
+        return self.payload[:size]
 
     def close(self) -> None:
         self.closed = True
@@ -96,6 +98,26 @@ class OnsLoadingTest(unittest.TestCase):
 
         with self.assertRaisesRegex(GenerationDataError, "Nao foi possivel baixar dados ONS"):
             load_ons_generation(2026, 1, opener=failing_opener)
+
+    def test_load_ons_generation_limits_download_size(self) -> None:
+        response = FakeResponse(b"a" * 11)
+
+        def fake_opener(request, timeout):
+            return response
+
+        with self.assertRaisesRegex(GenerationDataError, "10 bytes"):
+            load_ons_generation(2026, 1, max_bytes=10, opener=fake_opener)
+
+        self.assertTrue(response.closed)
+
+    def test_load_ons_generation_rejects_invalid_utf8(self) -> None:
+        response = FakeResponse(b"\xff")
+
+        def fake_opener(request, timeout):
+            return response
+
+        with self.assertRaisesRegex(GenerationDataError, "UTF-8 valido"):
+            load_ons_generation(2026, 1, opener=fake_opener)
 
 
 if __name__ == "__main__":

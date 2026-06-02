@@ -17,6 +17,7 @@ ONS_GENERATION_BY_PLANT_AWS_BASE_URL = (
 )
 ONS_USER_AGENT = "radar-transicao-energetica/0.1"
 ONS_PERIOD_PATTERN = re.compile(r"^\d{4}-\d{2}$")
+ONS_MAX_DOWNLOAD_BYTES = 200 * 1024 * 1024
 
 
 def parse_ons_period(value: str) -> tuple[int, int]:
@@ -44,6 +45,7 @@ def load_ons_generation(
     month: int,
     *,
     timeout: float = 30.0,
+    max_bytes: int = ONS_MAX_DOWNLOAD_BYTES,
     opener: Callable[..., Any] = urlopen,
 ) -> list[GenerationRecord]:
     url = build_ons_generation_url(year, month)
@@ -52,7 +54,7 @@ def load_ons_generation(
     try:
         response = opener(request, timeout=timeout)
         try:
-            payload = response.read()
+            payload = _read_limited_payload(response, max_bytes=max_bytes)
         finally:
             close = getattr(response, "close", None)
             if callable(close):
@@ -82,3 +84,23 @@ def _validate_ons_period(year: int, month: int) -> None:
         raise ValueError("A fonte ONS V0 aceita arquivos mensais de 2022 em diante.")
     if month < 1 or month > 12:
         raise ValueError("Mes ONS invalido. Use um valor entre 1 e 12.")
+
+
+def _read_limited_payload(response: Any, *, max_bytes: int) -> bytes:
+    if max_bytes < 1:
+        raise ValueError("max_bytes deve ser maior que zero.")
+
+    payload = response.read(max_bytes + 1)
+    if len(payload) > max_bytes:
+        raise GenerationDataError(
+            "Arquivo ONS excede o limite de download da V0 "
+            f"({_format_size(max_bytes)})."
+        )
+    return payload
+
+
+def _format_size(value: int) -> str:
+    megabyte = 1024 * 1024
+    if value < megabyte:
+        return f"{value} bytes"
+    return f"{value / megabyte:.0f} MB"
