@@ -81,7 +81,7 @@ Decisões tomadas para reduzir risco:
 Limites assumidos:
 
 - o executável inicial não valida ainda PySide6, pandas, scikit-learn ou gráficos ricos;
-- o baseline atual é média móvel simples, não modelo de machine learning;
+- o baseline atual é média móvel avaliada por MAE, não modelo de machine learning com `scikit-learn`;
 - a visualização atual é textual, não desktop;
 - o cache atual é SQLite, com análise, metadados, versão de schema e registros normalizados;
 - a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
@@ -534,9 +534,9 @@ Commits sugeridos:
 
 ## Fase 8: Modelo Baseline
 
-Status: parcialmente concluída.
+Status: concluída para baseline inicial sem `scikit-learn`.
 
-A implementação atual usa média móvel simples como baseline interpretável. Modelos com `scikit-learn`, treino/validação mais completos e métricas seguem planejados.
+A implementação atual usa média móvel como baseline interpretável, com previsão da próxima janela, comparação walk-forward entre real e previsto, MAE em pontos percentuais no relatório textual e campos estruturados no JSON. Modelos com `scikit-learn` e validação mais completa seguem planejados para etapas posteriores.
 
 Rastreabilidade:
 
@@ -561,7 +561,7 @@ O primeiro baseline pode usar apenas variáveis temporais e histórico de geraç
 
 Entregáveis:
 
-- pipeline de treino baseline;
+- cálculo baseline por média móvel;
 - divisão simples entre treino e validação;
 - métrica inicial;
 - teste com dataset mínimo;
@@ -569,7 +569,7 @@ Entregáveis:
 
 Critérios de aceite:
 
-- modelo treina com dataset mínimo;
+- baseline calcula previsão com dataset mínimo;
 - predição retorna formato esperado;
 - métrica é calculada;
 - limitações são explícitas;
@@ -579,14 +579,14 @@ Critérios de aceite:
 Commits sugeridos:
 
 - `Define alvo inicial do modelo baseline`;
-- `Implementa treino baseline`;
+- `Implementa baseline por media movel`;
 - `Valida predicao baseline com dataset minimo`.
 
 ## Fase 9: Comparação e Alerta Interpretável
 
 Status: parcialmente concluída.
 
-A implementação atual gera alerta textual com base na participação renovável calculada. Comparação visual entre real e previsto ainda está pendente.
+A implementação atual gera alerta textual com base na participação renovável calculada e exibe comparação textual real vs previsto do baseline. Comparação visual entre real e previsto ainda está pendente.
 
 Rastreabilidade:
 
@@ -625,7 +625,7 @@ Commits sugeridos:
 
 - `Define regras de alerta interpretavel`;
 - `Implementa alerta de renovabilidade`;
-- `Exibe comparacao entre real e previsto`;
+- `Exibe comparacao textual entre real e previsto`;
 - `Valida mensagens de alerta`.
 
 ## Fase 10: Fechamento do MVP Funcional
@@ -703,8 +703,8 @@ Fora de escopo:
 12. `Cria visualizacao inicial por fonte`.
 13. `Define variaveis climaticas iniciais`.
 14. `Implementa carregamento climatico`.
-15. `Implementa treino baseline`.
-16. `Exibe comparacao entre real e previsto`.
+15. `Implementa baseline por media movel`.
+16. `Exibe comparacao textual entre real e previsto`.
 17. `Implementa alerta de renovabilidade`.
 
 Essa ordem pode ser ajustada conforme descobertas técnicas, mas cada commit deve manter um tópico verificável.

@@ -140,7 +140,7 @@ Linha de corte:
 | `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
 | `REQ-004` | Exibir gráfico de geração por fonte. | Alta | Parcial |
 | `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Planejado |
-| `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Parcial |
+| `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Implementado |
 | `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Parcial |
 | `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Implementado |
 | `REQ-009` | Disponibilizar comandos claros de instalação, execução e testes. | Alta | Implementado |
@@ -155,7 +155,7 @@ Critérios mínimos do MVP:
 - Dado que a fonte ONS esteja indisponível, com encoding inválido ou acima do limite local, quando a coleta for executada, então o sistema deve informar erro claro sem traceback.
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado um conjunto de dados insuficiente ou indisponível, quando a aplicação tentar carregar informações, então o sistema deve informar o problema sem quebrar o fluxo principal.
-- Dado um modelo baseline treinado, quando houver dados de avaliação, então o sistema deve apresentar ao menos uma métrica de erro ou comparação visual.
+- Dado um baseline de média móvel, quando houver pontos anteriores suficientes, então o sistema deve apresentar MAE e comparação real vs previsto sem depender de `scikit-learn`.
 - Dado um resultado de participação renovável ou risco, quando o alerta for exibido, então a mensagem deve ser compreensível para usuário não especialista.
 - Dado que o projeto não deve depender de credenciais privadas, quando o ambiente for preparado, então a execução local deve funcionar apenas com dados públicos ou cache.
 - Dado que o projeto é OSS, quando uma pessoa contribuir, então deve haver documentação clara de setup, teste e escopo do MVP.
@@ -167,7 +167,7 @@ Critérios mínimos do MVP:
 | `TEST-001` | Unitário | `REQ-003` | Validar cálculo de participação renovável com dados sintéticos. |
 | `TEST-002` | Unitário | `REQ-003` | Validar tratamento de fontes ausentes ou valores zerados. |
 | `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, cache SQLite e diretório temporário. |
-| `TEST-004` | Unitário | `REQ-006` | Validar treino e predição do modelo baseline com dataset mínimo. |
+| `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE e comparação walk-forward do baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Verificar se gráfico, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
@@ -210,7 +210,7 @@ Responsabilidades:
 - `data.py`: leitura, normalização e validação de CSV;
 - `ons.py`: carregamento do dataset público ONS Geração por Usina em Base Horária;
 - `domain.py`: cálculo de participação renovável;
-- `baseline.py`: baseline simples por média móvel;
+- `baseline.py`: baseline por média móvel, MAE e comparação real vs previsto;
 - `alerts.py`: alerta interpretável;
 - `charts.py`: visualização textual inicial;
 - `cache.py`: cache SQLite local;

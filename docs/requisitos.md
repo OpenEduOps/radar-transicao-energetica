@@ -16,7 +16,7 @@ A primeira fatia funcional deve ser menor que a V0 completa. Ela deve entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-A primeira implementação já entrega essa fatia como CLI local, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache SQLite, visualização textual, baseline simples por média móvel, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Integração climática, interface desktop, reuso offline do cache e empacotamento de release continuam para etapas posteriores do MVP funcional.
+A primeira implementação já entrega essa fatia como CLI local, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache SQLite, visualização textual, baseline por média móvel com MAE, comparação textual real vs previsto, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Integração climática, interface desktop, reuso offline do cache e empacotamento de release continuam para etapas posteriores do MVP funcional.
 
 Na decisão da primeira fonte pública real, ONS foi priorizado por entregar geração horária em CSV público e sem credenciais. ANEEL e CCEE permanecem candidatas para etapas complementares: ANEEL para dados estruturais do setor e CCEE para sinais econômicos, como PLD horário.
 
@@ -43,7 +43,7 @@ Contribuidores:
 | `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
 | `REQ-004` | Exibir gráfico de geração por fonte. | Alta | Parcial |
 | `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Planejado |
-| `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Parcial |
+| `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Implementado |
 | `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Parcial |
 | `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Implementado |
 | `REQ-009` | Disponibilizar comandos claros de instalação, execução e testes. | Alta | Implementado |
@@ -69,7 +69,7 @@ Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQ
 - Dado que a fonte pública ONS esteja indisponível, acima do limite local ou com encoding inválido, quando a coleta for executada, então o sistema deve informar erro claro sem traceback.
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado um conjunto de dados insuficiente ou indisponível, quando a aplicação tentar carregar informações, então o sistema deve informar o problema sem quebrar o fluxo principal.
-- Dado um modelo baseline treinado, quando houver dados de avaliação, então o sistema deve apresentar ao menos uma métrica de erro ou comparação visual.
+- Dado um baseline de média móvel, quando houver pontos anteriores suficientes, então o sistema deve apresentar MAE e comparação real vs previsto sem depender de `scikit-learn`.
 - Dado um resultado de participação renovável ou risco, quando o alerta for exibido, então a mensagem deve ser compreensível para usuário não especialista.
 - Dado que o projeto não deve depender de credenciais privadas, quando o ambiente for preparado, então a execução local deve funcionar apenas com dados públicos ou cache.
 - Dado que o projeto é OSS, quando uma pessoa contribuir, então deve haver documentação clara de setup, teste e escopo do MVP.
@@ -81,7 +81,7 @@ Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQ
 | `TEST-001` | Unitário | `REQ-003` | Validar cálculo de participação renovável com dados sintéticos. |
 | `TEST-002` | Unitário | `REQ-003` | Validar tratamento de fontes ausentes ou valores zerados. |
 | `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, escrita do cache SQLite e persistência de registros normalizados em diretório temporário. |
-| `TEST-004` | Unitário | `REQ-006` | Validar treino e predição do modelo baseline com dataset mínimo. |
+| `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE e comparação walk-forward do baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Verificar se gráfico, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |

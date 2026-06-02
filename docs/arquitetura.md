@@ -4,7 +4,7 @@ Este documento descreve a arquitetura inicial do **Radar da Transição Energét
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, fonte ONS, cache SQLite, baseline simples e alerta textual. As próximas camadas devem avançar para reuso offline do cache, integração climática, interface desktop e executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, fonte ONS, cache SQLite, baseline por média móvel com MAE, comparação textual real vs previsto e alerta textual. As próximas camadas devem avançar para reuso offline do cache, integração climática, interface desktop e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
@@ -13,7 +13,7 @@ A arquitetura deve permitir evolução incremental: a base atual é uma aplicaç
 | Linguagem | Python 3.11+ | Boa aderência a dados, automação, ML e desktop. |
 | Dados | Biblioteca padrão agora; `pandas` planejado | A V0 reduz dependências; `pandas` entra quando volume e análise tabular justificarem. |
 | HTTP/APIs | `urllib` agora; `requests` planejado | Coleta ONS inicial sem dependências externas; `requests` entra se a camada de dados crescer. |
-| ML | Média móvel agora; `scikit-learn` planejado | Baseline simples primeiro; modelos e métricas mais completas depois. |
+| ML | Média móvel avaliada; `scikit-learn` planejado | Baseline interpretável com MAE antes de modelos mais complexos. |
 | Cache local | SQLite | Banco local sem dependência externa para análise, metadados e registros normalizados. |
 | UI desktop | CLI agora; PySide6 planejado | CLI mantém domínio testável antes da tela. |
 | Gráficos | Texto agora; Matplotlib ou Plotly planejado | Visualização textual valida o conceito antes de gráficos ricos. |
@@ -73,7 +73,7 @@ radar-transicao-energetica/
 | `data.py` | Leitura, normalização e validação de dados de geração. |
 | `ons.py` | Construção da URL pública e carregamento do dataset ONS Geração por Usina em Base Horária. |
 | `domain.py` | Cálculo de participação renovável e agregações por período. |
-| `baseline.py` | Baseline simples e interpretável para a próxima janela. |
+| `baseline.py` | Baseline por média móvel, MAE e comparação walk-forward real vs previsto. |
 | `alerts.py` | Regras textuais de alerta educacional. |
 | `charts.py` | Visualização textual inicial. |
 | `serialization.py` | Contrato JSON compartilhado entre CLI e cache. |

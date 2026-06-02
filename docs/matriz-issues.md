@@ -47,7 +47,8 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 - `ISSUE-004`: implementada com cache SQLite local que registra payload da análise, origem dos dados, versão de schema e registros normalizados.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
 - `ISSUE-006`: parcialmente implementada com visualização textual.
-- `ISSUE-008`: parcialmente implementada com baseline por média móvel.
+- `ISSUE-008`: implementada com baseline por média móvel, MAE e comparação walk-forward.
+- `ISSUE-009`: parcialmente implementada com comparação textual e JSON entre real e previsto.
 - `ISSUE-010`: parcialmente implementada com alerta interpretável.
 
 Pendências principais:
@@ -66,7 +67,7 @@ A primeira fatia funcional foi planejada para se limitar a:
 - `ISSUE-005`: cálculo de participação renovável;
 - testes automatizados para o cálculo e dados sintéticos.
 
-Parte de `ISSUE-006`, `ISSUE-008` e `ISSUE-010` já foi antecipada em forma textual para viabilizar o primeiro `.exe` local. As versões completas dessas issues continuam planejadas.
+Parte de `ISSUE-006`, `ISSUE-009` e `ISSUE-010` já foi antecipada em forma textual para viabilizar o primeiro `.exe` local. As versões completas dessas issues continuam planejadas.
 
 Critérios já atendidos para `ISSUE-003`:
 
@@ -143,6 +144,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - validar links de dados públicos e instruções do README;
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
 - adicionar consulta do cache SQLite por período como próxima evolução de dados.
+- melhorar visualização da comparação real vs previsto do baseline.
 
 ## Evitar Como Primeira Issue
 
