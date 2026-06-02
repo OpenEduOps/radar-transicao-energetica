@@ -84,6 +84,7 @@ Os itens abaixo devem ficar fora do ciclo atual. Eles só devem ser retomados de
 
 - `SECURITY.md`;
 - `CODE_OF_CONDUCT.md`;
+- PR template formal;
 - workflow de release;
 - smoke test de executável;
 - regras de branch protection;

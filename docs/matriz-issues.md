@@ -44,6 +44,7 @@ Estes itens não devem entrar nas primeiras issues. Eles ficam aguardando scaffo
 
 - `SECURITY.md`;
 - `CODE_OF_CONDUCT.md`;
+- PR template formal;
 - workflow de release;
 - smoke test de executável;
 - regras de branch protection;

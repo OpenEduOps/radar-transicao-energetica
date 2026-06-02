@@ -2,6 +2,30 @@
 
 Este documento organiza a primeira rodada de planejamento do **Radar da Transição Energética**. O [README](../README.md) é a fonte de verdade inicial do projeto; este planejamento apenas estrutura o ponto de partida em decisões, requisitos, critérios de aceite, testes e issues planejadas.
 
+## Aplicação do Template em Duas Etapas
+
+O template local de planejamento foi usado como checklist interno, sem ser publicado no repositório. A adoção fica dividida em duas etapas:
+
+Etapa 1, concluída neste ciclo:
+
+- transformar o README em pacote mínimo de planejamento público;
+- documentar requisitos V0, critérios de aceite e testes planejados;
+- documentar arquitetura inicial;
+- organizar matriz de issues;
+- registrar estratégia inicial de CI/CD.
+
+Etapa 2, adiada até existir scaffold Python, primeira fatia funcional, testes básicos e comando local documentado:
+
+- criar PR template formal;
+- criar `SECURITY.md`;
+- criar `CODE_OF_CONDUCT.md`;
+- implementar workflow de release;
+- implementar smoke test de executável;
+- configurar regras de branch protection;
+- evoluir para CI completa com build de artefato.
+
+A orientação inicial de contribuição já existe em [CONTRIBUTING.md](../CONTRIBUTING.md), mas a governança completa de contribuição deve evoluir apenas quando houver código e fluxo de PR mais concretos.
+
 ## Identidade do Projeto
 
 | Campo | Definição inicial |

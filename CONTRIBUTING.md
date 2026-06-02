@@ -79,6 +79,8 @@ Se uma mudança ainda não puder ser testada automaticamente, descreva clarament
 
 ## Checklist de Pull Request
 
+Este checklist é uma orientação inicial. Um PR template formal deve ser criado apenas depois que o projeto tiver scaffold Python, primeira fatia funcional, testes básicos e comando local documentado.
+
 Antes de abrir uma PR, confira:
 
 - [ ] a mudança está ligada a um requisito, issue ou critério de aceite;

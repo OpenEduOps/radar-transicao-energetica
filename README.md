@@ -18,7 +18,7 @@ Este README é a porta de entrada e a fonte inicial de verdade do projeto. A doc
 - [Requisitos](docs/requisitos.md): requisitos V0, critérios de aceite e testes planejados.
 - [Arquitetura](docs/arquitetura.md): estrutura, responsabilidades, fluxo de dados e decisões pendentes.
 - [Matriz de issues](docs/matriz-issues.md): sequência planejada de issues e rastreabilidade.
-- [CI/CD](docs/ci.md): estratégia inicial de automação, qualidade e release.
+- [CI/CD](docs/ci.md): estratégia inicial de automação, qualidade e itens adiados de release.
 - [Contribuindo](CONTRIBUTING.md): orientações para colaborar com o projeto.
 
 ## Problema
