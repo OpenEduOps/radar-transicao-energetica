@@ -28,6 +28,7 @@ O MVP funcional deve evoluir a primeira fatia para incluir:
 
 - cache local;
 - visualização inicial de geração por fonte;
+- integração de variáveis climáticas iniciais;
 - modelo baseline para previsão ou classificação;
 - comparação entre dado real e previsão;
 - alerta interpretável para participação renovável ou pressão térmica;
@@ -50,16 +51,17 @@ Ficam fora da primeira fatia funcional e só devem voltar depois de base validad
 
 A implementação deve seguir uma ordem incremental:
 
-1. criar estrutura Python mínima;
+1. criar estrutura Python mínima e documentação real de setup;
 2. escolher uma fonte pública inicial;
 3. implementar carregamento e normalização;
 4. implementar cálculo de participação renovável;
 5. validar com dados sintéticos e testes automatizados;
-6. adicionar cache local;
-7. criar visualização inicial;
-8. adicionar modelo baseline;
-9. adicionar comparação e alerta interpretável;
-10. preparar automação e documentação compatíveis com o estado real do projeto.
+6. criar CI Python mínima para a primeira fatia funcional;
+7. adicionar cache local;
+8. criar visualização inicial;
+9. integrar variáveis climáticas quando a base estiver estável;
+10. adicionar modelo baseline;
+11. adicionar comparação e alerta interpretável.
 
 Cada etapa deve gerar uma entrega revisável, com commit próprio quando representar avanço verificável.
 
@@ -87,17 +89,17 @@ Validação:
 - links locais da documentação resolvem corretamente;
 - template local de planejamento permanece ignorado pelo Git.
 
-## Fase 1: Scaffold Python Mínimo
+## Fase 1: Setup Documental e Scaffold Python Mínimo
 
 Rastreabilidade:
 
-- Issue: `ISSUE-002`;
+- Issues: `ISSUE-001`, `ISSUE-002`;
 - Requisito: `REQ-009`;
 - Teste: `TEST-007`.
 
 Objetivo:
 
-Criar a estrutura mínima do projeto Python para permitir instalação local, execução simples e testes automatizados.
+Criar a estrutura mínima do projeto Python e documentar comandos reais de instalação, execução e teste.
 
 Entregáveis:
 
@@ -105,7 +107,7 @@ Entregáveis:
 - pacote em `src/radar_transicao_energetica`;
 - diretório `tests`;
 - módulo de entrada inicial;
-- instruções básicas no README ou documento de setup;
+- instruções básicas no README;
 - comando de teste documentado.
 
 Escopo:
@@ -113,7 +115,8 @@ Escopo:
 - definir metadados do pacote;
 - configurar dependências mínimas de desenvolvimento;
 - criar primeiro teste simples;
-- garantir que `python -m pytest` funcione.
+- garantir que `python -m pytest` funcione;
+- documentar apenas comandos que existam no scaffold.
 
 Fora de escopo:
 
@@ -175,6 +178,7 @@ Escopo:
 - validar colunas mínimas;
 - converter datas e valores numéricos;
 - retornar estrutura compatível com cálculo posterior.
+- manter testes automatizados baseados em fixtures, sem depender de rede ao rodar a suíte.
 
 Fora de escopo:
 
@@ -265,7 +269,38 @@ Marco de saída:
 
 Esta fase encerra a primeira fatia funcional quando combinada com scaffold, carregamento inicial e documentação de execução.
 
-## Fase 4: Cache Local
+## Fase 4: CI Inicial da Primeira Fatia
+
+Rastreabilidade:
+
+- Documento: [CI/CD](ci.md);
+- Requisitos: `REQ-009`, `NFR-002`, `NFR-004`.
+
+Objetivo:
+
+Criar automação compatível com a primeira fatia funcional, sem antecipar release ou build de artefato.
+
+Entregáveis:
+
+- workflow de CI Python mínima;
+- execução de testes;
+- checagem de importação ou compilação;
+- permissões mínimas.
+
+Critérios de aceite:
+
+- CI roda em push e PR;
+- testes passam;
+- permissões começam com `contents: read`;
+- release, artefato e smoke test permanecem fora do escopo.
+
+Commits sugeridos:
+
+- `Adiciona CI Python inicial`;
+- `Executa testes no workflow de CI`;
+- `Documenta validacao automatizada inicial`.
+
+## Fase 5: Cache Local
 
 Rastreabilidade:
 
@@ -298,7 +333,7 @@ Commits sugeridos:
 - `Implementa cache local de dados`;
 - `Valida leitura e escrita de cache`.
 
-## Fase 5: Visualização Inicial
+## Fase 6: Visualização Inicial
 
 Rastreabilidade:
 
@@ -344,7 +379,7 @@ Commits sugeridos:
 - `Adiciona estados basicos de visualizacao`;
 - `Documenta QA da visualizacao inicial`.
 
-## Fase 6: Variáveis Climáticas
+## Fase 7: Variáveis Climáticas
 
 Rastreabilidade:
 
@@ -383,7 +418,7 @@ Commits sugeridos:
 - `Implementa carregamento climatico`;
 - `Integra clima a features do modelo`.
 
-## Fase 7: Modelo Baseline
+## Fase 8: Modelo Baseline
 
 Rastreabilidade:
 
@@ -426,7 +461,7 @@ Commits sugeridos:
 - `Implementa treino baseline`;
 - `Valida predicao baseline com dataset minimo`.
 
-## Fase 8: Comparação e Alerta Interpretável
+## Fase 9: Comparação e Alerta Interpretável
 
 Rastreabilidade:
 
@@ -468,37 +503,6 @@ Commits sugeridos:
 - `Exibe comparacao entre real e previsto`;
 - `Valida mensagens de alerta`.
 
-## Fase 9: CI Inicial
-
-Rastreabilidade:
-
-- Documento: [CI/CD](ci.md);
-- Requisitos: `REQ-009`, `NFR-002`, `NFR-004`.
-
-Objetivo:
-
-Criar automação compatível com o estado real do projeto, sem antecipar release ou build de artefato.
-
-Entregáveis:
-
-- workflow de CI Python mínima;
-- execução de testes;
-- checagem de importação ou compilação;
-- permissões mínimas.
-
-Critérios de aceite:
-
-- CI roda em push e PR;
-- testes passam;
-- permissões começam com `contents: read`;
-- release, artefato e smoke test permanecem fora do escopo.
-
-Commits sugeridos:
-
-- `Adiciona CI Python inicial`;
-- `Executa testes no workflow de CI`;
-- `Documenta validacao automatizada inicial`.
-
 ## Fase 10: Fechamento do MVP Funcional
 
 Objetivo:
@@ -534,11 +538,14 @@ Critérios de aceite:
 7. `Define regra de participacao renovavel`.
 8. `Implementa calculo de renovabilidade`.
 9. `Testa casos limite da participacao renovavel`.
-10. `Implementa cache local de dados`.
-11. `Cria visualizacao inicial por fonte`.
-12. `Implementa treino baseline`.
-13. `Implementa alerta de renovabilidade`.
-14. `Adiciona CI Python inicial`.
+10. `Adiciona CI Python inicial`.
+11. `Implementa cache local de dados`.
+12. `Cria visualizacao inicial por fonte`.
+13. `Define variaveis climaticas iniciais`.
+14. `Implementa carregamento climatico`.
+15. `Implementa treino baseline`.
+16. `Exibe comparacao entre real e previsto`.
+17. `Implementa alerta de renovabilidade`.
 
 Essa ordem pode ser ajustada conforme descobertas técnicas, mas cada commit deve manter um tópico verificável.
 
@@ -566,4 +573,4 @@ Uma fase só deve avançar quando:
 
 ## Próxima Ação Recomendada
 
-Iniciar pela `ISSUE-002`: criar scaffold Python mínimo com `pyproject.toml`, pacote em `src/radar_transicao_energetica`, diretório `tests`, teste de sanidade e comandos básicos documentados.
+Iniciar por `ISSUE-001` e `ISSUE-002` em conjunto: criar scaffold Python mínimo com `pyproject.toml`, pacote em `src/radar_transicao_energetica`, diretório `tests`, teste de sanidade e comandos básicos documentados.
