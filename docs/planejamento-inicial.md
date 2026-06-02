@@ -84,6 +84,8 @@ O contrato normalizado da primeira fonte pública usa `period`, `source` e `gene
 
 A primeira interface desktop usa Tkinter e reutiliza o fluxo de análise existente. Ela mostra fonte, período, métricas centrais, geração por fonte em tabela, alerta interpretável e comparação do baseline sem duplicar regras de domínio na camada visual.
 
+O primeiro `.exe` local é experimental. A release pública fica bloqueada por gate técnico até a UI inicial estar estável, com smoke test formal, checksum, build automático na CI e workflow de release definidos.
+
 Incluído no MVP:
 
 - coleta ou carregamento de pelo menos uma fonte pública de dados de geração elétrica;
@@ -147,6 +149,12 @@ Linha de corte:
 | `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Implementado |
 | `REQ-009` | Disponibilizar comandos claros de instalação, execução e testes. | Alta | Implementado |
 
+Requisito transversal adicional:
+
+| ID | Requisito | Status |
+| --- | --- | --- |
+| `NFR-006` | Bloquear release pública do `.exe` enquanto os critérios mínimos de UI, smoke test, checksum, CI de artefato e workflow não estiverem completos. | Implementado |
+
 ## Critérios de Aceite
 
 Critérios mínimos do MVP:
@@ -173,6 +181,7 @@ Critérios mínimos do MVP:
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela e verificar se geração por fonte, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
+| `TEST-008` | Unitário e packaging | `NFR-006` | Validar release gate, bloqueio de release pública e ausência de build de artefato na CI atual. |
 
 ## Arquitetura Inicial
 
@@ -201,6 +210,7 @@ radar-transicao-energetica/
 │       ├── alerts.py
 │       ├── charts.py
 │       ├── desktop.py
+│       ├── release.py
 │       ├── serialization.py
 │       └── cache.py
 ├── tests/
@@ -217,6 +227,7 @@ Responsabilidades:
 - `alerts.py`: alerta interpretável;
 - `charts.py`: visualização textual inicial;
 - `desktop.py`: interface desktop inicial em Tkinter;
+- `release.py`: gate de release pública do `.exe`;
 - `cache.py`: cache SQLite local;
 - `serialization.py`: contrato JSON compartilhado entre CLI e cache, incluindo `data_source`;
 - `app.py`: composição da aplicação;
@@ -245,6 +256,7 @@ Princípios iniciais:
 | `ISSUE-008` | Modelo | Implementar modelo baseline de previsão ou classificação. | `REQ-006` | `TEST-004` | `ISSUE-005` |
 | `ISSUE-009` | Modelo | Exibir comparação entre dado real e previsão. | `REQ-007` | `TEST-006` | `ISSUE-008` |
 | `ISSUE-010` | Produto | Implementar alerta interpretável para participação renovável ou pressão térmica. | `REQ-008` | `TEST-005`, `TEST-006` | `ISSUE-005`, `ISSUE-008` |
+| `ISSUE-011` | Release | Bloquear release pública do `.exe` enquanto o fluxo visual não estiver estável. | `NFR-006` | `TEST-008` | `ISSUE-006` |
 
 Primeiras issues originalmente recomendadas:
 
@@ -255,4 +267,4 @@ Primeiras issues originalmente recomendadas:
 
 Essas quatro issues criam a base para uma primeira demonstração funcional sem antecipar complexidade visual pesada, empacotamento de release ou modelos avançados.
 
-Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-008` está implementada como baseline de média móvel; `ISSUE-009` e `ISSUE-010` estão parcialmente atendidas com comparação e alerta. As próximas frentes recomendadas são reuso offline do cache SQLite, integração climática e evolução da interface para gráficos e QA manual.
+Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-008` está implementada como baseline de média móvel; `ISSUE-009` e `ISSUE-010` estão parcialmente atendidas com comparação e alerta; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são reuso offline do cache SQLite, integração climática, evolução da interface para gráficos e QA manual e só então preparação de release pública.

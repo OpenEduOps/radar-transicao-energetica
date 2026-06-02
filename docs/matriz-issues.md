@@ -25,6 +25,7 @@ Este documento organiza as primeiras issues planejadas para o **Radar da Transi�
 | `ISSUE-008` | Modelo | Implementar modelo baseline de previsão ou classificação. | `REQ-006` | `TEST-004` | `ISSUE-005` |
 | `ISSUE-009` | Modelo | Exibir comparação entre dado real e previsão. | `REQ-007` | `TEST-006` | `ISSUE-008` |
 | `ISSUE-010` | Produto | Implementar alerta interpretável para participação renovável ou pressão térmica. | `REQ-008` | `TEST-005`, `TEST-006` | `ISSUE-005`, `ISSUE-008` |
+| `ISSUE-011` | Release | Bloquear release pública do `.exe` enquanto o fluxo visual não estiver estável. | `NFR-006` | `TEST-008` | `ISSUE-006` |
 
 ## Sequência Recomendada
 
@@ -50,13 +51,14 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 - `ISSUE-008`: implementada com baseline por média móvel, MAE e comparação walk-forward.
 - `ISSUE-009`: parcialmente implementada com comparação textual e JSON entre real e previsto.
 - `ISSUE-010`: parcialmente implementada com alerta interpretável.
+- `ISSUE-011`: implementada com release gate, `--release-status`, bloqueio de `--public-release` e testes de packaging.
 
 Pendências principais:
 
 - usar cache SQLite para reuso offline da fonte ONS e consultas por período;
 - integrar clima;
 - evoluir a interface desktop inicial para gráficos ricos, estados visuais e QA manual;
-- transformar o primeiro `.exe` local em release validada.
+- transformar o primeiro `.exe` local em release validada depois do gate retornar `public-ready`.
 
 ## Fatia Funcional Inicial
 
@@ -93,7 +95,7 @@ Estes itens continuam fora do escopo atual. Eles ficam aguardando um fluxo mais 
 
 Esses tópicos voltam para a matriz quando o projeto tiver fluxo local demonstrável mais estável, interface visual mais madura ou decisão clara de release.
 
-O build local experimental do `.exe` não altera esse backlog: release, smoke test formal e CI de artefato seguem adiados.
+O build local experimental do `.exe` não altera esse backlog: release, smoke test formal e CI de artefato seguem adiados. O release gate atual apenas impede que esses itens sejam antecipados sem estabilidade da UI.
 
 ## Template de Issue
 
@@ -146,6 +148,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
 - adicionar consulta do cache SQLite por período como próxima evolução de dados.
 - melhorar visualização da comparação real vs previsto do baseline.
+- evoluir critérios de release somente depois de QA manual da UI inicial.
 
 ## Evitar Como Primeira Issue
 

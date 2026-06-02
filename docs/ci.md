@@ -22,7 +22,7 @@ A automação deve responder, de forma incremental:
 | CI Python mínima | Implementada | Rodar compilação e testes unitários. |
 | CI de dados | Implementada parcialmente | Validar normalização com fixtures e cache em diretório temporário. |
 | CI de UI | Iniciada sem abrir janela | Validar entry point e modelo de apresentação da tela. |
-| CI de release | Após fluxo visual estável | Gerar artefato, checksum e smoke test. |
+| CI de release | Bloqueada pelo release gate até fluxo visual estável | Gerar artefato, checksum e smoke test. |
 
 ## Jobs Iniciais Recomendados
 
@@ -58,11 +58,12 @@ Para o primeiro build local experimental:
 
 ```text
 python -m pip install -e ".[dev]"
+python scripts/build_exe.py --release-status
 python scripts/build_exe.py
 dist\radar-transicao-energetica.exe --sem-cache
 ```
 
-Esse build local não faz parte da CI inicial.
+Esse build local não faz parte da CI inicial. No estado atual, `python scripts/build_exe.py --public-release` deve falhar e listar as pendências de release pública.
 
 ## Permissões
 
@@ -86,10 +87,13 @@ Permissões adicionais só devem aparecer em jobs que realmente publiquem releas
 - Usar cache local apenas em diretórios temporários dentro da CI.
 - Validar o cache SQLite com schema versionado, metadados de análise e registros normalizados.
 - Testar a interface desktop por funções puras e entry point, sem exigir janela gráfica na CI inicial.
+- Manter `scripts/build_exe.py`, upload de artefato e checksum fora do workflow atual.
+- Preservar `build/`, `dist/` e arquivos `.spec` fora do Git.
+- Bloquear release pública do `.exe` enquanto `python scripts/build_exe.py --release-status` indicar `local-experimental`.
 
 ## Estratégia de Release
 
-Release ainda está fora da primeira versão. Quando o fluxo principal estiver estável, cada release deve ter:
+Release ainda está fora da primeira versão. O projeto possui um gate técnico para manter o `.exe` no estágio `local-experimental` até a interface inicial estar estável. Quando o fluxo principal estiver estável, cada release deve ter:
 
 - versão/tag;
 - notas de release;
@@ -113,7 +117,7 @@ Os itens abaixo devem ficar fora do ciclo documental inicial e da primeira fatia
 
 Essa decisão evita antecipar governança, release e automação pesada antes de existir um fluxo funcional mínimo para validar.
 
-O primeiro `.exe` local experimental é uma validação manual e não muda a decisão de adiar release e build de artefato na CI.
+O primeiro `.exe` local experimental é uma validação manual e não muda a decisão de adiar release e build de artefato na CI. O gate técnico apenas torna essa decisão verificável por teste e pelo comando `python scripts/build_exe.py --release-status`.
 
 ## Critério Para Ativar CI Completa
 
@@ -124,4 +128,6 @@ A CI completa deve ser criada quando o projeto tiver:
 - dependências de UI estabilizadas;
 - comando de build local repetível;
 - critério de smoke test do executável definido;
+- checksum definido;
+- gate de release retornando `public-ready`;
 - decisão sobre distribuição pública do artefato.

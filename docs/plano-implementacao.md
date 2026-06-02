@@ -67,7 +67,7 @@ Cada etapa deve gerar uma entrega revisável, com commit próprio quando represe
 
 ## Autocrítica do Caminho Até o Primeiro `.exe`
 
-O plano original adiava empacotamento porque ainda não havia fluxo funcional. Com a implementação inicial, faz sentido gerar um primeiro `.exe` local experimental, desde que ele seja tratado como validação técnica, não como release pública.
+O plano original adiava empacotamento porque ainda não havia fluxo funcional. Com a implementação inicial, faz sentido gerar um primeiro `.exe` local experimental, desde que ele seja tratado como validação técnica, não como release pública. A decisão agora está codificada em um release gate: o estágio atual é `local-experimental` e a tentativa de release pública falha enquanto os critérios mínimos estiverem pendentes.
 
 Decisões tomadas para reduzir risco:
 
@@ -76,6 +76,7 @@ Decisões tomadas para reduzir risco:
 - carregar CSV local e exemplo embutido para manter execução offline;
 - testar domínio, dados e CLI com `unittest`;
 - empacotar localmente com PyInstaller apenas depois de testes e execução manual passarem;
+- bloquear release pública por código até a UI inicial estar estável;
 - manter `dist/`, `build/` e arquivos `.spec` fora do Git.
 
 Limites assumidos:
@@ -86,6 +87,8 @@ Limites assumidos:
 - o cache atual é SQLite, com análise, metadados, versão de schema e registros normalizados;
 - a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
 - não há release workflow, checksum, assinatura, smoke test formal ou build automático de artefato.
+- `python scripts/build_exe.py --release-status` deve indicar `local-experimental`;
+- `python scripts/build_exe.py --public-release` deve falhar enquanto o gate estiver incompleto.
 
 Gate mínimo para considerar o primeiro `.exe` válido:
 
@@ -93,6 +96,8 @@ Gate mínimo para considerar o primeiro `.exe` válido:
 - `python -m compileall src tests scripts` passa;
 - `python -m pip install -e .` instala o pacote;
 - `radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-cache` roda pelo comando instalado;
+- `python scripts/build_exe.py --release-status` informa o estágio atual;
+- `python scripts/build_exe.py --public-release` bloqueia release pública no estado atual;
 - CLI roda com exemplo embutido;
 - CLI roda com `examples/geracao_exemplo.csv`;
 - `scripts/build_exe.py` gera `dist/radar-transicao-energetica.exe`;
@@ -371,6 +376,7 @@ Critérios de aceite:
 - testes passam;
 - pacote instala em modo editável;
 - comando `radar-transicao-energetica` executa um smoke test com o CSV de exemplo;
+- testes garantem que a CI atual não executa `scripts/build_exe.py`, upload de artefato ou checksum;
 - permissões começam com `contents: read`;
 - release, artefato e smoke test permanecem fora do escopo.
 
@@ -659,7 +665,7 @@ Critérios de aceite:
 
 ## Fase 11: Primeiro Executável Local Experimental
 
-Status: concluída localmente para a primeira versão CLI experimental.
+Status: concluída localmente para a primeira versão CLI experimental, com release pública bloqueada por gate técnico.
 
 Objetivo:
 
@@ -668,8 +674,11 @@ Gerar um primeiro `.exe` local para provar que a aplicação CLI atual pode ser 
 Entregáveis:
 
 - script local `scripts/build_exe.py`;
+- módulo `release.py` com critérios de readiness;
 - executável `dist/radar-transicao-energetica.exe`;
 - instruções no README;
+- comando `--release-status`;
+- bloqueio de `--public-release`;
 - validação manual do `.exe`.
 
 Critérios de aceite:
@@ -679,6 +688,8 @@ Critérios de aceite:
 - executável analisa o exemplo embutido;
 - executável analisa `examples/geracao_exemplo.csv`;
 - executável retorna JSON quando chamado com `--json`;
+- `--release-status` retorna `local-experimental`;
+- `--public-release` falha antes de chamar PyInstaller enquanto UI estável, smoke test, checksum, CI de artefato e workflow de release estiverem pendentes;
 - artefatos de build permanecem fora do Git.
 
 Fora de escopo:
@@ -722,7 +733,7 @@ Essa ordem pode ser ajustada conforme descobertas técnicas, mas cada commit dev
 | Modelo baseline pouco confiável | Interpretação ruim | Documentar limitações e usar alerta educacional. |
 | UI complexa demais | Regras difíceis de testar | Manter a tela consumindo APIs de aplicação e modelos de apresentação testáveis. |
 | CI pesada cedo demais | Custo e manutenção | Começar com testes e importação, sem release. |
-| Empacotamento prematuro | Trabalho sem fluxo estável | Manter o `.exe` atual como experimento local e adiar release, instalador e CI de artefato. |
+| Empacotamento prematuro | Trabalho sem fluxo estável | Manter o `.exe` atual como experimento local, bloquear release pública por gate e adiar release, instalador e CI de artefato. |
 
 ## Critérios Para Avançar Entre Fases
 

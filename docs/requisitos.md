@@ -57,6 +57,7 @@ Contribuidores:
 | `NFR-003` | Clareza educacional | Alertas e mensagens devem usar linguagem compreensível para usuário não especialista. | Parcial |
 | `NFR-004` | Baixo atrito de contribuição | Setup, testes e escopo de issues devem ser documentados. | Implementado |
 | `NFR-005` | Cache local | Dados baixados ou processados devem poder ser reutilizados localmente. | Parcial |
+| `NFR-006` | Release incremental | O `.exe` local deve permanecer experimental até UI estável, smoke test formal, checksum, CI de artefato e workflow de release estarem definidos. | Implementado |
 
 Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQLite em `data/cache/analises.sqlite`, com payload da análise, metadados da fonte, versão de schema e registros normalizados. Ela ainda não usa esse banco para evitar novo download ONS automaticamente; esse reuso offline fica como próxima evolução.
 
@@ -74,6 +75,8 @@ Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQ
 - Dado um resultado de participação renovável ou risco, quando o alerta for exibido, então a mensagem deve ser compreensível para usuário não especialista.
 - Dado que o projeto não deve depender de credenciais privadas, quando o ambiente for preparado, então a execução local deve funcionar apenas com dados públicos ou cache.
 - Dado que o projeto é OSS, quando uma pessoa contribuir, então deve haver documentação clara de setup, teste e escopo do MVP.
+- Dado que o `.exe` atual é experimental, quando `python scripts/build_exe.py --public-release` for executado antes do gate estar completo, então o comando deve falhar e listar as pendências de release.
+- Dado que a CI atual é mínima, quando a suíte de testes for executada, então ela deve verificar que build de artefato, upload e checksum não foram ativados no workflow.
 
 ## Testes Planejados
 
@@ -86,6 +89,7 @@ Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQ
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar o modelo de apresentação da interface sem abrir janela e verificar manualmente se geração por fonte, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
+| `TEST-008` | Unitário e packaging | `NFR-006` | Validar release gate, `--release-status`, bloqueio de `--public-release`, ausência de build/upload/checksum na CI e ignore de artefatos locais. |
 
 ## Fora de Escopo da V0
 
@@ -100,4 +104,4 @@ Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQ
 - suporte multiusuário;
 - empacotamento final de release como `.exe`, até que o fluxo principal esteja estável.
 
-O primeiro `.exe` local experimental é permitido para validação técnica da versão CLI e não substitui o empacotamento final de release. A interface desktop inicial também não implica release pública enquanto gráficos ricos, QA manual e smoke test de artefato estiverem pendentes.
+O primeiro `.exe` local experimental é permitido para validação técnica da versão CLI e não substitui o empacotamento final de release. A interface desktop inicial também não implica release pública enquanto gráficos ricos, QA manual, smoke test de artefato, checksum e build automático de artefato estiverem pendentes.

@@ -18,6 +18,7 @@ A arquitetura deve permitir evolução incremental: a base atual é uma aplicaç
 | UI desktop | Tkinter inicial; PySide6 planejado | Tkinter permite a primeira tela sem dependências novas; PySide6 fica para uma experiência mais rica. |
 | Gráficos | Texto e tabela agora; Matplotlib ou Plotly planejado | Visualização textual e tabela desktop validam o conceito antes de gráficos ricos. |
 | Empacotamento | PyInstaller local experimental | Gera `.exe` local, ainda sem release pública. |
+| Release | Gate local no pacote | Mantém release pública bloqueada até UI estável, smoke test, checksum, CI de artefato e workflow definidos. |
 
 A primeira implementação evita dependências pesadas e usa biblioteca padrão do Python. Essa escolha reduz atrito para testes, permitiu gerar um primeiro `.exe` local experimental e abriu a primeira interface desktop com Tkinter.
 
@@ -56,6 +57,7 @@ radar-transicao-energetica/
 │       ├── alerts.py
 │       ├── charts.py
 │       ├── desktop.py
+│       ├── release.py
 │       ├── serialization.py
 │       └── cache.py
 ├── tests/
@@ -78,8 +80,10 @@ radar-transicao-energetica/
 | `alerts.py` | Regras textuais de alerta educacional. |
 | `charts.py` | Visualização textual inicial. |
 | `desktop.py` | Interface desktop inicial em Tkinter e modelo de apresentação testável sem abrir janela. |
+| `release.py` | Critérios de readiness e mensagens do gate de release pública do `.exe`. |
 | `serialization.py` | Contrato JSON compartilhado entre CLI e cache. |
 | `cache.py` | Escrita e leitura do cache SQLite local. |
+| `scripts/build_exe.py` | Build local experimental com PyInstaller, status de release e bloqueio de release pública prematura. |
 | `tests` | Testes unitários, integração leve e QA automatizável. |
 
 O JSON e o cache incluem `data_source` para registrar a origem da análise. Na fonte ONS, esse bloco carrega o tipo da fonte, período mensal, URL do dataset e URL do recurso CSV usado.
@@ -132,6 +136,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 | `models` | features e alvo | Modelo não deve depender de fonte externa diretamente. |
 | `data` | fontes públicas e normalização | Rede e persistência ficam isoladas de domínio e UI. |
 | `cache` | resultado de análise e registros normalizados | Cache atual usa SQLite e mantém schema versionado. |
+| `release` | `scripts/build_exe.py` e testes de packaging | Release pública depende do gate, não de decisão implícita no script de build. |
 
 ## Riscos e Mitigações
 
@@ -143,6 +148,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 | Modelo baseline parecer sofisticado demais | Baixa interpretabilidade | Priorizar métricas simples e explicação textual. |
 | UI crescer antes do domínio | Dificuldade de teste | Implementar cálculo e features antes de telas complexas. |
 | Empacotamento antecipado | Custo sem fluxo estável | Manter primeiro `.exe` como validação local, sem release pública. |
+| Release pública acidental | Artefato sem QA, checksum ou smoke test | Bloquear `--public-release` e testar ausência de build/upload/checksum na CI atual. |
 
 ## Decisões Pendentes
 
