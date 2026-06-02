@@ -76,9 +76,20 @@ def alert_to_dict(alert: RenewableAlert) -> dict[str, str]:
     }
 
 
-def baseline_to_dict(baseline: BaselinePrediction) -> dict[str, float | int | str | None]:
+def baseline_to_dict(baseline: BaselinePrediction) -> dict[str, Any]:
     return {
         "method": baseline.method,
         "points_used": baseline.points_used,
         "predicted_renewable_share": baseline.predicted_renewable_share,
+        "mean_absolute_error": baseline.mean_absolute_error,
+        "evaluated_points": baseline.evaluated_points,
+        "comparisons": [
+            {
+                "period": item.period,
+                "actual_renewable_share": item.actual_renewable_share,
+                "predicted_renewable_share": item.predicted_renewable_share,
+                "absolute_error": item.absolute_error,
+            }
+            for item in baseline.comparisons
+        ],
     }

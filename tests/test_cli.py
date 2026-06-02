@@ -173,6 +173,28 @@ class CliTest(unittest.TestCase):
         self.assertIn("fontes ainda nao classificadas", result.stdout)
         self.assertIn("Fonte: CSV local", result.stdout)
 
+    def test_cli_text_output_reports_baseline_metric_and_comparison(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "radar_transicao_energetica",
+                "--sem-cache",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+
+        self.assertIn("Baseline MAE:", result.stdout)
+        self.assertIn("Ultima comparacao baseline:", result.stdout)
+        self.assertIn("real", result.stdout)
+        self.assertIn("previsto", result.stdout)
+
     def test_cli_reports_missing_ons_period_without_network(self) -> None:
         env = os.environ.copy()
         env["PYTHONPATH"] = str(Path.cwd() / "src")

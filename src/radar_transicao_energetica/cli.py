@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Sequence
 
 from radar_transicao_energetica.app import run_analysis
+from radar_transicao_energetica.baseline import BaselinePrediction
 from radar_transicao_energetica.charts import render_share_trend, render_source_chart
 from radar_transicao_energetica.data import DataSourceMetadata, GenerationDataError
 from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
@@ -60,7 +61,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 result.summary,
                 result.period_summaries,
                 result.alert.message,
-                result.baseline.predicted_renewable_share,
+                result.baseline,
                 result.data_source,
             )
         )
@@ -112,14 +113,19 @@ def render_report(
     summary: RenewableSummary,
     period_summaries: list[PeriodRenewableSummary],
     alert_message: str,
-    baseline_prediction: float | None,
+    baseline: BaselinePrediction,
     data_source: DataSourceMetadata | None = None,
 ) -> str:
     share_text = "sem dados" if summary.renewable_share is None else f"{summary.renewable_share:.1%}"
     baseline_text = (
         "sem dados"
-        if baseline_prediction is None
-        else f"{baseline_prediction:.1%}"
+        if baseline.predicted_renewable_share is None
+        else f"{baseline.predicted_renewable_share:.1%}"
+    )
+    baseline_error_text = (
+        "sem dados"
+        if baseline.mean_absolute_error is None
+        else f"{baseline.mean_absolute_error:.1%}"
     )
     lines = [
         "Radar da Transicao Energetica",
@@ -130,7 +136,15 @@ def render_report(
         f"Geracao renovavel: {summary.renewable_generation_mw:,.2f} MW",
         f"Participacao renovavel: {share_text}",
         f"Baseline proxima janela: {baseline_text}",
+        f"Baseline MAE: {baseline_error_text}",
     ]
+    latest_comparison = baseline.comparisons[-1] if baseline.comparisons else None
+    if latest_comparison is not None:
+        lines.append(
+            "Ultima comparacao baseline: "
+            f"real {latest_comparison.actual_renewable_share:.1%} vs "
+            f"previsto {latest_comparison.predicted_renewable_share:.1%}"
+        )
     if summary.unknown_sources:
         lines.append("Fontes nao classificadas na V0: " + ", ".join(summary.unknown_sources))
     lines.extend(

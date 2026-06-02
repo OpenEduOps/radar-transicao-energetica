@@ -8,7 +8,10 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from radar_transicao_energetica.alerts import build_renewable_alert
-from radar_transicao_energetica.baseline import predict_next_renewable_share
+from radar_transicao_energetica.baseline import (
+    evaluate_moving_average_baseline,
+    predict_next_renewable_share,
+)
 from radar_transicao_energetica.data import GenerationRecord
 from radar_transicao_energetica.domain import summarize_by_period, summarize_generation
 
@@ -87,6 +90,29 @@ class DomainTest(unittest.TestCase):
         self.assertEqual(prediction.method, "media_movel")
         self.assertEqual(prediction.points_used, 2)
         self.assertAlmostEqual(prediction.predicted_renewable_share or 0, 0.65)
+        self.assertEqual(prediction.evaluated_points, 1)
+        self.assertAlmostEqual(prediction.mean_absolute_error or 0, 0.3)
+        self.assertEqual(prediction.comparisons[0].period, "2026-01-01T01:00:00")
+        self.assertAlmostEqual(prediction.comparisons[0].actual_renewable_share, 0.8)
+        self.assertAlmostEqual(prediction.comparisons[0].predicted_renewable_share, 0.5)
+
+    def test_baseline_evaluates_walk_forward_comparisons(self) -> None:
+        records = [
+            GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 50.0),
+            GenerationRecord(datetime(2026, 1, 1, 0), "termica", 50.0),
+            GenerationRecord(datetime(2026, 1, 1, 1), "hidraulica", 80.0),
+            GenerationRecord(datetime(2026, 1, 1, 1), "termica", 20.0),
+            GenerationRecord(datetime(2026, 1, 1, 2), "hidraulica", 40.0),
+            GenerationRecord(datetime(2026, 1, 1, 2), "termica", 60.0),
+        ]
+
+        comparisons = evaluate_moving_average_baseline(summarize_by_period(records), window=2)
+
+        self.assertEqual(len(comparisons), 2)
+        self.assertAlmostEqual(comparisons[0].predicted_renewable_share, 0.5)
+        self.assertAlmostEqual(comparisons[0].absolute_error, 0.3)
+        self.assertAlmostEqual(comparisons[1].predicted_renewable_share, 0.65)
+        self.assertAlmostEqual(comparisons[1].absolute_error, 0.25)
 
     def test_baseline_rejects_invalid_window(self) -> None:
         with self.assertRaises(ValueError):
