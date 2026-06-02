@@ -98,6 +98,8 @@ O JSON retornado possui cinco blocos principais:
 - `alert`: nível e mensagem interpretável;
 - `baseline`: método, pontos usados e previsão simples da próxima janela.
 
+Quando o cache está habilitado, o JSON também inclui `cache_path` com o caminho do banco SQLite gravado.
+
 Fontes fora da classificação inicial da V0 aparecem em `unknown_sources`. Elas continuam entrando na geração total, mas não são classificadas automaticamente como renováveis.
 
 ## Cache Local
