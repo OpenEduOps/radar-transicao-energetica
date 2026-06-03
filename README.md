@@ -25,7 +25,7 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 - exibe gráfico textual por fonte, tendência por período e comparação real vs previsto;
 - calcula baseline por média móvel com MAE, comparação real vs previsto e features climáticas simples quando há clima alinhado por período;
 - gera alerta interpretável;
-- abre uma primeira interface desktop em Tkinter para visualizar fonte, período, métricas centrais, geração por fonte, gráficos Canvas, clima opcional, alerta e comparação do baseline;
+- abre uma primeira interface desktop em Tkinter para visualizar fonte, período, métricas centrais, estados operacionais, geração por fonte, gráficos Canvas, clima opcional, alerta e comparação do baseline;
 - possui testes automatizados com `unittest`;
 - pode ser empacotado em um primeiro `.exe` local experimental com PyInstaller.
 
@@ -84,7 +84,7 @@ $env:PYTHONPATH='src'
 python -m radar_transicao_energetica.desktop
 ```
 
-A interface desktop inicial permite escolher exemplo embutido, CSV local ou fonte ONS mensal. Ela mostra geração por fonte em tabela e gráfico Canvas, participação renovável, geração total, geração renovável, alerta interpretável, baseline da próxima janela, MAE, contagem de comparações com clima, tabela e gráfico real vs previsto por período e, quando habilitado, um resumo climático Open-Meteo. Quando o cache está habilitado, a tela usa o caminho padrão `data/cache/analises.sqlite`.
+A interface desktop inicial permite escolher exemplo embutido, CSV local ou fonte ONS mensal. Ela mostra geração por fonte em tabela e gráfico Canvas, participação renovável, geração total, geração renovável, alerta interpretável, baseline da próxima janela, MAE, contagem de comparações com clima, tabela e gráfico real vs previsto por período e, quando habilitado, um resumo climático Open-Meteo. O painel `Estados` explicita cenários sem dados, erro de entrada para CSV ou período ONS inválido, clima indisponível, baseline sem pontos suficientes e cache reutilizado. Quando o cache está habilitado, a tela usa o caminho padrão `data/cache/analises.sqlite`.
 
 Executar com o CSV de exemplo:
 
@@ -176,7 +176,7 @@ python -m unittest discover -s tests
 python -m compileall src tests scripts
 ```
 
-A suíte automatizada cobre a interface desktop sem abrir janela e sem Docker. Os testes validam o modelo de apresentação, os dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios, geração sem valor positivo, muitas barras, baseline com um único ponto, marcação de média móvel/clima e redraw dos gráficos.
+A suíte automatizada cobre a interface desktop sem abrir janela e sem Docker. Os testes validam o modelo de apresentação, os dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios, geração sem valor positivo, estados operacionais da tela, muitas barras, baseline com um único ponto, marcação de média móvel/clima e redraw dos gráficos.
 
 ## Primeiro Executável Local
 
@@ -441,8 +441,8 @@ A implementação atual já atende parte desses critérios com dados de exemplo,
 
 Próxima sequência técnica recomendada:
 
-1. Registrar o QA manual remanescente da interface desktop inicial, incluindo leitura visual dos gráficos Canvas e cenários com/sem clima.
-2. Refinar estados visuais e acessibilidade da tela antes de trocar Tkinter ou adicionar bibliotecas gráficas.
+1. Registrar o QA manual remanescente da interface desktop inicial, incluindo leitura visual dos gráficos Canvas, painel de estados e cenários com/sem clima.
+2. Refinar acessibilidade da tela antes de trocar Tkinter ou adicionar bibliotecas gráficas.
 3. Definir política de expiração ou invalidação do cache ONS quando necessário.
 4. Avaliar `scikit-learn` apenas depois que a leitura visual do baseline estiver estável.
 5. Transformar o `.exe` experimental em artefato de release apenas quando o fluxo visual estiver estável.

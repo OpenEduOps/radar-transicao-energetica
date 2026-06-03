@@ -448,7 +448,7 @@ Commits sugeridos:
 
 Status: concluída para visualização inicial.
 
-A implementação atual entrega visualização textual por fonte, tendência de participação renovável, comparação textual real vs previsto e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, geração por fonte em tabela e gráfico Canvas, alerta interpretável, baseline da próxima janela, MAE, tabela de comparação real vs previsto e gráfico Canvas do baseline. O QA automatizado dos gráficos roda sem janela e sem Docker, usando `FakeCanvas`; estados visuais mais completos, acessibilidade e QA manual remanescente continuam planejados.
+A implementação atual entrega visualização textual por fonte, tendência de participação renovável, comparação textual real vs previsto e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, painel de estados, geração por fonte em tabela e gráfico Canvas, alerta interpretável, baseline da próxima janela, MAE, tabela de comparação real vs previsto e gráfico Canvas do baseline. O QA automatizado dos gráficos e dos estados roda sem janela e sem Docker, usando `FakeCanvas`; acessibilidade e QA manual remanescente continuam planejados.
 
 Rastreabilidade:
 
@@ -467,7 +467,10 @@ Entregáveis:
 - modelo de apresentação testável sem abrir janela;
 - desenho de gráficos testado com `FakeCanvas`;
 - estado sem dados;
-- estado de erro;
+- estado de erro de CSV ou período ONS inválido;
+- estado de clima indisponível;
+- estado de baseline sem pontos suficientes;
+- estado de cache reutilizado;
 - QA manual documentado.
 
 Escopo:
@@ -764,4 +767,4 @@ Uma fase só deve avançar quando:
 
 ## Próxima Ação Recomendada
 
-Criar a próxima issue de visualização: tornar a comparação real vs previsto mais clara por período, destacando quando a previsão usou média móvel pura ou features climáticas simples.
+Criar a próxima issue de UI: registrar QA manual remanescente da janela desktop e refinar acessibilidade do painel de estados e dos gráficos Canvas.

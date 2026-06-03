@@ -48,7 +48,7 @@ Essa ordem permite entregar valor observável antes de avançar para QA manual r
 - `ISSUE-003`: implementada para a primeira fonte real com ONS Geração por Usina em Base Horária, mantendo carregador CSV local, aliases de colunas, exemplo offline, limite local de download e `data_source`.
 - `ISSUE-004`: implementada com cache SQLite local que registra payload da análise, origem dos dados, versão de schema, registros normalizados e reuso ONS por período.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
-- `ISSUE-006`: implementada para visualização inicial com gráfico textual, tabela desktop e gráfico Canvas de geração por fonte.
+- `ISSUE-006`: implementada para visualização inicial com gráfico textual, tabela desktop, painel de estados e gráfico Canvas de geração por fonte.
 - `ISSUE-007`: implementada com integração climática opcional Open-Meteo, fixtures offline, contrato `weather` no JSON/cache, resumo no CLI/desktop e features climáticas simples para o baseline.
 - `ISSUE-008`: implementada com baseline por média móvel, analogia climática simples, MAE e comparação walk-forward.
 - `ISSUE-009`: implementada para comparação inicial com JSON, gráfico textual na CLI, tabela desktop e gráfico Canvas real vs previsto.
@@ -57,8 +57,8 @@ Essa ordem permite entregar valor observável antes de avançar para QA manual r
 
 Pendências principais:
 
-- registrar QA manual remanescente da interface desktop inicial, incluindo leitura visual dos gráficos Canvas e cenários com/sem clima;
-- refinar estados visuais, acessibilidade e eventual biblioteca gráfica rica quando houver necessidade real;
+- registrar QA manual remanescente da interface desktop inicial, incluindo leitura visual dos gráficos Canvas, painel de estados e cenários com/sem clima;
+- refinar acessibilidade e eventual biblioteca gráfica rica quando houver necessidade real;
 - transformar o primeiro `.exe` local em release validada depois do gate retornar `public-ready`.
 
 ## Fatia Funcional Inicial
@@ -70,7 +70,7 @@ A primeira fatia funcional foi planejada para se limitar a:
 - `ISSUE-005`: cálculo de participação renovável;
 - testes automatizados para o cálculo e dados sintéticos.
 
-Parte de `ISSUE-006`, `ISSUE-009` e `ISSUE-010` já foi antecipada para viabilizar o primeiro `.exe` local e a primeira tela desktop. A comparação visual inicial já existe e possui QA automatizado sem janela; as próximas versões devem focar QA manual remanescente, estados visuais e refinamento da experiência.
+Parte de `ISSUE-006`, `ISSUE-009` e `ISSUE-010` já foi antecipada para viabilizar o primeiro `.exe` local e a primeira tela desktop. A comparação visual inicial e os estados operacionais já existem e possuem QA automatizado sem janela; as próximas versões devem focar QA manual remanescente, acessibilidade e refinamento da experiência.
 
 Critérios já atendidos para `ISSUE-003`:
 
