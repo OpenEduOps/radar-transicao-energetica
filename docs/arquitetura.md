@@ -102,7 +102,7 @@ Essa normalização fica em `data.py`, enquanto `ons.py` fica responsável por U
 
 Fontes reconhecidas na V0 entram em hidráulica, eólica, solar ou térmica. Fontes não reconhecidas continuam no total de geração e são expostas em `unknown_sources`, preservando rastreabilidade sem assumir classificação indevida.
 
-O cache SQLite atual salva metadados do schema em `cache_metadata`, o payload serializado da análise em `analyses` e registros normalizados em `generation_records`. Ele não persiste o CSV ONS bruto. A próxima evolução deve usar essas tabelas para reuso offline da fonte ONS e consultas por período.
+O cache SQLite atual salva metadados do schema em `cache_metadata`, o payload serializado da análise em `analyses` e registros normalizados em `generation_records`. Ele não persiste o CSV ONS bruto. Para a fonte ONS, a aplicação consulta a análise mais recente do mesmo período e reutiliza os registros normalizados antes de baixar novamente o CSV público.
 
 ## Fluxo de Dados Inicial
 
@@ -153,7 +153,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 ## Decisões Pendentes
 
 - Evoluir a fonte ONS para filtros de período e agregações mais eficientes quando o volume de dados exigir.
-- Usar o cache SQLite para reuso offline da fonte ONS e consultas por período.
+- Definir política de expiração ou invalidação para cache ONS quando necessário.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
 - Definir Matplotlib ou Plotly para os primeiros gráficos ricos.
 - Evoluir a interface Tkinter inicial para uma experiência desktop mais completa.

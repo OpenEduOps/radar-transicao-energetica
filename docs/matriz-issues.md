@@ -45,7 +45,7 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 - `ISSUE-001`: implementada com comandos reais no README.
 - `ISSUE-002`: implementada com `pyproject.toml`, pacote em `src` e testes.
 - `ISSUE-003`: implementada para a primeira fonte real com ONS Geração por Usina em Base Horária, mantendo carregador CSV local, aliases de colunas, exemplo offline, limite local de download e `data_source`.
-- `ISSUE-004`: implementada com cache SQLite local que registra payload da análise, origem dos dados, versão de schema e registros normalizados.
+- `ISSUE-004`: implementada com cache SQLite local que registra payload da análise, origem dos dados, versão de schema, registros normalizados e reuso ONS por período.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
 - `ISSUE-006`: parcialmente implementada com visualização textual e primeira interface desktop em Tkinter com tabela de geração por fonte.
 - `ISSUE-008`: implementada com baseline por média móvel, MAE e comparação walk-forward.
@@ -55,7 +55,6 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 
 Pendências principais:
 
-- usar cache SQLite para reuso offline da fonte ONS e consultas por período;
 - integrar clima;
 - evoluir a interface desktop inicial para gráficos ricos, estados visuais e QA manual;
 - transformar o primeiro `.exe` local em release validada depois do gate retornar `public-ready`.
@@ -146,7 +145,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - melhorar estados e QA manual da interface desktop inicial;
 - validar links de dados públicos e instruções do README;
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
-- adicionar consulta do cache SQLite por período como próxima evolução de dados.
+- evoluir política de expiração ou invalidação do cache ONS.
 - melhorar visualização da comparação real vs previsto do baseline.
 - evoluir critérios de release somente depois de QA manual da UI inicial.
 

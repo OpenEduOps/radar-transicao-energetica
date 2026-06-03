@@ -140,7 +140,7 @@ Linha de corte:
 | ID | Requisito | Prioridade | Status |
 | --- | --- | --- | --- |
 | `REQ-001` | Carregar dados públicos de geração elétrica em formato tratável pela aplicação. | Alta | Implementado |
-| `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Parcial |
+| `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Implementado |
 | `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
 | `REQ-004` | Exibir geração por fonte de forma comparável. | Alta | Parcial |
 | `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Planejado |
@@ -176,7 +176,7 @@ Critérios mínimos do MVP:
 | --- | --- | --- | --- |
 | `TEST-001` | Unitário | `REQ-003` | Validar cálculo de participação renovável com dados sintéticos. |
 | `TEST-002` | Unitário | `REQ-003` | Validar tratamento de fontes ausentes ou valores zerados. |
-| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, cache SQLite e diretório temporário. |
+| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, cache SQLite, diretório temporário e reuso ONS por período. |
 | `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE e comparação walk-forward do baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela e verificar se geração por fonte, comparação e alerta são compreensíveis. |
@@ -267,4 +267,4 @@ Primeiras issues originalmente recomendadas:
 
 Essas quatro issues criam a base para uma primeira demonstração funcional sem antecipar complexidade visual pesada, empacotamento de release ou modelos avançados.
 
-Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-008` está implementada como baseline de média móvel; `ISSUE-009` e `ISSUE-010` estão parcialmente atendidas com comparação e alerta; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são reuso offline do cache SQLite, integração climática, evolução da interface para gráficos e QA manual e só então preparação de release pública.
+Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-008` está implementada como baseline de média móvel; `ISSUE-009` e `ISSUE-010` estão parcialmente atendidas com comparação e alerta; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são integração climática, evolução da interface para gráficos e QA manual, política de expiração do cache ONS quando necessário e só então preparação de release pública.

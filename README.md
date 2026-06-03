@@ -407,10 +407,10 @@ A implementação atual já atende parte desses critérios com dados de exemplo,
 
 Próxima sequência técnica recomendada:
 
-1. Usar o cache SQLite como base para reuso offline da fonte ONS e consultas por período.
-2. Adicionar integração climática inicial.
-3. Evoluir a comparação real vs previsto para visualização mais clara por período.
-4. Evoluir a interface desktop inicial para gráficos visuais e melhor QA manual.
+1. Adicionar integração climática inicial.
+2. Evoluir a comparação real vs previsto para visualização mais clara por período.
+3. Evoluir a interface desktop inicial para gráficos visuais e melhor QA manual.
+4. Definir política de expiração ou invalidação do cache ONS quando necessário.
 5. Transformar o `.exe` experimental em artefato de release apenas quando o fluxo visual estiver estável.
 6. Adicionar smoke test formal do executável e CI de build de artefato depois da primeira interface.
 

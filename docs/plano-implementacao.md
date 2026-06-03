@@ -84,7 +84,7 @@ Limites assumidos:
 - o executável inicial não valida ainda PySide6, pandas, scikit-learn ou gráficos ricos;
 - o baseline atual é média móvel avaliada por MAE, não modelo de machine learning com `scikit-learn`;
 - a visualização atual combina CLI textual e tela desktop inicial em tabela, ainda sem gráfico rico;
-- o cache atual é SQLite, com análise, metadados, versão de schema e registros normalizados;
+- o cache atual é SQLite, com análise, metadados, versão de schema, registros normalizados e reuso ONS por período;
 - a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
 - não há release workflow, checksum, assinatura, smoke test formal ou build automático de artefato.
 - `python scripts/build_exe.py --release-status` deve indicar `local-experimental`;
@@ -397,9 +397,9 @@ Commits sugeridos:
 
 ## Fase 5: Cache Local
 
-Status: concluída para o cache SQLite inicial.
+Status: concluída para o cache SQLite inicial com reuso ONS por período.
 
-A implementação atual grava cache SQLite local em `data/cache/analises.sqlite`. O banco registra versão de schema, payload da análise, metadados da fonte e registros normalizados. A evolução pendente é usar esse cache para reuso offline da fonte ONS e consultas por período.
+A implementação atual grava cache SQLite local em `data/cache/analises.sqlite`. O banco registra versão de schema, payload da análise, metadados da fonte e registros normalizados. Para ONS, a aplicação consulta a análise mais recente do mesmo período e reutiliza esses registros antes de chamar o loader de rede.
 
 Rastreabilidade:
 
@@ -420,11 +420,14 @@ Entregáveis:
 - camada de cache local para dados normalizados;
 - metadados de fonte, período, URL do recurso e momento de coleta;
 - leitura e escrita em diretório controlado;
+- consulta por origem e período;
+- sinalização de `cache_hit`;
 - testes usando diretório temporário.
 
 Critérios de aceite:
 
 - dados podem ser salvos e recuperados;
+- ONS reutiliza registros do mesmo período sem chamar a fonte pública;
 - cache de dados normalizados não se confunde com o payload serializado da análise;
 - cache não exige serviço externo;
 - testes não escrevem fora de diretório temporário;
@@ -435,7 +438,8 @@ Commits sugeridos:
 
 - `Escolhe armazenamento local de cache`;
 - `Implementa cache local de dados`;
-- `Valida leitura e escrita de cache`.
+- `Valida leitura e escrita de cache`;
+- `Reutiliza cache ONS por periodo`.
 
 ## Fase 6: Visualização Inicial
 
@@ -748,4 +752,4 @@ Uma fase só deve avançar quando:
 
 ## Próxima Ação Recomendada
 
-Criar a próxima issue de cache: usar `data/cache/analises.sqlite` para reuso offline da fonte ONS e consultas por período, preservando testes em diretórios temporários.
+Criar a próxima issue de clima: integrar uma fonte climática inicial com fixtures offline, sem tornar rede obrigatória para a suíte automatizada.

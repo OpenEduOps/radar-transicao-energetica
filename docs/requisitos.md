@@ -39,7 +39,7 @@ Contribuidores:
 | ID | Requisito | Prioridade | Status |
 | --- | --- | --- | --- |
 | `REQ-001` | Carregar dados públicos de geração elétrica em formato tratável pela aplicação. | Alta | Implementado |
-| `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Parcial |
+| `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Implementado |
 | `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
 | `REQ-004` | Exibir geração por fonte de forma comparável. | Alta | Parcial |
 | `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Planejado |
@@ -56,10 +56,10 @@ Contribuidores:
 | `NFR-002` | Reprodutibilidade | Transformações, métricas e cálculos devem ser testáveis com dados sintéticos. | Implementado |
 | `NFR-003` | Clareza educacional | Alertas e mensagens devem usar linguagem compreensível para usuário não especialista. | Parcial |
 | `NFR-004` | Baixo atrito de contribuição | Setup, testes e escopo de issues devem ser documentados. | Implementado |
-| `NFR-005` | Cache local | Dados baixados ou processados devem poder ser reutilizados localmente. | Parcial |
+| `NFR-005` | Cache local | Dados baixados ou processados devem poder ser reutilizados localmente. | Implementado |
 | `NFR-006` | Release incremental | O `.exe` local deve permanecer experimental até UI estável, smoke test formal, checksum, CI de artefato e workflow de release estarem definidos. | Implementado |
 
-Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQLite em `data/cache/analises.sqlite`, com payload da análise, metadados da fonte, versão de schema e registros normalizados. Ela ainda não usa esse banco para evitar novo download ONS automaticamente; esse reuso offline fica como próxima evolução.
+Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQLite em `data/cache/analises.sqlite`, com payload da análise, metadados da fonte, versão de schema e registros normalizados. Para a fonte ONS, a aplicação reutiliza registros normalizados do mesmo período antes de tentar novo download.
 
 ## Critérios de Aceite do MVP
 
@@ -84,7 +84,7 @@ Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQ
 | --- | --- | --- | --- |
 | `TEST-001` | Unitário | `REQ-003` | Validar cálculo de participação renovável com dados sintéticos. |
 | `TEST-002` | Unitário | `REQ-003` | Validar tratamento de fontes ausentes ou valores zerados. |
-| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, escrita do cache SQLite e persistência de registros normalizados em diretório temporário. |
+| `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, escrita do cache SQLite, persistência e reuso de registros normalizados em diretório temporário. |
 | `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE e comparação walk-forward do baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar o modelo de apresentação da interface sem abrir janela e verificar manualmente se geração por fonte, comparação e alerta são compreensíveis. |
