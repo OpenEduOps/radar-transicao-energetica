@@ -256,6 +256,7 @@ class RadarDesktopApp:
         self.generation_canvas: tk.Canvas | None = None
         self.baseline_canvas: tk.Canvas | None = None
         self.baseline_table: ttk.Treeview | None = None
+        self.current_view_data: DesktopViewData | None = None
 
         self._build_layout()
         self.run_current_analysis()
@@ -387,6 +388,7 @@ class RadarDesktopApp:
             highlightbackground="#d6d6d6",
         )
         self.generation_canvas.grid(row=1, column=0, sticky="ew", pady=(12, 0))
+        self.generation_canvas.bind("<Configure>", lambda _event: self._redraw_charts())
 
         insights = ttk.LabelFrame(content, text="Alerta e baseline", padding=12)
         insights.grid(row=1, column=1, sticky="nsew", pady=(12, 0), padx=(6, 0))
@@ -443,6 +445,7 @@ class RadarDesktopApp:
             highlightbackground="#d6d6d6",
         )
         self.baseline_canvas.grid(row=0, column=1, sticky="nsew", padx=(8, 0))
+        self.baseline_canvas.bind("<Configure>", lambda _event: self._redraw_charts())
 
         status = ttk.Frame(self.root, padding=(12, 0, 12, 8))
         status.grid(row=2, column=0, sticky="ew")
@@ -505,6 +508,7 @@ class RadarDesktopApp:
         )
 
     def _render_result(self, data: DesktopViewData) -> None:
+        self.current_view_data = data
         self.source_label_var.set(data.source)
         self.period_var.set(data.period)
         for metric in data.metrics:
@@ -526,10 +530,21 @@ class RadarDesktopApp:
                     text=row.period,
                     values=(row.actual, row.predicted, row.error, row.method),
                 )
+        self._redraw_charts()
+
+    def _redraw_charts(self) -> None:
+        if self.current_view_data is None:
+            return
         if self.generation_canvas is not None:
-            _draw_generation_chart(self.generation_canvas, data.generation_chart_bars)
+            _draw_generation_chart(
+                self.generation_canvas,
+                self.current_view_data.generation_chart_bars,
+            )
         if self.baseline_canvas is not None:
-            _draw_baseline_chart(self.baseline_canvas, data.baseline_chart_points)
+            _draw_baseline_chart(
+                self.baseline_canvas,
+                self.current_view_data.baseline_chart_points,
+            )
 
 
 def main() -> int:
