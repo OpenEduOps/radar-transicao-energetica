@@ -471,7 +471,7 @@ Entregáveis:
 - estado de clima indisponível;
 - estado de baseline sem pontos suficientes;
 - estado de cache reutilizado;
-- QA manual documentado.
+- QA manual remanescente identificado.
 
 Escopo:
 
@@ -495,7 +495,7 @@ Critérios de aceite:
 - dados ausentes não quebram a visualização;
 - usuário entende o período e as fontes exibidas;
 - testes automatizados validam o modelo de apresentação sem abrir janela;
-- QA automatizado cobre o desenho sem janela e QA manual registra o cenário visual validado.
+- QA automatizado cobre o desenho sem janela e QA manual remanescente está documentado como pendência.
 
 Commits sugeridos:
 

@@ -144,7 +144,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - criar dados sintéticos de teste;
 - melhorar mensagens de erro para dados ausentes;
 - revisar clareza de alertas educacionais;
-- melhorar estados, acessibilidade e QA manual remanescente da interface desktop inicial;
+- melhorar acessibilidade do painel de estados e registrar QA manual remanescente da interface desktop inicial;
 - validar links de dados públicos e instruções do README;
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
 - evoluir política de expiração ou invalidação do cache ONS.
