@@ -15,6 +15,7 @@ from radar_transicao_energetica.desktop import (
     build_desktop_view_data,
     format_desktop_status,
 )
+from radar_transicao_energetica.weather import WeatherRecord
 
 
 class DesktopTest(unittest.TestCase):
@@ -32,6 +33,7 @@ class DesktopTest(unittest.TestCase):
         self.assertIn("boa_janela_renovavel", view_data.alert)
         self.assertIn("real", view_data.baseline_comparison)
         self.assertIn("previsto", view_data.baseline_comparison)
+        self.assertEqual(view_data.weather, "nao solicitado")
 
     def test_build_desktop_view_data_sorts_generation_rows_by_source(self) -> None:
         result = run_analysis(write_cache=False)
@@ -55,6 +57,44 @@ class DesktopTest(unittest.TestCase):
         self.assertEqual(options.source, "ons")
         self.assertEqual(options.ons_year, 2026)
         self.assertEqual(options.ons_month, 1)
+
+    def test_build_desktop_analysis_options_parses_weather_controls(self) -> None:
+        options = build_desktop_analysis_options(
+            source="exemplo",
+            include_weather=True,
+            weather_latitude=" -22.9 ",
+            weather_longitude=" -43.2 ",
+            weather_forecast_days="3",
+        )
+
+        self.assertTrue(options.include_weather)
+        self.assertEqual(options.weather_latitude, -22.9)
+        self.assertEqual(options.weather_longitude, -43.2)
+        self.assertEqual(options.weather_forecast_days, 3)
+
+    def test_build_desktop_analysis_options_rejects_invalid_weather_controls(self) -> None:
+        with self.assertRaisesRegex(ValueError, "latitude climatica"):
+            build_desktop_analysis_options(
+                source="exemplo",
+                include_weather=True,
+                weather_latitude="invalida",
+            )
+
+    def test_build_desktop_view_data_exposes_weather_summary(self) -> None:
+        result = run_analysis(
+            write_cache=False,
+            include_weather=True,
+            weather_loader=lambda **_kwargs: [
+                WeatherRecord(datetime(2026, 1, 1, 0), 22.0, 8.0, 0.0, 40.0),
+                WeatherRecord(datetime(2026, 1, 1, 1), 24.0, 10.0, 120.0, 60.0),
+            ],
+        )
+
+        view_data = build_desktop_view_data(result)
+
+        self.assertIn("Open-Meteo Forecast", view_data.weather)
+        self.assertIn("temperatura media 23.0 C", view_data.weather)
+        self.assertIn("nebulosidade 50.0%", view_data.weather)
 
     def test_build_desktop_analysis_options_rejects_unknown_source(self) -> None:
         with self.assertRaisesRegex(ValueError, "Fonte de dados desconhecida"):

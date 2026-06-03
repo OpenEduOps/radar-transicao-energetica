@@ -23,6 +23,18 @@ from radar_transicao_energetica.domain import (
     summarize_generation,
 )
 from radar_transicao_energetica.ons import load_ons_generation, ons_generation_source_metadata
+from radar_transicao_energetica.weather import (
+    DEFAULT_WEATHER_FORECAST_DAYS,
+    DEFAULT_WEATHER_LATITUDE,
+    DEFAULT_WEATHER_LONGITUDE,
+    WeatherDataError,
+    WeatherRecord,
+    WeatherSourceMetadata,
+    WeatherSummary,
+    load_open_meteo_weather,
+    open_meteo_source_metadata,
+    summarize_weather,
+)
 
 
 @dataclass(frozen=True)
@@ -35,6 +47,10 @@ class AnalysisResult:
     baseline: BaselinePrediction
     cache_path: Path | None
     cache_hit: bool = False
+    weather_records: list[WeatherRecord] | None = None
+    weather_source: WeatherSourceMetadata | None = None
+    weather_summary: WeatherSummary | None = None
+    weather_error: str | None = None
 
 
 def run_analysis(
@@ -46,6 +62,11 @@ def run_analysis(
     ons_month: int | None = None,
     ons_loader: Callable[[int, int], list[GenerationRecord]] | None = None,
     prefer_cache: bool = True,
+    include_weather: bool = False,
+    weather_latitude: float = DEFAULT_WEATHER_LATITUDE,
+    weather_longitude: float = DEFAULT_WEATHER_LONGITUDE,
+    weather_forecast_days: int = DEFAULT_WEATHER_FORECAST_DAYS,
+    weather_loader: Callable[..., list[WeatherRecord]] | None = None,
 ) -> AnalysisResult:
     records, data_source, cache_hit = _load_records(
         source_path=source_path,
@@ -60,11 +81,34 @@ def run_analysis(
     period_summaries = summarize_by_period(records)
     alert = build_renewable_alert(summary)
     baseline = predict_next_renewable_share(period_summaries)
+    weather_records: list[WeatherRecord] | None = None
+    weather_source: WeatherSourceMetadata | None = None
+    weather_summary: WeatherSummary | None = None
+    weather_error: str | None = None
+
+    if include_weather:
+        weather_source = open_meteo_source_metadata(
+            latitude=weather_latitude,
+            longitude=weather_longitude,
+            forecast_days=weather_forecast_days,
+        )
+        loader = weather_loader or load_open_meteo_weather
+        try:
+            weather_records = loader(
+                latitude=weather_latitude,
+                longitude=weather_longitude,
+                forecast_days=weather_forecast_days,
+            )
+        except WeatherDataError as exc:
+            weather_error = str(exc)
+            weather_records = []
+        weather_summary = summarize_weather(weather_records)
 
     written_cache_path = None
-    if cache_hit:
-        written_cache_path = Path(cache_path) if cache_path is not None else None
-    elif write_cache and cache_path is not None:
+    should_write_cache = write_cache and cache_path is not None and (
+        not cache_hit or include_weather
+    )
+    if should_write_cache:
         written_cache_path = write_analysis_cache(
             cache_path,
             records=records,
@@ -73,7 +117,14 @@ def run_analysis(
             alert=alert,
             baseline=baseline,
             data_source=data_source,
+            cache_hit=cache_hit,
+            weather_source=weather_source,
+            weather_summary=weather_summary,
+            weather_records=weather_records,
+            weather_error=weather_error,
         )
+    elif cache_hit:
+        written_cache_path = Path(cache_path) if cache_path is not None else None
 
     return AnalysisResult(
         records=records,
@@ -84,6 +135,10 @@ def run_analysis(
         baseline=baseline,
         cache_path=written_cache_path,
         cache_hit=cache_hit,
+        weather_records=weather_records,
+        weather_source=weather_source,
+        weather_summary=weather_summary,
+        weather_error=weather_error,
     )
 
 

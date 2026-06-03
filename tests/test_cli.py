@@ -13,7 +13,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.cache import read_latest_analysis_cache
+from radar_transicao_energetica.cli import render_report
 from radar_transicao_energetica.data import GenerationRecord
+from radar_transicao_energetica.weather import WeatherRecord
 
 
 class CliTest(unittest.TestCase):
@@ -305,6 +307,71 @@ class CliTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 1)
         self.assertIn("YYYY-MM", result.stderr)
+
+    def test_cli_rejects_invalid_weather_options_without_network(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "radar_transicao_energetica",
+                "--clima",
+                "open-meteo",
+                "--clima-latitude",
+                "91",
+                "--sem-cache",
+            ],
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Latitude climatica", result.stderr)
+
+    def test_render_report_includes_weather_summary_when_requested(self) -> None:
+        result = run_analysis(
+            write_cache=False,
+            include_weather=True,
+            weather_loader=lambda **_kwargs: [
+                WeatherRecord(datetime(2026, 1, 1, 0), 22.0, 8.0, 0.0, 40.0),
+                WeatherRecord(datetime(2026, 1, 1, 1), 24.0, 10.0, 120.0, 60.0),
+            ],
+        )
+
+        report = render_report(
+            result.summary,
+            result.period_summaries,
+            result.alert.message,
+            result.baseline,
+            result.data_source,
+            result.weather_summary,
+            result.weather_source,
+            result.weather_error,
+        )
+
+        self.assertIn("Clima: Open-Meteo Forecast", report)
+        self.assertIn("Temperatura media: 23.0 C", report)
+        self.assertIn("Vento medio: 9.0 km/h", report)
+        self.assertIn("Nebulosidade media: 50.0 %", report)
+
+    def test_render_report_includes_weather_error_without_hiding_generation(self) -> None:
+        result = run_analysis(write_cache=False)
+
+        report = render_report(
+            result.summary,
+            result.period_summaries,
+            result.alert.message,
+            result.baseline,
+            result.data_source,
+            weather_error="fonte climatica indisponivel",
+        )
+
+        self.assertIn("Geracao total:", report)
+        self.assertIn("Clima: indisponivel", report)
+        self.assertIn("fonte climatica indisponivel", report)
 
 
 if __name__ == "__main__":

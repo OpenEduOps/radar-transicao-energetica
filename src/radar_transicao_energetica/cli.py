@@ -12,6 +12,13 @@ from radar_transicao_energetica.data import DataSourceMetadata, GenerationDataEr
 from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
 from radar_transicao_energetica.ons import parse_ons_period
 from radar_transicao_energetica.serialization import analysis_payload
+from radar_transicao_energetica.weather import (
+    DEFAULT_WEATHER_FORECAST_DAYS,
+    DEFAULT_WEATHER_LATITUDE,
+    DEFAULT_WEATHER_LONGITUDE,
+    WeatherSourceMetadata,
+    WeatherSummary,
+)
 
 
 DEFAULT_CACHE_PATH = Path("data/cache/analises.sqlite")
@@ -37,6 +44,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             ons_year=ons_year,
             ons_month=ons_month,
             prefer_cache=not args.sem_cache,
+            include_weather=args.clima == "open-meteo",
+            weather_latitude=args.clima_latitude,
+            weather_longitude=args.clima_longitude,
+            weather_forecast_days=args.clima_dias,
         )
     except (GenerationDataError, ValueError) as exc:
         parser.exit(status=1, message=f"Erro: {exc}\n")
@@ -52,6 +63,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                     cache_path=result.cache_path,
                     data_source=result.data_source,
                     cache_hit=result.cache_hit,
+                    weather_source=result.weather_source,
+                    weather_summary=result.weather_summary,
+                    weather_records=result.weather_records,
+                    weather_error=result.weather_error,
                 ),
                 ensure_ascii=False,
                 indent=2,
@@ -65,6 +80,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 result.alert.message,
                 result.baseline,
                 result.data_source,
+                result.weather_summary,
+                result.weather_source,
+                result.weather_error,
             )
         )
         if result.cache_path:
@@ -105,6 +123,30 @@ def build_parser() -> argparse.ArgumentParser:
         help="Nao le nem grava cache local da ultima analise.",
     )
     parser.add_argument(
+        "--clima",
+        choices=("nenhum", "open-meteo"),
+        default="nenhum",
+        help="Integra fonte climatica opcional. Padrao: nenhum.",
+    )
+    parser.add_argument(
+        "--clima-latitude",
+        type=float,
+        default=DEFAULT_WEATHER_LATITUDE,
+        help=f"Latitude usada no Open-Meteo. Padrao: {DEFAULT_WEATHER_LATITUDE}.",
+    )
+    parser.add_argument(
+        "--clima-longitude",
+        type=float,
+        default=DEFAULT_WEATHER_LONGITUDE,
+        help=f"Longitude usada no Open-Meteo. Padrao: {DEFAULT_WEATHER_LONGITUDE}.",
+    )
+    parser.add_argument(
+        "--clima-dias",
+        type=int,
+        default=DEFAULT_WEATHER_FORECAST_DAYS,
+        help=f"Dias de previsao climatica. Padrao: {DEFAULT_WEATHER_FORECAST_DAYS}.",
+    )
+    parser.add_argument(
         "--json",
         action="store_true",
         help="Imprime resultado resumido em JSON.",
@@ -118,6 +160,9 @@ def render_report(
     alert_message: str,
     baseline: BaselinePrediction,
     data_source: DataSourceMetadata | None = None,
+    weather_summary: WeatherSummary | None = None,
+    weather_source: WeatherSourceMetadata | None = None,
+    weather_error: str | None = None,
 ) -> str:
     share_text = "sem dados" if summary.renewable_share is None else f"{summary.renewable_share:.1%}"
     baseline_text = (
@@ -141,6 +186,13 @@ def render_report(
         f"Baseline proxima janela: {baseline_text}",
         f"Baseline MAE: {baseline_error_text}",
     ]
+    weather_lines = _format_weather_lines(
+        weather_summary=weather_summary,
+        weather_source=weather_source,
+        weather_error=weather_error,
+    )
+    if weather_lines:
+        lines.extend(weather_lines)
     latest_comparison = baseline.comparisons[-1] if baseline.comparisons else None
     if latest_comparison is not None:
         lines.append(
@@ -171,3 +223,42 @@ def _format_data_source(data_source: DataSourceMetadata | None) -> str:
     if data_source.kind == "arquivo" and data_source.path:
         return f"{data_source.label}: {data_source.path}"
     return data_source.label
+
+
+def _format_weather_lines(
+    *,
+    weather_summary: WeatherSummary | None,
+    weather_source: WeatherSourceMetadata | None,
+    weather_error: str | None,
+) -> list[str]:
+    if weather_source is None and weather_summary is None and weather_error is None:
+        return []
+    label = "Open-Meteo" if weather_source is None else weather_source.label
+    if weather_error is not None:
+        return [f"Clima: indisponivel ({label}): {weather_error}"]
+    if weather_summary is None:
+        return [f"Clima: sem dados ({label})"]
+    return [
+        (
+            "Clima: "
+            f"{label} "
+            f"({weather_summary.period_start:%Y-%m-%d %H:%M} -> "
+            f"{weather_summary.period_end:%Y-%m-%d %H:%M})"
+        ),
+        f"Temperatura media: {_format_optional_number(weather_summary.average_temperature_2m_c, 'C')}",
+        f"Vento medio: {_format_optional_number(weather_summary.average_wind_speed_10m_kmh, 'km/h')}",
+        (
+            "Radiacao solar media: "
+            f"{_format_optional_number(weather_summary.average_shortwave_radiation_w_m2, 'W/m2')}"
+        ),
+        (
+            "Nebulosidade media: "
+            f"{_format_optional_number(weather_summary.average_cloud_cover_percent, '%')}"
+        ),
+    ]
+
+
+def _format_optional_number(value: float | None, unit: str) -> str:
+    if value is None:
+        return "sem dados"
+    return f"{value:.1f} {unit}"

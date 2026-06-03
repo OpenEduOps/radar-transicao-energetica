@@ -12,6 +12,11 @@ from radar_transicao_energetica.baseline import BaselinePrediction
 from radar_transicao_energetica.data import DataSourceMetadata, GenerationRecord
 from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
 from radar_transicao_energetica.serialization import analysis_payload
+from radar_transicao_energetica.weather import (
+    WeatherRecord,
+    WeatherSourceMetadata,
+    WeatherSummary,
+)
 
 
 CACHE_SCHEMA_VERSION = "1"
@@ -30,6 +35,11 @@ def write_analysis_cache(
     alert: RenewableAlert,
     baseline: BaselinePrediction,
     data_source: DataSourceMetadata | None = None,
+    cache_hit: bool = False,
+    weather_source: WeatherSourceMetadata | None = None,
+    weather_summary: WeatherSummary | None = None,
+    weather_records: list[WeatherRecord] | None = None,
+    weather_error: str | None = None,
 ) -> Path:
     cache_path = Path(path)
     payload = analysis_payload(
@@ -39,6 +49,11 @@ def write_analysis_cache(
         baseline=baseline,
         cache_path=cache_path,
         data_source=data_source,
+        cache_hit=cache_hit,
+        weather_source=weather_source,
+        weather_summary=weather_summary,
+        weather_records=weather_records,
+        weather_error=weather_error,
     )
 
     try:

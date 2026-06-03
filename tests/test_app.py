@@ -15,6 +15,7 @@ from radar_transicao_energetica.cache import (
     read_latest_generation_records,
 )
 from radar_transicao_energetica.data import GenerationRecord
+from radar_transicao_energetica.weather import WeatherDataError, WeatherRecord
 
 
 class AppTest(unittest.TestCase):
@@ -130,9 +131,85 @@ class AppTest(unittest.TestCase):
         self.assertFalse(result.cache_hit)
         self.assertEqual(result.summary.renewable_share, 0.5)
 
+    def test_run_analysis_persists_weather_when_ons_records_are_reused_from_cache(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "analise.sqlite"
+            run_analysis(
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                cache_path=cache_path,
+                ons_loader=lambda _year, _month: [
+                    GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 80.0),
+                    GenerationRecord(datetime(2026, 1, 1, 0), "termica", 20.0),
+                ],
+            )
+
+            result = run_analysis(
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                cache_path=cache_path,
+                ons_loader=lambda _year, _month: [],
+                include_weather=True,
+                weather_loader=lambda **_kwargs: [
+                    WeatherRecord(datetime(2026, 1, 1, 0), 22.0, 8.0, 0.0, 40.0),
+                ],
+            )
+            cache_payload = read_latest_analysis_cache(cache_path)
+
+        self.assertTrue(result.cache_hit)
+        self.assertEqual(cache_payload["cache_hit"], True)
+        self.assertEqual(cache_payload["weather"]["summary"]["record_count"], 1)
+        self.assertEqual(cache_payload["summary"]["renewable_share"], 0.8)
+
     def test_run_analysis_requires_ons_period(self) -> None:
         with self.assertRaisesRegex(ValueError, "--ons-periodo"):
             run_analysis(source="ons")
+
+    def test_run_analysis_can_include_weather_with_fixture_loader(self) -> None:
+        def fake_weather_loader(**kwargs: object) -> list[WeatherRecord]:
+            self.assertEqual(kwargs["latitude"], -15.7939)
+            self.assertEqual(kwargs["longitude"], -47.8828)
+            self.assertEqual(kwargs["forecast_days"], 2)
+            return [
+                WeatherRecord(datetime(2026, 1, 1, 0), 22.0, 8.0, 0.0, 40.0),
+                WeatherRecord(datetime(2026, 1, 1, 1), 24.0, 10.0, 120.0, 60.0),
+            ]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "analise.sqlite"
+
+            result = run_analysis(
+                cache_path=cache_path,
+                include_weather=True,
+                weather_loader=fake_weather_loader,
+            )
+            cache_payload = read_latest_analysis_cache(cache_path)
+
+        self.assertIsNotNone(result.weather_source)
+        self.assertIsNotNone(result.weather_summary)
+        self.assertIsNone(result.weather_error)
+        assert result.weather_summary is not None
+        self.assertEqual(result.weather_summary.record_count, 2)
+        self.assertEqual(result.weather_summary.average_temperature_2m_c, 23.0)
+        self.assertEqual(cache_payload["weather"]["summary"]["record_count"], 2)
+        self.assertEqual(cache_payload["weather"]["data_source"]["kind"], "open-meteo")
+
+    def test_run_analysis_keeps_generation_when_weather_loader_fails(self) -> None:
+        def failing_weather_loader(**_kwargs: object) -> list[WeatherRecord]:
+            raise WeatherDataError("fixture climatica indisponivel")
+
+        result = run_analysis(
+            write_cache=False,
+            include_weather=True,
+            weather_loader=failing_weather_loader,
+        )
+
+        self.assertGreater(len(result.records), 0)
+        self.assertEqual(result.weather_records, [])
+        self.assertEqual(result.weather_error, "fixture climatica indisponivel")
+        self.assertIsNone(result.weather_summary)
 
 
 if __name__ == "__main__":
