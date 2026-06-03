@@ -83,9 +83,9 @@ Decisões tomadas para reduzir risco:
 
 Limites assumidos:
 
-- o executável inicial não valida ainda PySide6, pandas, scikit-learn ou gráficos ricos;
+- o executável inicial não valida ainda PySide6, pandas, scikit-learn ou bibliotecas gráficas ricas;
 - o baseline atual é média móvel avaliada por MAE com analogia climática simples, não modelo de machine learning com `scikit-learn`;
-- a visualização atual combina CLI textual e tela desktop inicial em tabela, ainda sem gráfico rico;
+- a visualização atual combina CLI textual, tabela desktop e gráficos Canvas iniciais, ainda sem biblioteca gráfica rica;
 - o cache atual é SQLite, com análise, metadados, versão de schema, registros normalizados e reuso ONS por período;
 - a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
 - a primeira fonte climática foi consolidada com Open-Meteo Forecast API, de forma opcional, com limite local de 5 MB, fixtures offline e uso simples como feature do baseline quando há alinhamento por período;
@@ -446,9 +446,9 @@ Commits sugeridos:
 
 ## Fase 6: Visualização Inicial
 
-Status: parcialmente concluída.
+Status: concluída para visualização inicial.
 
-A implementação atual entrega visualização textual por fonte, tendência de participação renovável e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, geração por fonte em tabela, alerta interpretável, baseline da próxima janela, MAE e comparação real vs previsto. Gráfico visual rico, estados visuais mais completos e QA manual continuam planejados.
+A implementação atual entrega visualização textual por fonte, tendência de participação renovável, comparação textual real vs previsto e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, geração por fonte em tabela e gráfico Canvas, alerta interpretável, baseline da próxima janela, MAE, tabela de comparação real vs previsto e gráfico Canvas do baseline. Estados visuais mais completos, acessibilidade e QA manual continuam planejados.
 
 Rastreabilidade:
 
@@ -463,6 +463,7 @@ Criar a primeira visualização de geração por fonte.
 Entregáveis:
 
 - tabela desktop de geração por fonte;
+- gráfico Canvas inicial de geração por fonte;
 - modelo de apresentação testável sem abrir janela;
 - estado sem dados;
 - estado de erro;
@@ -606,9 +607,9 @@ Commits sugeridos:
 
 ## Fase 9: Comparação e Alerta Interpretável
 
-Status: parcialmente concluída.
+Status: concluída para comparação inicial e alerta textual.
 
-A implementação atual gera alerta textual com base na participação renovável calculada e exibe comparação real vs previsto do baseline no CLI, no JSON e na interface desktop inicial. Comparação visual mais rica entre real e previsto ainda está pendente.
+A implementação atual gera alerta textual com base na participação renovável calculada e exibe comparação real vs previsto do baseline no JSON, na CLI com gráfico textual e na interface desktop com tabela e gráfico Canvas. Comparação visual mais sofisticada, QA manual e eventual biblioteca gráfica rica continuam como evolução, não como pré-requisito para avaliar a heurística atual.
 
 Rastreabilidade:
 
@@ -622,7 +623,7 @@ Apresentar comparação entre dado real e previsão e gerar alerta compreensíve
 
 Entregáveis:
 
-- métrica, comparação textual ou comparação visual;
+- métrica, comparação textual e comparação visual inicial;
 - regra inicial de alerta;
 - mensagens educacionais;
 - teste da classificação textual;
@@ -642,6 +643,7 @@ Critérios de aceite:
 - dados insuficientes geram mensagem apropriada;
 - comparação não promete precisão operacional;
 - documentação reforça caráter educacional.
+- a visualização diferencia média móvel pura de analogia climática.
 
 Commits sugeridos:
 

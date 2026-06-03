@@ -26,7 +26,7 @@ A primeira fatia funcional já foi implementada. O projeto atualmente:
 - reutiliza cache ONS por período antes de baixar novamente a fonte pública;
 - integra clima opcional via Open-Meteo, com temperatura, vento, radiação solar e nebulosidade;
 - avalia o baseline de média móvel com MAE, comparação real vs previsto e features climáticas simples quando há clima alinhado;
-- abre uma interface desktop inicial em Tkinter para exemplo embutido, CSV local ou ONS mensal;
+- abre uma interface desktop inicial em Tkinter para exemplo embutido, CSV local ou ONS mensal, com tabela e gráficos Canvas;
 - executa testes automatizados com `unittest`;
 - pode gerar um `.exe` local experimental com PyInstaller;
 - bloqueia release pública do `.exe` enquanto UI estável, smoke test formal, checksum, build automático na CI e workflow de release estiverem pendentes.
@@ -41,12 +41,12 @@ Contribuições úteis agora incluem:
 - evoluir políticas de expiração ou invalidação do cache ONS;
 - ampliar fixtures climáticas e validar cenários Open-Meteo sem rede;
 - melhorar ou explicar as features climáticas simples usadas no baseline;
-- melhorar estados, mensagens e QA manual da interface desktop inicial;
-- melhorar visualização e interpretação da comparação baseline;
+- melhorar estados, mensagens, acessibilidade e QA manual da interface desktop inicial;
+- refinar a visualização e interpretação da comparação baseline em cenários com muitos períodos;
 - evoluir critérios de release do `.exe` sem publicar artefato antes do gate;
 - revisar critérios de aceite.
 
-A próxima evolução recomendada é tornar a comparação real vs previsto mais visual e clara por período, destacando quando a previsão usou média móvel pura ou features climáticas simples. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
+A próxima evolução recomendada é registrar QA manual da interface desktop inicial e refinar estados visuais antes de avaliar bibliotecas gráficas mais ricas ou `scikit-learn`. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
 
 ## Padrão de Trabalho
 
@@ -61,6 +61,7 @@ Exemplos de bons escopos:
 - adicionar teste para analogia climática do baseline;
 - adicionar teste para cache ou serialização;
 - adicionar teste de comparação real vs previsto do baseline;
+- adicionar teste para dados de gráfico da interface desktop;
 - adicionar teste para modelo de apresentação da interface sem abrir janela;
 - adicionar teste para critérios de release ou packaging;
 - melhorar mensagem de erro para dados indisponíveis;
@@ -137,6 +138,6 @@ Não inclua:
 
 ## Como Escolher Uma Issue
 
-Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial, cálculo de participação renovável, cache SQLite com reuso ONS, integração climática inicial, features climáticas simples, baseline e interface desktop inicial já existem. Boas contribuições agora estão em visualização mais clara do baseline, fixtures ONS/Open-Meteo, política de expiração do cache e QA da tela.
+Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial, cálculo de participação renovável, cache SQLite com reuso ONS, integração climática inicial, features climáticas simples, baseline e interface desktop inicial já existem. Boas contribuições agora estão em QA da tela, refinamento visual do baseline, fixtures ONS/Open-Meteo e política de expiração do cache.
 
 Se uma issue parecer grande demais, divida em uma etapa menor com critério de aceite próprio.

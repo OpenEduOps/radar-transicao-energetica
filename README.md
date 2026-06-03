@@ -22,14 +22,14 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 - grava cache SQLite local com a última análise e os registros normalizados;
 - reutiliza registros ONS já normalizados no cache para o mesmo período;
 - integra previsão climática horária opcional via Open-Meteo, com temperatura, vento, radiação solar e nebulosidade;
-- exibe gráfico textual por fonte e tendência por período;
+- exibe gráfico textual por fonte, tendência por período e comparação real vs previsto;
 - calcula baseline por média móvel com MAE, comparação real vs previsto e features climáticas simples quando há clima alinhado por período;
 - gera alerta interpretável;
-- abre uma primeira interface desktop em Tkinter para visualizar fonte, período, métricas centrais, geração por fonte, clima opcional, alerta e comparação do baseline;
+- abre uma primeira interface desktop em Tkinter para visualizar fonte, período, métricas centrais, geração por fonte, gráficos Canvas, clima opcional, alerta e comparação do baseline;
 - possui testes automatizados com `unittest`;
 - pode ser empacotado em um primeiro `.exe` local experimental com PyInstaller.
 
-O primeiro `.exe` ainda não é uma release pública completa. Ele serve como validação local do fluxo principal antes de avançar para gráficos ricos, empacotamento de release e smoke test formal. A interface desktop atual é uma tela inicial, ainda sem gráficos ricos ou instalador.
+O primeiro `.exe` ainda não é uma release pública completa. Ele serve como validação local do fluxo principal antes de avançar para QA manual formal, empacotamento de release e smoke test. A interface desktop atual tem gráficos Canvas iniciais, ainda sem biblioteca gráfica rica, instalador ou validação visual formal.
 
 ## Documentação do Projeto
 
@@ -84,7 +84,7 @@ $env:PYTHONPATH='src'
 python -m radar_transicao_energetica.desktop
 ```
 
-A interface desktop inicial permite escolher exemplo embutido, CSV local ou fonte ONS mensal. Ela mostra geração por fonte em tabela, participação renovável, geração total, geração renovável, alerta interpretável, baseline da próxima janela, MAE, contagem de comparações com clima, última comparação real vs previsto e, quando habilitado, um resumo climático Open-Meteo. Quando o cache está habilitado, a tela usa o caminho padrão `data/cache/analises.sqlite`.
+A interface desktop inicial permite escolher exemplo embutido, CSV local ou fonte ONS mensal. Ela mostra geração por fonte em tabela e gráfico Canvas, participação renovável, geração total, geração renovável, alerta interpretável, baseline da próxima janela, MAE, contagem de comparações com clima, tabela e gráfico real vs previsto por período e, quando habilitado, um resumo climático Open-Meteo. Quando o cache está habilitado, a tela usa o caminho padrão `data/cache/analises.sqlite`.
 
 Executar com o CSV de exemplo:
 
@@ -167,7 +167,7 @@ O baseline atual continua sem `scikit-learn`. A melhoria desta etapa é que a ap
 - calcula MAE, em pontos percentuais no relatório textual;
 - mantém a previsão da próxima janela para demonstração.
 
-No JSON, o bloco `baseline` inclui `error_metric`, `mean_absolute_error`, `evaluated_points`, `weather_feature_names`, `weather_adjusted_comparisons`, `predicted_with_weather` e `comparisons`. No relatório textual, a CLI mostra `Baseline MAE`, contagem de comparações com features climáticas e a última comparação real vs previsto.
+No JSON, o bloco `baseline` inclui `error_metric`, `mean_absolute_error`, `evaluated_points`, `weather_feature_names`, `weather_adjusted_comparisons`, `predicted_with_weather` e `comparisons`. No relatório textual, a CLI mostra `Baseline MAE`, contagem de comparações com features climáticas, última comparação e um gráfico textual por período com legenda para média móvel pura e analogia climática. Na interface desktop, a primeira tela limita a visualização do baseline aos últimos 8 pontos para manter a leitura legível.
 
 Rodar testes:
 
@@ -433,16 +433,16 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 - rodar localmente sem credenciais privadas;
 - ter instruções claras para instalação, execução e testes.
 
-A implementação atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação textual real vs previsto, alerta textual e primeira interface desktop. O fechamento do MVP ainda depende de comparação visual mais robusta, gráficos ricos e decisão de release.
+A implementação atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação textual e visual real vs previsto, alerta textual e primeira interface desktop com gráficos Canvas. O fechamento do MVP ainda depende de QA manual, refinamento visual e decisão de release.
 
 ## Próximos Passos
 
 Próxima sequência técnica recomendada:
 
-1. Evoluir a comparação real vs previsto para visualização mais clara por período, destacando quando clima foi usado.
-2. Evoluir a interface desktop inicial para gráficos visuais e melhor QA manual.
+1. Registrar QA manual da interface desktop inicial, incluindo gráficos Canvas e cenários com/sem clima.
+2. Refinar estados visuais e acessibilidade da tela antes de trocar Tkinter ou adicionar bibliotecas gráficas.
 3. Definir política de expiração ou invalidação do cache ONS quando necessário.
-4. Avaliar quando faz sentido trocar a heurística por um modelo com `scikit-learn`.
+4. Avaliar `scikit-learn` apenas depois que a leitura visual do baseline estiver estável.
 5. Transformar o `.exe` experimental em artefato de release apenas quando o fluxo visual estiver estável.
 6. Adicionar smoke test formal do executável e CI de build de artefato depois da primeira interface.
 

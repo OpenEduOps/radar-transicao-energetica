@@ -82,7 +82,7 @@ Na comparação inicial entre ONS, ANEEL e CCEE, o ONS foi escolhido por entrega
 
 O contrato normalizado da primeira fonte pública usa `period`, `source` e `generation_mw`, derivados dos campos ONS `din_instante`, `nom_tipousina` e `val_geracaomwmed`. O cache atual usa SQLite para registrar a análise, metadados da fonte, versão de schema e registros normalizados.
 
-A primeira interface desktop usa Tkinter e reutiliza o fluxo de análise existente. Ela mostra fonte, período, métricas centrais, geração por fonte em tabela, alerta interpretável e comparação do baseline sem duplicar regras de domínio na camada visual.
+A primeira interface desktop usa Tkinter e reutiliza o fluxo de análise existente. Ela mostra fonte, período, métricas centrais, geração por fonte em tabela e gráfico Canvas, alerta interpretável e comparação do baseline em tabela e gráfico Canvas sem duplicar regras de domínio na camada visual.
 
 A integração climática inicial usa temperatura, vento, radiação solar e nebulosidade como enriquecimento interpretável. Esses dados já aparecem no CLI, JSON, cache e desktop quando habilitados, e alimentam o baseline por analogia climática simples quando há alinhamento por período.
 
@@ -280,4 +280,4 @@ Primeiras issues originalmente recomendadas:
 
 Essas quatro issues criam a base para uma primeira demonstração funcional sem antecipar complexidade visual pesada, empacotamento de release ou modelos avançados.
 
-Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-007` está atendida com integração climática Open-Meteo e features simples no baseline; `ISSUE-008` está implementada como baseline de média móvel com analogia climática simples; `ISSUE-009` e `ISSUE-010` estão parcialmente atendidas com comparação e alerta; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são visualização mais clara da comparação real vs previsto, evolução da interface para gráficos e QA manual, política de expiração do cache ONS quando necessário e só então preparação de release pública.
+Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-007` está atendida com integração climática Open-Meteo e features simples no baseline; `ISSUE-008` está implementada como baseline de média móvel com analogia climática simples; `ISSUE-009` está atendida para comparação inicial em JSON, CLI e desktop; `ISSUE-010` está parcialmente atendida com alerta textual; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são QA manual da interface, refinamento visual, política de expiração do cache ONS quando necessário e só então preparação de release pública.

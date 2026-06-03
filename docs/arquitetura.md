@@ -4,7 +4,7 @@ Este documento descreve a arquitetura inicial do **Radar da Transição Energét
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação real vs previsto e alerta textual. As próximas camadas devem avançar para visualização mais clara dessas comparações, gráficos ricos e executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação real vs previsto, gráficos Canvas iniciais e alerta textual. As próximas camadas devem avançar para QA manual, refinamento visual, gráficos ricos opcionais e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
@@ -16,7 +16,7 @@ A arquitetura deve permitir evolução incremental: a base atual é uma aplicaç
 | ML | Média móvel e analogia climática simples; `scikit-learn` planejado | Baseline interpretável com MAE antes de modelos mais complexos. |
 | Cache local | SQLite | Banco local sem dependência externa para análise, metadados e registros normalizados. |
 | UI desktop | Tkinter inicial; PySide6 planejado | Tkinter permite a primeira tela sem dependências novas; PySide6 fica para uma experiência mais rica. |
-| Gráficos | Texto e tabela agora; Matplotlib ou Plotly planejado | Visualização textual e tabela desktop validam o conceito antes de gráficos ricos. |
+| Gráficos | Texto e Canvas Tkinter agora; Matplotlib ou Plotly planejado | Visualização textual e gráficos locais validam o conceito antes de bibliotecas ricas. |
 | Empacotamento | PyInstaller local experimental | Gera `.exe` local, ainda sem release pública. |
 | Release | Gate local no pacote | Mantém release pública bloqueada até UI estável, smoke test, checksum, CI de artefato e workflow definidos. |
 
@@ -84,8 +84,8 @@ radar-transicao-energetica/
 | `domain.py` | Cálculo de participação renovável e agregações por período. |
 | `baseline.py` | Baseline por média móvel, MAE, analogia climática simples e comparação walk-forward real vs previsto. |
 | `alerts.py` | Regras textuais de alerta educacional. |
-| `charts.py` | Visualização textual inicial. |
-| `desktop.py` | Interface desktop inicial em Tkinter e modelo de apresentação testável sem abrir janela. |
+| `charts.py` | Visualização textual inicial por fonte, tendência e comparação real vs previsto. |
+| `desktop.py` | Interface desktop inicial em Tkinter, gráficos Canvas e modelo de apresentação testável sem abrir janela. |
 | `features.py` | Alinhamento de clima por período, criação de features horárias simples e distância climática entre períodos. |
 | `weather.py` | Construção da URL Open-Meteo, download limitado, normalização horária, resumo climático e validações de coordenadas. |
 | `release.py` | Critérios de readiness e mensagens do gate de release pública do `.exe`. |
@@ -125,7 +125,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 -> enriquecimento climático opcional
 -> criação de features climáticas por período
 -> baseline por média móvel ou analogia climática simples
--> visualização por CLI ou desktop, baseline e alerta interpretável
+-> visualização por CLI ou desktop, gráficos iniciais, baseline e alerta interpretável
 ```
 
 ## Princípios
@@ -167,8 +167,8 @@ Fonte pública ONS, CSV local ou exemplo embutido
 
 - Evoluir a fonte ONS para filtros de período e agregações mais eficientes quando o volume de dados exigir.
 - Definir política de expiração ou invalidação para cache ONS quando necessário.
-- Definir quando a heurística climática simples deve evoluir para modelo estatístico ou `scikit-learn`.
+- Definir quando a heurística climática simples deve evoluir para modelo estatístico ou `scikit-learn`, após estabilizar a leitura visual.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
-- Definir Matplotlib ou Plotly para os primeiros gráficos ricos.
-- Evoluir a interface Tkinter inicial para uma experiência desktop mais completa.
+- Definir se Matplotlib ou Plotly serão necessários além dos gráficos Canvas atuais.
+- Evoluir a interface Tkinter inicial para uma experiência desktop mais completa e validada manualmente.
 - Definir quando o `.exe` local poderá virar artefato de release.
