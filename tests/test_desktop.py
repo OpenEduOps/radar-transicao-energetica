@@ -58,6 +58,10 @@ class FakeCanvas:
         self.calls.append(("create_oval", args, kwargs))
         return len(self.calls)
 
+    def create_polygon(self, *args: object, **kwargs: object) -> int:
+        self.calls.append(("create_polygon", args, kwargs))
+        return len(self.calls)
+
     def calls_named(self, name: str) -> list[tuple[tuple[object, ...], dict[str, object]]]:
         return [(args, kwargs) for call_name, args, kwargs in self.calls if call_name == name]
 
@@ -329,7 +333,7 @@ class DesktopTest(unittest.TestCase):
             )
         )
 
-        self.assertIn("AVISO - Clima indisponivel: sem conexao", text)
+        self.assertIn("ATENCAO - Clima indisponivel: sem conexao", text)
         self.assertIn("INFO - Cache reutilizado: cache local", text)
 
     def test_format_state_messages_reports_no_warnings(self) -> None:
@@ -348,12 +352,13 @@ class DesktopTest(unittest.TestCase):
         )
 
         self.assertEqual(canvas.calls[0][0], "delete")
-        self.assertIn("hidraulica", canvas.text_values())
+        self.assertIn("hidraulica (renovavel)", canvas.text_values())
         self.assertEqual(len(canvas.calls_named("create_rectangle")), 3)
         self.assertEqual(
             canvas.fill_values("create_rectangle"),
-            ["#2e7d32", "#c62828", "#607d8b"],
+            ["#166534", "#991b1b", "#374151"],
         )
+        self.assertIn("100 MW", canvas.text_values())
 
     def test_generation_chart_draws_empty_state_without_tk_window(self) -> None:
         canvas = FakeCanvas(width=520, height=160)
@@ -405,22 +410,22 @@ class DesktopTest(unittest.TestCase):
             ),
         )
 
-        self.assertIn("real", canvas.text_values())
-        self.assertIn("prev media", canvas.text_values())
-        self.assertIn("prev clima", canvas.text_values())
+        self.assertIn("Real", canvas.text_values())
+        self.assertIn("Prev. media", canvas.text_values())
+        self.assertIn("Prev. clima", canvas.text_values())
         self.assertIn("100%", canvas.text_values())
         self.assertIn("0%", canvas.text_values())
         self.assertEqual(
             canvas.fill_values("create_oval"),
-            [
-                "#2e7d32",
-                "#1565c0",
-                "#ef6c00",
-                "#2e7d32",
-                "#1565c0",
-                "#2e7d32",
-                "#ef6c00",
-            ],
+            ["#166534", "#166534", "#166534"],
+        )
+        self.assertEqual(
+            canvas.fill_values("create_rectangle"),
+            ["#1d4ed8", "#1d4ed8"],
+        )
+        self.assertEqual(
+            canvas.fill_values("create_polygon"),
+            ["#9a3412", "#9a3412"],
         )
         self.assertGreaterEqual(len(canvas.calls_named("create_line")), 3)
 
@@ -447,7 +452,9 @@ class DesktopTest(unittest.TestCase):
         ]
 
         self.assertEqual(data_lines, [])
-        self.assertEqual(len(canvas.calls_named("create_oval")), 5)
+        self.assertEqual(len(canvas.calls_named("create_oval")), 2)
+        self.assertEqual(len(canvas.calls_named("create_rectangle")), 2)
+        self.assertEqual(len(canvas.calls_named("create_polygon")), 1)
 
     def test_desktop_redraw_charts_uses_last_view_data_without_tk_window(self) -> None:
         result = run_analysis(write_cache=False)
@@ -463,6 +470,20 @@ class DesktopTest(unittest.TestCase):
 
         self.assertGreater(len(generation_canvas.calls_named("create_rectangle")), 0)
         self.assertGreater(len(baseline_canvas.calls_named("create_oval")), 0)
+
+    def test_run_from_keyboard_executes_analysis_and_stops_event(self) -> None:
+        app = object.__new__(RadarDesktopApp)
+        calls: list[str] = []
+
+        def fake_run_current_analysis() -> None:
+            calls.append("run")
+
+        app.run_current_analysis = fake_run_current_analysis
+
+        result = RadarDesktopApp._run_from_keyboard(app, object())
+
+        self.assertEqual(calls, ["run"])
+        self.assertEqual(result, "break")
 
     def test_build_desktop_analysis_options_rejects_unknown_source(self) -> None:
         with self.assertRaisesRegex(ValueError, "Fonte de dados desconhecida"):

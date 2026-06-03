@@ -21,6 +21,14 @@ from radar_transicao_energetica.weather import (
 
 MAX_DESKTOP_BASELINE_POINTS = 8
 DesktopStateLevel = Literal["info", "aviso", "erro"]
+TEXT_COLOR = "#111827"
+MUTED_TEXT_COLOR = "#374151"
+AXIS_COLOR = "#4b5563"
+RENEWABLE_COLOR = "#166534"
+NON_RENEWABLE_COLOR = "#991b1b"
+UNKNOWN_COLOR = "#374151"
+MOVING_AVERAGE_COLOR = "#1d4ed8"
+WEATHER_COLOR = "#9a3412"
 
 
 class CanvasLike(Protocol):
@@ -37,6 +45,8 @@ class CanvasLike(Protocol):
     def create_line(self, *args: object, **kwargs: object) -> int: ...
 
     def create_oval(self, *args: object, **kwargs: object) -> int: ...
+
+    def create_polygon(self, *args: object, **kwargs: object) -> int: ...
 
 
 @dataclass(frozen=True)
@@ -295,8 +305,8 @@ def _build_state_messages(result: AnalysisResult) -> tuple[DesktopStateMessage, 
                 level="aviso",
                 title="Sem dados uteis",
                 detail=(
-                    "A geracao total do periodo esta zerada; indicadores percentuais "
-                    "ficam indisponiveis."
+                    "A geracao total do periodo esta zerada. Percentuais e baseline "
+                    "podem ficar indisponiveis."
                 ),
             )
         )
@@ -314,13 +324,13 @@ def _build_state_messages(result: AnalysisResult) -> tuple[DesktopStateMessage, 
                 level="aviso",
                 title="Baseline sem pontos suficientes",
                 detail=(
-                    "Inclua pelo menos dois periodos com participacao renovavel "
-                    "para comparar real vs previsto."
+                    "Sao necessarios pelo menos dois periodos com participacao "
+                    "renovavel para comparar real vs previsto."
                 ),
             )
         )
     if result.cache_hit:
-        detail = "Registros normalizados foram reutilizados do cache local."
+        detail = "A analise usou registros ONS ja salvos no cache SQLite local."
         if result.cache_path is not None:
             detail = f"{detail} Cache: {result.cache_path}"
         messages.append(
@@ -340,8 +350,8 @@ def _input_error_state_message(message: str) -> DesktopStateMessage:
             level="aviso",
             title="Sem dados",
             detail=(
-                "A fonte selecionada nao retornou registros de geracao "
-                "para analisar."
+                "A fonte selecionada nao retornou registros de geracao. "
+                "Revise o CSV, o periodo ONS ou o cache usado."
             ),
         )
     return DesktopStateMessage(
@@ -355,9 +365,18 @@ def _format_state_messages(messages: tuple[DesktopStateMessage, ...]) -> str:
     if not messages:
         return "Sem avisos"
     return "\n".join(
-        f"{message.level.upper()} - {message.title}: {message.detail}"
+        f"{_state_level_label(message.level)} - {message.title}: {message.detail}"
         for message in messages
     )
+
+
+def _state_level_label(level: DesktopStateLevel) -> str:
+    labels: dict[DesktopStateLevel, str] = {
+        "info": "INFO",
+        "aviso": "ATENCAO",
+        "erro": "ERRO",
+    }
+    return labels[level]
 
 
 class RadarDesktopApp:
@@ -384,10 +403,15 @@ class RadarDesktopApp:
         self.generation_canvas: tk.Canvas | None = None
         self.baseline_canvas: tk.Canvas | None = None
         self.baseline_table: ttk.Treeview | None = None
+        self.source_buttons: list[ttk.Radiobutton] = []
+        self.run_button: ttk.Button | None = None
         self.current_view_data: DesktopViewData | None = None
 
         self._build_layout()
+        self._configure_keyboard_shortcuts()
         self.run_current_analysis()
+        if self.source_buttons:
+            self.source_buttons[0].focus_set()
 
     def _build_layout(self) -> None:
         self.root.columnconfigure(0, weight=1)
@@ -402,52 +426,94 @@ class RadarDesktopApp:
             (("Exemplo", "exemplo"), ("CSV", "csv"), ("ONS", "ons")),
             start=1,
         ):
-            ttk.Radiobutton(
+            button = ttk.Radiobutton(
                 controls,
                 text=label,
                 value=value,
                 variable=self.source_var,
                 command=self._sync_control_state,
-            ).grid(row=0, column=index, padx=(8, 0), sticky="w")
+                takefocus=True,
+            )
+            button.grid(row=0, column=index, padx=(8, 0), sticky="w")
+            self.source_buttons.append(button)
 
-        ttk.Label(controls, text="CSV").grid(row=1, column=0, pady=(8, 0), sticky="w")
-        self.csv_entry = ttk.Entry(controls, textvariable=self.csv_path_var)
+        ttk.Label(controls, text="CSV local").grid(row=1, column=0, pady=(8, 0), sticky="w")
+        self.csv_entry = ttk.Entry(controls, textvariable=self.csv_path_var, takefocus=True)
         self.csv_entry.grid(row=1, column=1, columnspan=4, padx=(8, 0), pady=(8, 0), sticky="ew")
-        self.csv_button = ttk.Button(controls, text="Selecionar", command=self._choose_csv)
+        self.csv_button = ttk.Button(
+            controls,
+            text="Selecionar arquivo",
+            command=self._choose_csv,
+            takefocus=True,
+        )
         self.csv_button.grid(row=1, column=5, padx=(8, 0), pady=(8, 0), sticky="w")
 
-        ttk.Label(controls, text="ONS").grid(row=2, column=0, pady=(8, 0), sticky="w")
-        self.ons_entry = ttk.Entry(controls, textvariable=self.ons_period_var, width=12)
+        ttk.Label(controls, text="Periodo ONS").grid(row=2, column=0, pady=(8, 0), sticky="w")
+        self.ons_entry = ttk.Entry(
+            controls,
+            textvariable=self.ons_period_var,
+            width=12,
+            takefocus=True,
+        )
         self.ons_entry.grid(row=2, column=1, padx=(8, 0), pady=(8, 0), sticky="w")
 
-        ttk.Checkbutton(
+        self.weather_checkbutton = ttk.Checkbutton(
             controls,
             text="Clima Open-Meteo",
             variable=self.include_weather_var,
             command=self._sync_control_state,
-        ).grid(row=3, column=0, pady=(8, 0), sticky="w")
-        ttk.Label(controls, text="Lat").grid(row=3, column=1, padx=(8, 0), pady=(8, 0), sticky="e")
+            takefocus=True,
+        )
+        self.weather_checkbutton.grid(row=3, column=0, pady=(8, 0), sticky="w")
+        ttk.Label(controls, text="Latitude").grid(
+            row=3,
+            column=1,
+            padx=(8, 0),
+            pady=(8, 0),
+            sticky="e",
+        )
         self.weather_latitude_entry = ttk.Entry(
             controls,
             textvariable=self.weather_latitude_var,
             width=10,
+            takefocus=True,
         )
         self.weather_latitude_entry.grid(row=3, column=2, padx=(4, 0), pady=(8, 0), sticky="w")
-        ttk.Label(controls, text="Lon").grid(row=3, column=3, padx=(8, 0), pady=(8, 0), sticky="e")
+        ttk.Label(controls, text="Longitude").grid(
+            row=3,
+            column=3,
+            padx=(8, 0),
+            pady=(8, 0),
+            sticky="e",
+        )
         self.weather_longitude_entry = ttk.Entry(
             controls,
             textvariable=self.weather_longitude_var,
             width=10,
+            takefocus=True,
         )
         self.weather_longitude_entry.grid(row=3, column=4, padx=(4, 0), pady=(8, 0), sticky="w")
-        ttk.Label(controls, text="Dias").grid(row=3, column=5, padx=(8, 0), pady=(8, 0), sticky="e")
+        ttk.Label(controls, text="Dias clima").grid(
+            row=3,
+            column=5,
+            padx=(8, 0),
+            pady=(8, 0),
+            sticky="e",
+        )
         self.weather_days_entry = ttk.Entry(
             controls,
             textvariable=self.weather_forecast_days_var,
             width=4,
+            takefocus=True,
         )
         self.weather_days_entry.grid(row=3, column=6, padx=(4, 0), pady=(8, 0), sticky="w")
-        ttk.Button(controls, text="Executar", command=self.run_current_analysis).grid(
+        self.run_button = ttk.Button(
+            controls,
+            text="Executar analise",
+            command=self.run_current_analysis,
+            takefocus=True,
+        )
+        self.run_button.grid(
             row=3,
             column=7,
             padx=(8, 0),
@@ -493,7 +559,7 @@ class RadarDesktopApp:
                 sticky="w",
             )
 
-        states = ttk.LabelFrame(content, text="Estados", padding=12)
+        states = ttk.LabelFrame(content, text="Estado da analise", padding=12)
         states.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(12, 0))
         states.columnconfigure(0, weight=1)
         ttk.Label(
@@ -538,7 +604,7 @@ class RadarDesktopApp:
             wraplength=390,
             justify="left",
         ).grid(row=1, column=0, sticky="ew", pady=(4, 16))
-        ttk.Label(insights, text="Comparacao").grid(row=2, column=0, sticky="w")
+        ttk.Label(insights, text="Real vs previsto").grid(row=2, column=0, sticky="w")
         ttk.Label(
             insights,
             textvariable=self.baseline_comparison_var,
@@ -565,9 +631,9 @@ class RadarDesktopApp:
             height=5,
         )
         self.baseline_table.heading("#0", text="Periodo")
-        self.baseline_table.heading("actual", text="Real")
-        self.baseline_table.heading("predicted", text="Previsto")
-        self.baseline_table.heading("error", text="Erro")
+        self.baseline_table.heading("actual", text="Real (%)")
+        self.baseline_table.heading("predicted", text="Previsto (%)")
+        self.baseline_table.heading("error", text="Erro (p.p.)")
         self.baseline_table.heading("method", text="Metodo")
         self.baseline_table.column("#0", width=150, anchor="w")
         self.baseline_table.column("actual", width=90, anchor="e")
@@ -590,6 +656,14 @@ class RadarDesktopApp:
         ttk.Label(status, textvariable=self.status_var).grid(row=0, column=0, sticky="w")
 
         self._sync_control_state()
+
+    def _configure_keyboard_shortcuts(self) -> None:
+        self.root.bind("<Control-r>", self._run_from_keyboard)
+        self.root.bind("<Return>", self._run_from_keyboard)
+
+    def _run_from_keyboard(self, _event: tk.Event[object]) -> str:
+        self.run_current_analysis()
+        return "break"
 
     def _sync_control_state(self) -> None:
         source = self.source_var.get()
@@ -780,7 +854,7 @@ def _draw_generation_chart(
         _draw_empty_canvas(canvas, width, height, "Geracao sem valor positivo")
         return
 
-    left = 96
+    left = 136
     right = 16
     top = 16
     bottom = 16
@@ -793,7 +867,13 @@ def _draw_generation_chart(
         y = top + index * row_height + row_height / 2
         bar_width = round((bar.generation_mw / max_generation) * chart_width)
         color = _generation_color(bar.category)
-        canvas.create_text(8, y, text=bar.source[:13], anchor="w", fill="#263238")
+        canvas.create_text(
+            8,
+            y,
+            text=f"{bar.source[:12]} ({_source_category_label(bar.category)})",
+            anchor="w",
+            fill=TEXT_COLOR,
+        )
         canvas.create_rectangle(
             left,
             y - bar_height / 2,
@@ -805,9 +885,9 @@ def _draw_generation_chart(
         canvas.create_text(
             left + min(bar_width + 6, chart_width - 8),
             y,
-            text=f"{bar.generation_mw:,.0f}",
+            text=f"{bar.generation_mw:,.0f} MW",
             anchor="w",
-            fill="#37474f",
+            fill=MUTED_TEXT_COLOR,
         )
 
 
@@ -829,10 +909,10 @@ def _draw_baseline_chart(
     plot_width = max(40, width - left - right)
     plot_height = max(40, height - top - bottom)
 
-    canvas.create_line(left, top, left, top + plot_height, fill="#b0bec5")
-    canvas.create_line(left, top + plot_height, left + plot_width, top + plot_height, fill="#b0bec5")
-    canvas.create_text(left - 8, top, text="100%", anchor="e", fill="#607d8b")
-    canvas.create_text(left - 8, top + plot_height, text="0%", anchor="e", fill="#607d8b")
+    canvas.create_line(left, top, left, top + plot_height, fill=AXIS_COLOR)
+    canvas.create_line(left, top + plot_height, left + plot_width, top + plot_height, fill=AXIS_COLOR)
+    canvas.create_text(left - 8, top, text="100%", anchor="e", fill=MUTED_TEXT_COLOR)
+    canvas.create_text(left - 8, top + plot_height, text="0%", anchor="e", fill=MUTED_TEXT_COLOR)
     _draw_baseline_legend(canvas, left, 14)
 
     actual_coordinates: list[tuple[int, int]] = []
@@ -844,44 +924,78 @@ def _draw_baseline_chart(
         actual_coordinates.append((x, actual_y))
         predicted_coordinates.append((x, predicted_y))
 
-    _draw_line(canvas, actual_coordinates, color="#2e7d32")
-    _draw_line(canvas, predicted_coordinates, color="#546e7a", dash=(4, 3))
+    _draw_line(canvas, actual_coordinates, color=RENEWABLE_COLOR)
+    _draw_line(canvas, predicted_coordinates, color=MOVING_AVERAGE_COLOR, dash=(4, 3))
 
     for index, point in enumerate(points):
         x = _chart_x(index, len(points), left, plot_width)
         actual_y = _share_y(point.actual_renewable_share, top, plot_height)
         predicted_y = _share_y(point.predicted_renewable_share, top, plot_height)
-        predicted_color = "#ef6c00" if point.method == "clima" else "#1565c0"
-        canvas.create_oval(x - 4, actual_y - 4, x + 4, actual_y + 4, fill="#2e7d32", outline="")
         canvas.create_oval(
             x - 4,
-            predicted_y - 4,
+            actual_y - 4,
             x + 4,
-            predicted_y + 4,
-            fill=predicted_color,
-            outline="",
+            actual_y + 4,
+            fill=RENEWABLE_COLOR,
+            outline=TEXT_COLOR,
         )
+        _draw_prediction_marker(canvas, x, predicted_y, point.method)
         if len(points) <= 6 or index in (0, len(points) - 1):
             canvas.create_text(
                 x,
                 top + plot_height + 14,
                 text=point.period[-5:],
                 anchor="n",
-                fill="#607d8b",
+                fill=MUTED_TEXT_COLOR,
             )
 
 
 def _draw_baseline_legend(canvas: CanvasLike, left: int, y: int) -> None:
-    legend_items = (
-        ("real", "#2e7d32"),
-        ("prev media", "#1565c0"),
-        ("prev clima", "#ef6c00"),
-    )
     x = left
-    for label, color in legend_items:
-        canvas.create_oval(x, y - 4, x + 8, y + 4, fill=color, outline="")
-        canvas.create_text(x + 14, y, text=label, anchor="w", fill="#37474f")
-        x += 92
+    canvas.create_oval(x, y - 4, x + 8, y + 4, fill=RENEWABLE_COLOR, outline=TEXT_COLOR)
+    canvas.create_text(x + 14, y, text="Real", anchor="w", fill=TEXT_COLOR)
+    x += 74
+    canvas.create_rectangle(
+        x,
+        y - 5,
+        x + 10,
+        y + 5,
+        fill=MOVING_AVERAGE_COLOR,
+        outline=TEXT_COLOR,
+    )
+    canvas.create_text(x + 16, y, text="Prev. media", anchor="w", fill=TEXT_COLOR)
+    x += 122
+    _draw_diamond(canvas, x + 5, y, fill=WEATHER_COLOR)
+    canvas.create_text(x + 16, y, text="Prev. clima", anchor="w", fill=TEXT_COLOR)
+
+
+def _draw_prediction_marker(canvas: CanvasLike, x: int, y: int, method: str) -> None:
+    if method == "clima":
+        _draw_diamond(canvas, x, y, fill=WEATHER_COLOR)
+        return
+    canvas.create_rectangle(
+        x - 5,
+        y - 5,
+        x + 5,
+        y + 5,
+        fill=MOVING_AVERAGE_COLOR,
+        outline=TEXT_COLOR,
+    )
+
+
+def _draw_diamond(canvas: CanvasLike, x: int, y: int, *, fill: str) -> None:
+    canvas.create_polygon(
+        x,
+        y - 6,
+        x + 6,
+        y,
+        x,
+        y + 6,
+        x - 6,
+        y,
+        fill=fill,
+        outline=TEXT_COLOR,
+    )
 
 
 def _draw_line(
@@ -910,10 +1024,18 @@ def _share_y(value: float, top: int, plot_height: int) -> int:
 
 def _generation_color(category: str) -> str:
     if category == "renovavel":
-        return "#2e7d32"
+        return RENEWABLE_COLOR
     if category == "nao renovavel":
-        return "#c62828"
-    return "#607d8b"
+        return NON_RENEWABLE_COLOR
+    return UNKNOWN_COLOR
+
+
+def _source_category_label(category: str) -> str:
+    if category == "renovavel":
+        return "renovavel"
+    if category == "nao renovavel":
+        return "nao renovavel"
+    return "fonte indefinida"
 
 
 def _canvas_size(value: int, *, fallback: int) -> int:
@@ -921,7 +1043,7 @@ def _canvas_size(value: int, *, fallback: int) -> int:
 
 
 def _draw_empty_canvas(canvas: CanvasLike, width: int, height: int, text: str) -> None:
-    canvas.create_text(width // 2, height // 2, text=text, fill="#607d8b")
+    canvas.create_text(width // 2, height // 2, text=text, fill=MUTED_TEXT_COLOR)
 
 
 def _format_weather(result: AnalysisResult) -> str:
