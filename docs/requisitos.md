@@ -116,4 +116,4 @@ Observação sobre `REQ-005`: a integração climática inicial usa Open-Meteo d
 - suporte multiusuário;
 - empacotamento final de release como `.exe`, até que o fluxo principal esteja estável.
 
-O primeiro `.exe` local experimental é permitido para validação técnica da versão CLI e não substitui o empacotamento final de release. A interface desktop inicial também não implica release pública enquanto QA manual remanescente, refinamento visual, smoke test de artefato, checksum e build automático de artefato estiverem pendentes.
+O primeiro `.exe` local experimental é permitido para validação técnica da versão CLI e não substitui o empacotamento final de release. A interface desktop inicial também não implica release pública enquanto QA manual remanescente, validação manual da acessibilidade básica, refinamento visual, smoke test de artefato, checksum e build automático de artefato estiverem pendentes.

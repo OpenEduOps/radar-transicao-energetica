@@ -210,7 +210,7 @@ python scripts\build_exe.py --public-release
 
 O gate atual bloqueia release pública enquanto estes itens estiverem pendentes:
 
-- interface desktop inicial com QA automatizado sem janela e QA manual remanescente registrado;
+- interface desktop inicial com QA automatizado sem janela e QA manual remanescente registrado, incluindo acessibilidade básica na janela real;
 - smoke test formal do executável;
 - checksum do artefato;
 - build automático de artefato na CI;
