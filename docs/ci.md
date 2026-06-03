@@ -137,7 +137,7 @@ O primeiro `.exe` local experimental é uma validação manual e não muda a dec
 
 A CI completa deve ser criada quando o projeto tiver:
 
-- interface desktop inicial com gráficos Canvas e QA manual registrado;
+- interface desktop inicial com gráficos Canvas e QA manual remanescente registrado;
 - fluxo principal validado manualmente;
 - dependências de UI estabilizadas;
 - comando de build local repetível;

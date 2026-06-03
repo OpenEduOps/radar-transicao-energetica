@@ -176,7 +176,7 @@ python -m unittest discover -s tests
 python -m compileall src tests scripts
 ```
 
-A suíte automatizada cobre a interface desktop sem abrir janela e sem Docker. Os testes validam o modelo de apresentação, os dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios, geração zerada, muitas barras, baseline com único ponto, marcação de média móvel/clima e redraw dos gráficos.
+A suíte automatizada cobre a interface desktop sem abrir janela e sem Docker. Os testes validam o modelo de apresentação, os dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios, geração sem valor positivo, muitas barras, baseline com um único ponto, marcação de média móvel/clima e redraw dos gráficos.
 
 ## Primeiro Executável Local
 
@@ -210,7 +210,7 @@ python scripts\build_exe.py --public-release
 
 O gate atual bloqueia release pública enquanto estes itens estiverem pendentes:
 
-- interface desktop inicial com QA automatizado sem janela e QA manual registrado;
+- interface desktop inicial com QA automatizado sem janela e QA manual remanescente registrado;
 - smoke test formal do executável;
 - checksum do artefato;
 - build automático de artefato na CI;
