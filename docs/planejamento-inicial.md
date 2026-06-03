@@ -147,10 +147,10 @@ Linha de corte:
 | `REQ-001` | Carregar dados públicos de geração elétrica em formato tratável pela aplicação. | Alta | Implementado |
 | `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Implementado |
 | `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
-| `REQ-004` | Exibir geração por fonte de forma comparável. | Alta | Parcial |
+| `REQ-004` | Exibir geração por fonte de forma comparável. | Alta | Implementado |
 | `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Implementado |
 | `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Implementado |
-| `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Parcial |
+| `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Implementado |
 | `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Implementado |
 | `REQ-009` | Disponibilizar comandos claros de instalação, execução e testes. | Alta | Implementado |
 
@@ -173,7 +173,7 @@ Critérios mínimos do MVP:
 - Dado que clima esteja alinhado ao período de geração, quando o baseline comparar real vs previsto, então o sistema deve indicar quando features climáticas foram usadas.
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado um conjunto de dados insuficiente ou indisponível, quando a aplicação tentar carregar informações, então o sistema deve informar o problema sem quebrar o fluxo principal.
-- Dado um baseline de média móvel, quando houver pontos anteriores suficientes, então o sistema deve apresentar MAE e comparação real vs previsto sem depender de `scikit-learn`.
+- Dado um baseline de média móvel, quando houver pontos anteriores suficientes, então o sistema deve apresentar MAE e comparação real vs previsto por período sem depender de `scikit-learn`.
 - Dado um resultado de participação renovável ou risco, quando o alerta for exibido, então a mensagem deve ser compreensível para usuário não especialista.
 - Dado que o projeto não deve depender de credenciais privadas, quando o ambiente for preparado, então a execução local deve funcionar apenas com dados públicos ou cache.
 - Dado que o projeto é OSS, quando uma pessoa contribuir, então deve haver documentação clara de setup, teste e escopo do MVP.
@@ -187,7 +187,7 @@ Critérios mínimos do MVP:
 | `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, cache SQLite, diretório temporário e reuso ONS por período. |
 | `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE e comparação walk-forward do baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
-| `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela e verificar se geração por fonte, comparação e alerta são compreensíveis. |
+| `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela, dados dos gráficos Canvas e verificar se geração por fonte, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
 | `TEST-008` | Unitário e packaging | `NFR-006` | Validar release gate, bloqueio de release pública e ausência de build de artefato na CI atual. |
 | `TEST-009` | Unitário e integração leve | `REQ-005` | Validar Open-Meteo com fixture offline, resumo climático, features climáticas simples, JSON/cache, CLI e desktop sem rede. |

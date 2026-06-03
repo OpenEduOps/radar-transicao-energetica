@@ -426,7 +426,7 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 
 - carregar pelo menos uma fonte pública de dados de geração elétrica;
 - calcular a participação renovável em um período selecionado;
-- exibir geração por fonte de forma comparável, inicialmente em tabela e depois em gráfico rico;
+- exibir geração por fonte de forma comparável, com tabela e gráfico inicial;
 - executar um baseline interpretável com métrica de erro;
 - apresentar uma previsão comparável com dados reais;
 - gerar pelo menos um alerta interpretável;
