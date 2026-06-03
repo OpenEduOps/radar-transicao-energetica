@@ -20,6 +20,7 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 - normaliza fonte, período e geração;
 - calcula participação renovável;
 - grava cache SQLite local com a última análise e os registros normalizados;
+- reutiliza registros ONS já normalizados no cache para o mesmo período;
 - exibe gráfico textual por fonte e tendência por período;
 - calcula baseline por média móvel com MAE e comparação real vs previsto;
 - gera alerta interpretável;
@@ -115,7 +116,7 @@ O JSON retornado possui cinco blocos principais:
 - `alert`: nível e mensagem interpretável;
 - `baseline`: método, janela, pontos usados, previsão simples da próxima janela, MAE e comparações real vs previsto.
 
-Quando o cache está habilitado, o JSON também inclui `cache_path` com o caminho do banco SQLite gravado.
+Quando o cache está habilitado, o JSON também inclui `cache_path` com o caminho do banco SQLite e `cache_hit` para indicar se registros ONS foram reutilizados.
 
 Fontes fora da classificação inicial da V0 aparecem em `unknown_sources`. Elas continuam entrando na geração total, mas não são classificadas automaticamente como renováveis.
 
@@ -141,7 +142,7 @@ O cache atual mantém:
 - `analyses`: payload serializado da análise, origem dos dados, período e participação renovável;
 - `generation_records`: registros normalizados em `period`, `source` e `generation_mw`.
 
-Use `--sem-cache` quando quiser executar sem gravar esse banco local.
+Quando a análise usa `--fonte ons --ons-periodo YYYY-MM`, a aplicação procura no SQLite a análise ONS mais recente do mesmo período antes de baixar novamente o CSV público. Use `--sem-cache` quando quiser executar sem ler nem gravar esse banco local.
 
 ## Baseline e Avaliação
 

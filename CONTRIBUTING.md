@@ -23,6 +23,7 @@ A primeira fatia funcional já foi implementada. O projeto atualmente:
 - calcula participação renovável;
 - registra a origem da análise em `data_source`;
 - grava cache SQLite local com análise e registros normalizados;
+- reutiliza cache ONS por período antes de baixar novamente a fonte pública;
 - avalia o baseline de média móvel com MAE e comparação real vs previsto;
 - abre uma interface desktop inicial em Tkinter para exemplo embutido, CSV local ou ONS mensal;
 - executa testes automatizados com `unittest`;
@@ -36,12 +37,13 @@ Contribuições úteis agora incluem:
 - propor dados sintéticos para testes;
 - ampliar fixtures ONS para fontes ainda não classificadas na V0;
 - melhorar consultas, validações e rastreabilidade do cache SQLite;
+- evoluir políticas de expiração ou invalidação do cache ONS;
 - melhorar estados, mensagens e QA manual da interface desktop inicial;
 - melhorar visualização e interpretação da comparação baseline;
 - evoluir critérios de release do `.exe` sem publicar artefato antes do gate;
 - revisar critérios de aceite.
 
-A próxima evolução recomendada é usar o cache SQLite como base para reuso offline da fonte ONS e consultas por período, em paralelo com melhorias incrementais da interface desktop. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
+A próxima evolução recomendada é integrar uma primeira fonte climática simples, em paralelo com melhorias incrementais da interface desktop. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
 
 ## Padrão de Trabalho
 
