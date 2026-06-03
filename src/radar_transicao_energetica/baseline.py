@@ -72,7 +72,7 @@ def predict_next_renewable_share(
         if weather_adjusted_comparisons > 0
         else "media_movel"
     )
-    weather_feature_names = WEATHER_FEATURE_NAMES if weather_features else ()
+    weather_feature_names = _weather_feature_names_used(weather_features)
     if not usable_shares:
         return BaselinePrediction(
             predicted_renewable_share=None,
@@ -256,6 +256,18 @@ def _predict_from_weather_analogues(
     predicted_share = sum(share for _distance, share in selected) / len(selected)
     average_distance = sum(distance for distance, _share in selected) / len(selected)
     return predicted_share, len(selected), average_distance
+
+
+def _weather_feature_names_used(
+    weather_features: dict[datetime, WeatherFeature],
+) -> tuple[str, ...]:
+    if not weather_features:
+        return ()
+    return tuple(
+        name
+        for name in WEATHER_FEATURE_NAMES
+        if any(feature.values_by_name()[name] is not None for feature in weather_features.values())
+    )
 
 
 def _mean_absolute_error(comparisons: list[BaselineComparison]) -> float | None:

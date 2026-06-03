@@ -195,6 +195,29 @@ class DomainTest(unittest.TestCase):
         self.assertIsNotNone(prediction.next_weather_feature)
         self.assertAlmostEqual(prediction.predicted_renewable_share or 0, 0.8)
 
+    def test_baseline_reports_only_available_weather_feature_names(self) -> None:
+        records = [
+            GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 50.0),
+            GenerationRecord(datetime(2026, 1, 1, 0), "termica", 50.0),
+            GenerationRecord(datetime(2026, 1, 1, 1), "hidraulica", 75.0),
+            GenerationRecord(datetime(2026, 1, 1, 1), "termica", 25.0),
+        ]
+        weather = [
+            WeatherRecord(datetime(2026, 1, 1, 0), 20.0, 5.0, None, None),
+            WeatherRecord(datetime(2026, 1, 1, 1), 22.0, 7.0, None, None),
+        ]
+
+        prediction = predict_next_renewable_share(
+            summarize_by_period(records),
+            window=1,
+            weather_records=weather,
+        )
+
+        self.assertEqual(
+            prediction.weather_feature_names,
+            ("temperature_2m_c", "wind_speed_10m_kmh"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
