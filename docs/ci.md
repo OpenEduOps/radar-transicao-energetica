@@ -21,6 +21,7 @@ A automação deve responder, de forma incremental:
 | CI documental | Após definir ferramenta de validação documental | Validar estrutura básica de docs e links principais. |
 | CI Python mínima | Implementada | Rodar compilação e testes unitários. |
 | CI de dados | Implementada parcialmente | Validar normalização com fixtures e cache em diretório temporário. |
+| CI de clima | Implementada parcialmente | Validar Open-Meteo por fixtures/loaders injetados, sem rede. |
 | CI de UI | Iniciada sem abrir janela | Validar entry point e modelo de apresentação da tela. |
 | CI de release | Bloqueada pelo release gate até fluxo visual estável | Gerar artefato, checksum e smoke test. |
 
@@ -51,6 +52,8 @@ O workflow atual executa esses comandos em Windows com Python 3.12. O pacote dec
 O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
 
 A integração ONS é validada na suíte por fixture offline, cobrindo o contrato `din_instante` -> `period`, `nom_tipousina` -> `source` e `val_geracaomwmed` -> `generation_mw`. A suíte também valida `data_source`, erro de download, payload não UTF-8 e limite local de tamanho. O comando real com `--fonte ons --ons-periodo YYYY-MM` é uma validação manual com rede e não faz parte da CI obrigatória.
+
+A integração climática Open-Meteo também é validada sem rede. A suíte cobre construção de URL, metadados da fonte, normalização horária, resumo climático, limite local de 5 MB, JSON inválido, coordenadas inválidas, persistência no payload/cache, relatório CLI e modelo de apresentação desktop com fixtures ou loaders injetados.
 
 A interface desktop inicial é validada de forma automatizada sem abrir janela. A suíte testa o modelo de apresentação, a seleção de fonte, o status com cache e o entry point `radar-transicao-energetica-ui`. A abertura real da janela continua como QA manual, porque a CI inicial não deve depender de ambiente gráfico.
 
@@ -84,6 +87,7 @@ Permissões adicionais só devem aparecer em jobs que realmente publiquem releas
 - Evitar CI cara enquanto o projeto ainda estiver validando o MVP.
 - Preferir fixtures e dados sintéticos para testes de domínio.
 - Não depender de download real do ONS para aprovar a suíte automatizada.
+- Não depender de chamada real ao Open-Meteo para aprovar a suíte automatizada.
 - Usar cache local apenas em diretórios temporários dentro da CI.
 - Validar o cache SQLite com schema versionado, metadados de análise e registros normalizados.
 - Testar a interface desktop por funções puras e entry point, sem exigir janela gráfica na CI inicial.

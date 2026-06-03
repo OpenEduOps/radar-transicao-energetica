@@ -21,14 +21,15 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 - calcula participação renovável;
 - grava cache SQLite local com a última análise e os registros normalizados;
 - reutiliza registros ONS já normalizados no cache para o mesmo período;
+- integra previsão climática horária opcional via Open-Meteo, com temperatura, vento, radiação solar e nebulosidade;
 - exibe gráfico textual por fonte e tendência por período;
 - calcula baseline por média móvel com MAE e comparação real vs previsto;
 - gera alerta interpretável;
-- abre uma primeira interface desktop em Tkinter para visualizar fonte, período, métricas centrais, geração por fonte, alerta e comparação do baseline;
+- abre uma primeira interface desktop em Tkinter para visualizar fonte, período, métricas centrais, geração por fonte, clima opcional, alerta e comparação do baseline;
 - possui testes automatizados com `unittest`;
 - pode ser empacotado em um primeiro `.exe` local experimental com PyInstaller.
 
-O primeiro `.exe` ainda não é uma release pública completa. Ele serve como validação local do fluxo principal antes de avançar para integração climática, empacotamento de release e smoke test formal. A interface desktop atual é uma tela inicial, ainda sem gráficos ricos ou instalador.
+O primeiro `.exe` ainda não é uma release pública completa. Ele serve como validação local do fluxo principal antes de avançar para gráficos ricos, empacotamento de release e smoke test formal. A interface desktop atual é uma tela inicial, ainda sem gráficos ricos ou instalador.
 
 ## Documentação do Projeto
 
@@ -83,7 +84,7 @@ $env:PYTHONPATH='src'
 python -m radar_transicao_energetica.desktop
 ```
 
-A interface desktop inicial permite escolher exemplo embutido, CSV local ou fonte ONS mensal. Ela mostra geração por fonte em tabela, participação renovável, geração total, geração renovável, alerta interpretável, baseline da próxima janela, MAE e última comparação real vs previsto. Quando o cache está habilitado, a tela usa o caminho padrão `data/cache/analises.sqlite`.
+A interface desktop inicial permite escolher exemplo embutido, CSV local ou fonte ONS mensal. Ela mostra geração por fonte em tabela, participação renovável, geração total, geração renovável, alerta interpretável, baseline da próxima janela, MAE, última comparação real vs previsto e, quando habilitado, um resumo climático Open-Meteo. Quando o cache está habilitado, a tela usa o caminho padrão `data/cache/analises.sqlite`.
 
 Executar com o CSV de exemplo:
 
@@ -108,13 +109,23 @@ python -m radar_transicao_energetica --fonte ons --ons-periodo 2026-01 --json --
 
 O argumento `--ons-periodo` usa o formato `YYYY-MM`, com mês em dois dígitos. A integração ONS V0 trabalha com os arquivos mensais publicados a partir de 2022. Essa execução depende de acesso à internet, pode baixar arquivos com dezenas de MB e possui limite local de 200 MB por download; os testes automatizados continuam usando fixtures offline.
 
-O JSON retornado possui cinco blocos principais:
+Executar com a integração climática inicial via Open-Meteo:
+
+```powershell
+$env:PYTHONPATH='src'
+python -m radar_transicao_energetica --clima open-meteo --clima-latitude -15.7939 --clima-longitude -47.8828 --clima-dias 2 --json --sem-cache
+```
+
+O modo climático é opcional e usa Brasília como coordenada padrão. Ele consulta previsão horária de temperatura a 2 m, vento a 10 m, radiação solar de onda curta e nebulosidade. Falhas de download ou JSON climático inválido não interrompem o cálculo de geração; nesse caso, o resultado registra `weather.error`. Coordenadas inválidas ou dias fora do intervalo aceito falham antes de tentar rede. A suíte automatizada usa fixtures e loaders injetados, sem depender da API externa.
+
+O JSON retornado possui estes blocos principais:
 
 - `data_source`: origem da análise, como exemplo embutido, CSV local ou dataset ONS com período e URL do recurso;
 - `summary`: totais, período analisado, participação renovável e geração por fonte;
 - `period_summaries`: participação renovável agregada por período;
 - `alert`: nível e mensagem interpretável;
 - `baseline`: método, janela, pontos usados, previsão simples da próxima janela, MAE e comparações real vs previsto.
+- `weather`: bloco opcional com fonte climática, resumo, registros horários e erro, quando `--clima open-meteo` é usado.
 
 Quando o cache está habilitado, o JSON também inclui `cache_path` com o caminho do banco SQLite e `cache_hit` para indicar se registros ONS foram reutilizados.
 
@@ -142,7 +153,7 @@ O cache atual mantém:
 - `analyses`: payload serializado da análise, origem dos dados, período e participação renovável;
 - `generation_records`: registros normalizados em `period`, `source` e `generation_mw`.
 
-Quando a análise usa `--fonte ons --ons-periodo YYYY-MM`, a aplicação procura no SQLite a análise ONS mais recente do mesmo período antes de baixar novamente o CSV público. Use `--sem-cache` quando quiser executar sem ler nem gravar esse banco local.
+Quando a análise usa `--fonte ons --ons-periodo YYYY-MM`, a aplicação procura no SQLite a análise ONS mais recente do mesmo período antes de baixar novamente o CSV público. Se a análise também habilitar clima, o payload enriquecido com `weather` é gravado como última análise sem baixar novamente a fonte ONS. Use `--sem-cache` quando quiser executar sem ler nem gravar esse banco local.
 
 ## Baseline e Avaliação
 
@@ -258,11 +269,16 @@ Fonte pública consolidada na V0:
 
 - [ONS Geração por Usina em Base Horária](https://dados.ons.org.br/dataset/geracao-usina-2): geração verificada de usinas, conjuntos de usinas e grupos de pequenas usinas em base horária. A integração atual usa os CSVs mensais publicados no bucket público do ONS na AWS, no padrão `GERACAO_USINA-2_YYYY_MM.csv`.
 
+Fonte climática inicial:
+
+- [Open-Meteo Forecast API](https://open-meteo.com/en/docs): previsão horária sem chave privada para coordenadas WGS84. A integração V0 usa temperatura a 2 m, vento a 10 m, radiação solar de onda curta e nebulosidade, sempre de forma opcional.
+
 Decisão da V0:
 
 - ONS foi escolhido como primeira fonte real porque entrega geração horária por usina em CSV público, sem credenciais e com aderência direta ao cálculo de participação renovável.
 - ANEEL permanece como candidata para dados estruturais, como geração distribuída e cadastro de empreendimentos, mas não substitui a necessidade inicial de série horária de geração.
 - CCEE permanece como candidata para sinal econômico, como PLD horário, mas entra melhor depois que a base de geração estiver estável.
+- Open-Meteo foi escolhido como primeira fonte climática por não exigir credenciais e por entregar variáveis diretamente úteis para interpretação de vento, radiação, temperatura e nebulosidade.
 
 Limites e decisões da integração ONS V0:
 
@@ -271,6 +287,14 @@ Limites e decisões da integração ONS V0:
 - a suíte automatizada usa fixtures offline e não baixa dados reais do ONS;
 - o resultado JSON e o cache registram a origem da análise em `data_source`;
 - a coleta manual com rede possui limite local de 200 MB por arquivo mensal.
+
+Limites e decisões da integração climática V0:
+
+- a coleta Open-Meteo é opcional e não roda por padrão;
+- a suíte automatizada usa fixtures e loaders injetados, sem rede;
+- o download climático tem limite local de 5 MB;
+- falhas da fonte climática são registradas em `weather.error` sem interromper o cálculo de geração;
+- a integração ainda não alimenta o baseline como feature de previsão.
 
 Contrato de normalização da fonte ONS:
 
@@ -365,6 +389,7 @@ radar-transicao-energetica/
 │       ├── alerts.py
 │       ├── charts.py
 │       ├── desktop.py
+│       ├── weather.py
 │       ├── serialization.py
 │       └── cache.py
 ├── tests/
@@ -385,6 +410,7 @@ Responsabilidades sugeridas:
 - `alerts.py`: regras textuais de alerta;
 - `charts.py`: visualização textual inicial;
 - `desktop.py`: primeira interface desktop em Tkinter;
+- `weather.py`: URL, coleta limitada, normalização e resumo climático Open-Meteo;
 - `serialization.py`: contrato JSON compartilhado por CLI e cache;
 - `cache.py`: escrita e leitura do cache SQLite local.
 
@@ -401,13 +427,13 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 - rodar localmente sem credenciais privadas;
 - ter instruções claras para instalação, execução e testes.
 
-A implementação atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, baseline com MAE, comparação textual real vs previsto, alerta textual e primeira interface desktop. O fechamento do MVP ainda depende de integração climática, comparação visual mais robusta, gráficos ricos e decisão de release.
+A implementação atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, integração climática opcional Open-Meteo, baseline com MAE, comparação textual real vs previsto, alerta textual e primeira interface desktop. O fechamento do MVP ainda depende de usar clima como feature do baseline, comparação visual mais robusta, gráficos ricos e decisão de release.
 
 ## Próximos Passos
 
 Próxima sequência técnica recomendada:
 
-1. Adicionar integração climática inicial.
+1. Usar as variáveis climáticas como features exploratórias do baseline, ainda sem `scikit-learn`.
 2. Evoluir a comparação real vs previsto para visualização mais clara por período.
 3. Evoluir a interface desktop inicial para gráficos visuais e melhor QA manual.
 4. Definir política de expiração ou invalidação do cache ONS quando necessário.

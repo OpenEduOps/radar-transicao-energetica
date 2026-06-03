@@ -74,7 +74,7 @@ O MVP deve provar que uma pessoa consegue abrir o aplicativo, carregar dados pú
 
 Antes do MVP completo, a primeira fatia funcional deve provar uma base menor: carregar uma fonte pública de geração elétrica, calcular participação renovável e validar esse cálculo com testes automatizados.
 
-Estado atual dessa fatia: a fonte pública inicial foi consolidada com o dataset **ONS Geração por Usina em Base Horária**, consumido por CSV mensal público, enquanto o exemplo embutido e o CSV local seguem disponíveis para execução offline.
+Estado atual dessa fatia: a fonte pública inicial foi consolidada com o dataset **ONS Geração por Usina em Base Horária**, consumido por CSV mensal público, enquanto o exemplo embutido e o CSV local seguem disponíveis para execução offline. A primeira fonte climática opcional também foi consolidada com Open-Meteo, mantendo testes automatizados por fixtures e loaders injetados sem rede.
 
 A implementação atual registra a origem da análise em `data_source`, incluindo exemplo embutido, caminho do CSV local ou, no caso ONS, período mensal, URL do dataset e URL do recurso CSV usado. A coleta ONS tem limite local de 200 MB por download e permanece fora da CI obrigatória para manter a suíte determinística e sem rede.
 
@@ -84,6 +84,8 @@ O contrato normalizado da primeira fonte pública usa `period`, `source` e `gene
 
 A primeira interface desktop usa Tkinter e reutiliza o fluxo de análise existente. Ela mostra fonte, período, métricas centrais, geração por fonte em tabela, alerta interpretável e comparação do baseline sem duplicar regras de domínio na camada visual.
 
+A integração climática inicial usa temperatura, vento, radiação solar e nebulosidade como enriquecimento interpretável. Esses dados já aparecem no CLI, JSON, cache e desktop quando habilitados, mas ainda não alimentam o baseline como feature de previsão.
+
 O primeiro `.exe` local é experimental. A release pública fica bloqueada por gate técnico até a UI inicial estar estável, com smoke test formal, checksum, build automático na CI e workflow de release definidos.
 
 Incluído no MVP:
@@ -91,6 +93,7 @@ Incluído no MVP:
 - coleta ou carregamento de pelo menos uma fonte pública de dados de geração elétrica;
 - cálculo da participação renovável em um período selecionado;
 - visualização comparável de geração por fonte;
+- integração climática inicial opcional para interpretação;
 - modelo baseline para previsão de participação renovável ou classificação de risco de pressão térmica;
 - comparação entre dado real e previsão;
 - alerta interpretável com linguagem educacional;
@@ -127,9 +130,10 @@ Fluxo esperado da primeira experiência útil:
 4. O usuário seleciona ou confirma o período de análise.
 5. O sistema calcula geração por fonte e participação renovável.
 6. O sistema exibe geração hidráulica, térmica, eólica e solar de forma comparável.
-7. O sistema executa um modelo baseline para previsão ou classificação.
-8. O sistema compara resultado real e estimado quando houver dados suficientes.
-9. O sistema exibe um alerta interpretável sobre a janela analisada.
+7. Se clima estiver habilitado, o sistema carrega variáveis climáticas públicas e exibe um resumo.
+8. O sistema executa um modelo baseline para previsão ou classificação.
+9. O sistema compara resultado real e estimado quando houver dados suficientes.
+10. O sistema exibe um alerta interpretável sobre a janela analisada.
 
 Linha de corte:
 
@@ -143,7 +147,7 @@ Linha de corte:
 | `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Implementado |
 | `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
 | `REQ-004` | Exibir geração por fonte de forma comparável. | Alta | Parcial |
-| `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Planejado |
+| `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Parcial |
 | `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Implementado |
 | `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Parcial |
 | `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Implementado |
@@ -163,6 +167,8 @@ Critérios mínimos do MVP:
 - Dado um período mensal ONS válido a partir de 2022, quando o usuário executar `--fonte ons --ons-periodo YYYY-MM`, então o sistema deve baixar e normalizar o CSV público correspondente para `period`, `source` e `generation_mw`.
 - Dado que a análise use exemplo, CSV local ou ONS, quando o resultado JSON ou cache for gerado, então a origem dos dados deve aparecer em `data_source`.
 - Dado que a fonte ONS esteja indisponível, com encoding inválido ou acima do limite local, quando a coleta for executada, então o sistema deve informar erro claro sem traceback.
+- Dado que clima seja habilitado, quando a fonte Open-Meteo retornar dados horários válidos, então o sistema deve expor resumo e registros climáticos sem tornar rede obrigatória nos testes.
+- Dado que a fonte climática falhe, quando a análise elétrica puder continuar, então o sistema deve registrar erro climático sem quebrar participação renovável, baseline e alerta.
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado um conjunto de dados insuficiente ou indisponível, quando a aplicação tentar carregar informações, então o sistema deve informar o problema sem quebrar o fluxo principal.
 - Dado um baseline de média móvel, quando houver pontos anteriores suficientes, então o sistema deve apresentar MAE e comparação real vs previsto sem depender de `scikit-learn`.
@@ -182,6 +188,7 @@ Critérios mínimos do MVP:
 | `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela e verificar se geração por fonte, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
 | `TEST-008` | Unitário e packaging | `NFR-006` | Validar release gate, bloqueio de release pública e ausência de build de artefato na CI atual. |
+| `TEST-009` | Unitário e integração leve | `REQ-005` | Validar Open-Meteo com fixture offline, resumo climático, JSON/cache, CLI e desktop sem rede. |
 
 ## Arquitetura Inicial
 
@@ -211,6 +218,7 @@ radar-transicao-energetica/
 │       ├── charts.py
 │       ├── desktop.py
 │       ├── release.py
+│       ├── weather.py
 │       ├── serialization.py
 │       └── cache.py
 ├── tests/
@@ -228,6 +236,7 @@ Responsabilidades:
 - `charts.py`: visualização textual inicial;
 - `desktop.py`: interface desktop inicial em Tkinter;
 - `release.py`: gate de release pública do `.exe`;
+- `weather.py`: fonte climática Open-Meteo, validações, normalização e resumo;
 - `cache.py`: cache SQLite local;
 - `serialization.py`: contrato JSON compartilhado entre CLI e cache, incluindo `data_source`;
 - `app.py`: composição da aplicação;
@@ -252,7 +261,7 @@ Princípios iniciais:
 | `ISSUE-004` | Dados | Implementar cache local para dados carregados. | `REQ-002` | `TEST-003` | `ISSUE-003` |
 | `ISSUE-005` | Domínio | Implementar cálculo de participação renovável. | `REQ-003` | `TEST-001`, `TEST-002` | `ISSUE-003` |
 | `ISSUE-006` | UI | Criar visualização inicial de geração por fonte. | `REQ-004` | `TEST-006` | `ISSUE-005` |
-| `ISSUE-007` | Features | Integrar variáveis climáticas iniciais. | `REQ-005` | `TEST-003` | `ISSUE-003` |
+| `ISSUE-007` | Features | Integrar variáveis climáticas iniciais. | `REQ-005` | `TEST-009` | `ISSUE-003` |
 | `ISSUE-008` | Modelo | Implementar modelo baseline de previsão ou classificação. | `REQ-006` | `TEST-004` | `ISSUE-005` |
 | `ISSUE-009` | Modelo | Exibir comparação entre dado real e previsão. | `REQ-007` | `TEST-006` | `ISSUE-008` |
 | `ISSUE-010` | Produto | Implementar alerta interpretável para participação renovável ou pressão térmica. | `REQ-008` | `TEST-005`, `TEST-006` | `ISSUE-005`, `ISSUE-008` |
@@ -267,4 +276,4 @@ Primeiras issues originalmente recomendadas:
 
 Essas quatro issues criam a base para uma primeira demonstração funcional sem antecipar complexidade visual pesada, empacotamento de release ou modelos avançados.
 
-Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-008` está implementada como baseline de média móvel; `ISSUE-009` e `ISSUE-010` estão parcialmente atendidas com comparação e alerta; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são integração climática, evolução da interface para gráficos e QA manual, política de expiração do cache ONS quando necessário e só então preparação de release pública.
+Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-007` está parcialmente atendida com integração climática Open-Meteo; `ISSUE-008` está implementada como baseline de média móvel; `ISSUE-009` e `ISSUE-010` estão parcialmente atendidas com comparação e alerta; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são uso de clima como feature do baseline, evolução da interface para gráficos e QA manual, política de expiração do cache ONS quando necessário e só então preparação de release pública.

@@ -4,7 +4,7 @@ Este documento descreve a arquitetura inicial do **Radar da Transição Energét
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período, baseline por média móvel com MAE, comparação real vs previsto e alerta textual. As próximas camadas devem avançar para integração climática, gráficos ricos e executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período, integração climática opcional Open-Meteo, baseline por média móvel com MAE, comparação real vs previsto e alerta textual. As próximas camadas devem avançar para uso do clima como feature do baseline, gráficos ricos e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
@@ -22,15 +22,19 @@ A arquitetura deve permitir evolução incremental: a base atual é uma aplicaç
 
 A primeira implementação evita dependências pesadas e usa biblioteca padrão do Python. Essa escolha reduz atrito para testes, permitiu gerar um primeiro `.exe` local experimental e abriu a primeira interface desktop com Tkinter.
 
-Na fonte pública inicial, a coleta HTTP também usa biblioteca padrão (`urllib`) para manter a V0 sem dependências externas. `requests` segue planejado apenas se a camada de dados crescer o suficiente para justificar a dependência.
+Na fonte pública inicial e na integração climática opcional, a coleta HTTP também usa biblioteca padrão (`urllib`) para manter a V0 sem dependências externas. `requests` segue planejado apenas se a camada de dados crescer o suficiente para justificar a dependência.
 
 O carregador ONS aplica um limite local de download por arquivo mensal para evitar consumo inesperado de memória quando a fonte pública muda, falha ou retorna um conteúdo fora do tamanho esperado.
+
+O carregador Open-Meteo aplica limite local de 5 MB, valida coordenadas, valida dias de previsão e transforma falhas de download, encoding ou JSON em erro climático controlado. Esse erro não interrompe o cálculo de geração porque clima ainda é enriquecimento opcional, não pré-requisito do domínio.
 
 ## Decisão da Fonte Pública Inicial
 
 A fonte pública consolidada na V0 é o dataset **ONS Geração por Usina em Base Horária**. A escolha priorizou dados horários de geração, disponibilidade pública em CSV, ausência de credenciais e aderência direta ao cálculo de participação renovável.
 
 ANEEL e CCEE continuam relevantes para evolução do produto, mas não são a primeira fonte de geração normalizada: ANEEL tende a complementar a leitura estrutural do setor, enquanto CCEE adiciona sinal econômico, como PLD horário. Essas integrações devem entrar depois que a base ONS, o cache local e as validações estiverem mais estáveis.
+
+A fonte climática inicial é a Open-Meteo Forecast API. A escolha prioriza ausência de credenciais, variáveis horárias diretamente úteis para o domínio e facilidade de cobrir a normalização com fixtures offline.
 
 ## Estrutura Planejada
 
@@ -57,6 +61,7 @@ radar-transicao-energetica/
 │       ├── alerts.py
 │       ├── charts.py
 │       ├── desktop.py
+│       ├── weather.py
 │       ├── release.py
 │       ├── serialization.py
 │       └── cache.py
@@ -80,6 +85,7 @@ radar-transicao-energetica/
 | `alerts.py` | Regras textuais de alerta educacional. |
 | `charts.py` | Visualização textual inicial. |
 | `desktop.py` | Interface desktop inicial em Tkinter e modelo de apresentação testável sem abrir janela. |
+| `weather.py` | Construção da URL Open-Meteo, download limitado, normalização horária, resumo climático e validações de coordenadas. |
 | `release.py` | Critérios de readiness e mensagens do gate de release pública do `.exe`. |
 | `serialization.py` | Contrato JSON compartilhado entre CLI e cache. |
 | `cache.py` | Escrita e leitura do cache SQLite local. |
@@ -87,6 +93,8 @@ radar-transicao-energetica/
 | `tests` | Testes unitários, integração leve e QA automatizável. |
 
 O JSON e o cache incluem `data_source` para registrar a origem da análise. Na fonte ONS, esse bloco carrega o tipo da fonte, período mensal, URL do dataset e URL do recurso CSV usado.
+
+Quando clima é habilitado, o JSON inclui `weather` com `data_source`, `summary`, `records` e, quando aplicável, `error`. O cache SQLite não cria uma tabela climática nesta V0; o payload da última análise registra o bloco climático, enquanto `generation_records` segue dedicado aos registros de geração normalizados. Se a geração ONS vier do cache e clima for solicitado, a aplicação grava uma nova análise enriquecida sem baixar novamente o CSV ONS.
 
 ## Contrato de Normalização ONS
 
@@ -112,6 +120,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 -> normalização
 -> cache local
 -> cálculo de participação renovável
+-> enriquecimento climático opcional
 -> criação de features
 -> modelo baseline
 -> visualização por CLI ou desktop, baseline e alerta interpretável
@@ -135,6 +144,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 | `features` | dados normalizados | Features devem ser testáveis sem UI. |
 | `models` | features e alvo | Modelo não deve depender de fonte externa diretamente. |
 | `data` | fontes públicas e normalização | Rede e persistência ficam isoladas de domínio e UI. |
+| `weather` | fonte climática pública e normalização | Clima é opcional, testado por fixture e não deve bloquear o cálculo de geração. |
 | `cache` | resultado de análise e registros normalizados | Cache atual usa SQLite e mantém schema versionado. |
 | `release` | `scripts/build_exe.py` e testes de packaging | Release pública depende do gate, não de decisão implícita no script de build. |
 
@@ -145,6 +155,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 | Fonte pública muda formato | Quebra de coleta | Validar schema e cobrir normalização com testes. |
 | Arquivo público cresce além do esperado | Consumo excessivo de memória | Limitar download por arquivo na V0 e evoluir para processamento incremental quando necessário. |
 | Rede indisponível | Fluxo interrompido | Usar cache local e mensagens claras. |
+| Fonte climática instável | Perda de enriquecimento | Registrar `weather.error` sem bloquear a análise elétrica. |
 | Modelo baseline parecer sofisticado demais | Baixa interpretabilidade | Priorizar métricas simples e explicação textual. |
 | UI crescer antes do domínio | Dificuldade de teste | Implementar cálculo e features antes de telas complexas. |
 | Empacotamento antecipado | Custo sem fluxo estável | Manter primeiro `.exe` como validação local, sem release pública. |
@@ -154,6 +165,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 
 - Evoluir a fonte ONS para filtros de período e agregações mais eficientes quando o volume de dados exigir.
 - Definir política de expiração ou invalidação para cache ONS quando necessário.
+- Definir como variáveis climáticas entram como features do baseline sem reduzir interpretabilidade.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
 - Definir Matplotlib ou Plotly para os primeiros gráficos ricos.
 - Evoluir a interface Tkinter inicial para uma experiência desktop mais completa.

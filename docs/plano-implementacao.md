@@ -20,7 +20,7 @@ A primeira fatia funcional foi definida para entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-Essa fatia já foi concluída como CLI local e interface desktop inicial, com fonte ONS, cálculo de renovabilidade, testes, cache SQLite e instruções de execução. O plano original não dependia de integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, tela Tkinter, baseline avaliado por MAE, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
+Essa fatia já foi concluída como CLI local e interface desktop inicial, com fonte ONS, cálculo de renovabilidade, testes, cache SQLite e instruções de execução. O plano original não dependia de integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, tela Tkinter, integração climática opcional Open-Meteo, baseline avaliado por MAE, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
 
 ### MVP Funcional
 
@@ -59,9 +59,10 @@ A implementação deve seguir uma ordem incremental:
 6. criar CI Python mínima para a primeira fatia funcional;
 7. adicionar cache local;
 8. criar visualização inicial;
-9. integrar variáveis climáticas quando a base estiver estável;
-10. adicionar modelo baseline;
-11. adicionar comparação e alerta interpretável.
+9. adicionar modelo baseline e avaliação por métrica;
+10. adicionar comparação e alerta interpretável;
+11. integrar variáveis climáticas iniciais quando a base estiver estável;
+12. usar clima como feature exploratória do baseline.
 
 Cada etapa deve gerar uma entrega revisável, com commit próprio quando representar avanço verificável.
 
@@ -86,6 +87,7 @@ Limites assumidos:
 - a visualização atual combina CLI textual e tela desktop inicial em tabela, ainda sem gráfico rico;
 - o cache atual é SQLite, com análise, metadados, versão de schema, registros normalizados e reuso ONS por período;
 - a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
+- a primeira fonte climática foi consolidada com Open-Meteo Forecast API, de forma opcional, com limite local de 5 MB, fixtures offline e sem uso ainda como feature do baseline;
 - não há release workflow, checksum, assinatura, smoke test formal ou build automático de artefato.
 - `python scripts/build_exe.py --release-status` deve indicar `local-experimental`;
 - `python scripts/build_exe.py --public-release` deve falhar enquanto o gate estiver incompleto.
@@ -498,13 +500,15 @@ Commits sugeridos:
 
 ## Fase 7: Variáveis Climáticas
 
-Status: pendente.
+Status: parcialmente concluída para integração inicial Open-Meteo.
+
+A implementação atual adiciona fonte climática opcional via Open-Meteo, com temperatura a 2 m, vento a 10 m, radiação solar de onda curta e nebulosidade. O CLI aceita `--clima open-meteo`, o JSON/cache registram o bloco `weather`, a interface desktop exibe resumo climático quando habilitado e a suíte usa fixtures/loaders injetados sem rede. A próxima evolução é usar essas variáveis como features exploratórias do baseline.
 
 Rastreabilidade:
 
 - Issue: `ISSUE-007`;
 - Requisito: `REQ-005`;
-- Teste: `TEST-003`.
+- Teste: `TEST-009`.
 
 Objetivo:
 
@@ -515,6 +519,7 @@ Entregáveis:
 - escolha de variáveis climáticas;
 - carregamento de dados climáticos públicos;
 - normalização por período;
+- resumo climático no CLI, JSON, cache e desktop;
 - integração com features.
 
 Variáveis candidatas:
@@ -531,6 +536,7 @@ Critérios de aceite:
 - falha da fonte climática não impede cálculo de participação renovável;
 - documentação registra limitações.
 - a suíte automatizada continua podendo rodar sem rede.
+- falha de download, encoding ou JSON climático inválido não impede a análise de geração.
 
 Fora de escopo:
 
@@ -538,11 +544,13 @@ Fora de escopo:
 - otimização de previsão;
 - decisões operacionais baseadas em clima;
 - dependência obrigatória de API externa em testes.
+- uso de clima como feature do baseline nesta etapa.
 
 Commits sugeridos:
 
 - `Define variaveis climaticas iniciais`;
 - `Implementa carregamento climatico`;
+- `Exibe resumo climatico opcional`;
 - `Integra clima a features do modelo`.
 
 ## Fase 8: Modelo Baseline
@@ -570,7 +578,7 @@ Recomendação inicial:
 
 Começar por regressão de participação renovável, porque a métrica é mais direta e a classificação pode ser derivada depois por faixas interpretáveis.
 
-O primeiro baseline pode usar apenas variáveis temporais e histórico de geração se a integração climática ainda estiver instável. Variáveis climáticas devem melhorar o modelo, não bloquear o treino mínimo.
+O primeiro baseline pode usar apenas variáveis temporais e histórico de geração, mesmo com a integração climática inicial disponível. Variáveis climáticas devem melhorar o modelo, não bloquear o treino mínimo.
 
 Entregáveis:
 
@@ -752,4 +760,4 @@ Uma fase só deve avançar quando:
 
 ## Próxima Ação Recomendada
 
-Criar a próxima issue de clima: integrar uma fonte climática inicial com fixtures offline, sem tornar rede obrigatória para a suíte automatizada.
+Criar a próxima issue de modelagem: usar as variáveis climáticas já normalizadas como features exploratórias do baseline, ainda sem `scikit-learn`, mantendo comparação real vs previsto e testes com fixtures offline.

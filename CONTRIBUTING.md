@@ -1,6 +1,6 @@
 # Contribuindo
 
-Obrigado por considerar contribuir com o **Radar da Transição Energética**. O projeto ainda está no início, mas já possui uma primeira aplicação local em Python, com CLI, interface desktop inicial, testes, cache SQLite, exemplo offline e integração com a fonte pública ONS Geração por Usina em Base Horária.
+Obrigado por considerar contribuir com o **Radar da Transição Energética**. O projeto ainda está no início, mas já possui uma primeira aplicação local em Python, com CLI, interface desktop inicial, testes, cache SQLite, exemplo offline, integração com a fonte pública ONS Geração por Usina em Base Horária e integração climática opcional via Open-Meteo.
 
 ## Antes de Começar
 
@@ -24,6 +24,7 @@ A primeira fatia funcional já foi implementada. O projeto atualmente:
 - registra a origem da análise em `data_source`;
 - grava cache SQLite local com análise e registros normalizados;
 - reutiliza cache ONS por período antes de baixar novamente a fonte pública;
+- integra clima opcional via Open-Meteo, com temperatura, vento, radiação solar e nebulosidade;
 - avalia o baseline de média móvel com MAE e comparação real vs previsto;
 - abre uma interface desktop inicial em Tkinter para exemplo embutido, CSV local ou ONS mensal;
 - executa testes automatizados com `unittest`;
@@ -38,12 +39,14 @@ Contribuições úteis agora incluem:
 - ampliar fixtures ONS para fontes ainda não classificadas na V0;
 - melhorar consultas, validações e rastreabilidade do cache SQLite;
 - evoluir políticas de expiração ou invalidação do cache ONS;
+- ampliar fixtures climáticas e validar cenários Open-Meteo sem rede;
+- usar variáveis climáticas já normalizadas como features exploratórias do baseline;
 - melhorar estados, mensagens e QA manual da interface desktop inicial;
 - melhorar visualização e interpretação da comparação baseline;
 - evoluir critérios de release do `.exe` sem publicar artefato antes do gate;
 - revisar critérios de aceite.
 
-A próxima evolução recomendada é integrar uma primeira fonte climática simples, em paralelo com melhorias incrementais da interface desktop. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
+A próxima evolução recomendada é usar a fonte climática já integrada como feature exploratória do baseline, em paralelo com melhorias incrementais da interface desktop. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
 
 ## Padrão de Trabalho
 
@@ -54,6 +57,7 @@ Exemplos de bons escopos:
 - documentar limite ou comportamento da fonte ONS;
 - documentar o contrato de normalização entre campos ONS e campos internos;
 - adicionar fixture ONS com nova fonte ainda não classificada;
+- adicionar fixture climática com novo cenário de temperatura, vento, radiação ou nebulosidade;
 - adicionar teste para cache ou serialização;
 - adicionar teste de comparação real vs previsto do baseline;
 - adicionar teste para modelo de apresentação da interface sem abrir janela;
@@ -98,6 +102,7 @@ Prioridades iniciais:
 - fixtures sintéticas para dados;
 - testes de integração leve para cache local e serialização;
 - validações offline para a fonte ONS;
+- validações offline para a fonte climática Open-Meteo;
 - QA manual documentado para visualizações e alertas.
 
 Se uma mudança ainda não puder ser testada automaticamente, descreva claramente a validação manual feita.
@@ -131,6 +136,6 @@ Não inclua:
 
 ## Como Escolher Uma Issue
 
-Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial, cálculo de participação renovável, cache SQLite com reuso ONS, baseline e interface desktop inicial já existem. Boas contribuições agora estão em integração climática, fixtures ONS, política de expiração do cache, QA da tela e visualização mais clara do baseline.
+Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial, cálculo de participação renovável, cache SQLite com reuso ONS, integração climática inicial, baseline e interface desktop inicial já existem. Boas contribuições agora estão em features climáticas para baseline, fixtures ONS/Open-Meteo, política de expiração do cache, QA da tela e visualização mais clara do baseline.
 
 Se uma issue parecer grande demais, divida em uma etapa menor com critério de aceite próprio.

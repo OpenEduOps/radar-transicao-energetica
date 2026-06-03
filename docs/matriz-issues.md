@@ -21,7 +21,7 @@ Este documento organiza as primeiras issues planejadas para o **Radar da Transi�
 | `ISSUE-004` | Dados | Implementar cache local para dados carregados. | `REQ-002` | `TEST-003` | `ISSUE-003` |
 | `ISSUE-005` | Domínio | Implementar cálculo de participação renovável. | `REQ-003` | `TEST-001`, `TEST-002` | `ISSUE-003` |
 | `ISSUE-006` | UI | Criar visualização inicial de geração por fonte. | `REQ-004` | `TEST-006` | `ISSUE-005` |
-| `ISSUE-007` | Features | Integrar variáveis climáticas iniciais. | `REQ-005` | `TEST-003` | `ISSUE-003` |
+| `ISSUE-007` | Features | Integrar variáveis climáticas iniciais. | `REQ-005` | `TEST-009` | `ISSUE-003` |
 | `ISSUE-008` | Modelo | Implementar modelo baseline de previsão ou classificação. | `REQ-006` | `TEST-004` | `ISSUE-005` |
 | `ISSUE-009` | Modelo | Exibir comparação entre dado real e previsão. | `REQ-007` | `TEST-006` | `ISSUE-008` |
 | `ISSUE-010` | Produto | Implementar alerta interpretável para participação renovável ou pressão térmica. | `REQ-008` | `TEST-005`, `TEST-006` | `ISSUE-005`, `ISSUE-008` |
@@ -35,10 +35,11 @@ Este documento organiza as primeiras issues planejadas para o **Radar da Transi�
 4. `ISSUE-005`: cálculo de participação renovável.
 5. `ISSUE-004`: cache local.
 6. `ISSUE-006`: visualização inicial.
-7. `ISSUE-008`: modelo baseline.
-8. `ISSUE-010`: alerta interpretável.
+7. `ISSUE-007`: variáveis climáticas iniciais.
+8. `ISSUE-008`: modelo baseline.
+9. `ISSUE-010`: alerta interpretável.
 
-Essa ordem permite entregar valor observável antes de avançar para integração climática, comparação visual mais refinada e empacotamento.
+Essa ordem permite entregar valor observável antes de avançar para uso climático em modelagem, comparação visual mais refinada e empacotamento.
 
 ## Estado Atual da Implementação
 
@@ -48,6 +49,7 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 - `ISSUE-004`: implementada com cache SQLite local que registra payload da análise, origem dos dados, versão de schema, registros normalizados e reuso ONS por período.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
 - `ISSUE-006`: parcialmente implementada com visualização textual e primeira interface desktop em Tkinter com tabela de geração por fonte.
+- `ISSUE-007`: parcialmente implementada com integração climática opcional Open-Meteo, fixtures offline, contrato `weather` no JSON/cache e resumo no CLI/desktop.
 - `ISSUE-008`: implementada com baseline por média móvel, MAE e comparação walk-forward.
 - `ISSUE-009`: parcialmente implementada com comparação textual e JSON entre real e previsto.
 - `ISSUE-010`: parcialmente implementada com alerta interpretável.
@@ -55,7 +57,7 @@ Essa ordem permite entregar valor observável antes de avançar para integraçã
 
 Pendências principais:
 
-- integrar clima;
+- usar clima como feature exploratória do baseline;
 - evoluir a interface desktop inicial para gráficos ricos, estados visuais e QA manual;
 - transformar o primeiro `.exe` local em release validada depois do gate retornar `public-ready`.
 
@@ -146,6 +148,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - validar links de dados públicos e instruções do README;
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
 - evoluir política de expiração ou invalidação do cache ONS.
+- ampliar fixtures climáticas e testar novos cenários Open-Meteo sem rede.
 - melhorar visualização da comparação real vs previsto do baseline.
 - evoluir critérios de release somente depois de QA manual da UI inicial.
 
