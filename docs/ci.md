@@ -55,16 +55,16 @@ A integração ONS é validada na suíte por fixture offline, cobrindo o contrat
 
 A integração climática Open-Meteo também é validada sem rede. A suíte cobre construção de URL, metadados da fonte, normalização horária, resumo climático, features climáticas simples, limite local de 5 MB, JSON inválido, coordenadas inválidas, persistência no payload/cache, relatório CLI e modelo de apresentação desktop com fixtures ou loaders injetados.
 
-A interface desktop inicial é validada de forma automatizada sem abrir janela. A suíte testa o modelo de apresentação, dados dos gráficos Canvas, seleção de fonte, status com cache e o entry point `radar-transicao-energetica-ui`. A abertura real da janela continua como QA manual, porque a CI inicial não deve depender de ambiente gráfico.
+A interface desktop inicial é validada de forma automatizada sem abrir janela e sem Docker. A suíte testa o modelo de apresentação, dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios dos gráficos, cores de média móvel/clima, redraw dos gráficos, seleção de fonte, status com cache e o entry point `radar-transicao-energetica-ui`. A abertura real da janela continua como QA manual, porque a CI inicial não deve depender de ambiente gráfico.
 
-QA manual mínimo pendente para a interface desktop:
+QA manual mínimo que ainda exige inspeção humana da janela:
 
 - abrir `radar-transicao-energetica-ui` com exemplo embutido;
-- validar fonte, período, métricas centrais, geração por fonte e alerta;
-- verificar tabela e gráfico Canvas de geração por fonte;
-- verificar tabela e gráfico Canvas real vs previsto;
-- executar cenário com clima habilitado e confirmar marcação de comparações com clima;
-- redimensionar a janela e confirmar que os gráficos continuam legíveis;
+- validar leitura visual de fonte, período, métricas centrais, geração por fonte e alerta;
+- verificar se tabela e gráfico Canvas de geração por fonte estão legíveis;
+- verificar se tabela e gráfico Canvas real vs previsto estão legíveis;
+- executar cenário com clima habilitado e confirmar visualmente a marcação de comparações com clima;
+- redimensionar a janela e confirmar visualmente que os gráficos continuam legíveis;
 - validar mensagem de erro para CSV ausente ou período ONS inválido.
 
 Para o primeiro build local experimental:

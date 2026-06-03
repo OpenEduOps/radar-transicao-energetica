@@ -12,11 +12,62 @@ from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.data import GenerationRecord
 from radar_transicao_energetica.desktop import (
     MAX_DESKTOP_BASELINE_POINTS,
+    DesktopBaselineChartPoint,
+    DesktopGenerationChartBar,
+    RadarDesktopApp,
     build_desktop_analysis_options,
     build_desktop_view_data,
     format_desktop_status,
+    _draw_baseline_chart,
+    _draw_generation_chart,
 )
 from radar_transicao_energetica.weather import WeatherRecord
+
+
+class FakeCanvas:
+    def __init__(self, width: int = 420, height: int = 190) -> None:
+        self.width = width
+        self.height = height
+        self.calls: list[tuple[str, tuple[object, ...], dict[str, object]]] = []
+
+    def delete(self, *args: object) -> None:
+        self.calls.append(("delete", args, {}))
+
+    def winfo_width(self) -> int:
+        return self.width
+
+    def winfo_height(self) -> int:
+        return self.height
+
+    def create_text(self, *args: object, **kwargs: object) -> int:
+        self.calls.append(("create_text", args, kwargs))
+        return len(self.calls)
+
+    def create_rectangle(self, *args: object, **kwargs: object) -> int:
+        self.calls.append(("create_rectangle", args, kwargs))
+        return len(self.calls)
+
+    def create_line(self, *args: object, **kwargs: object) -> int:
+        self.calls.append(("create_line", args, kwargs))
+        return len(self.calls)
+
+    def create_oval(self, *args: object, **kwargs: object) -> int:
+        self.calls.append(("create_oval", args, kwargs))
+        return len(self.calls)
+
+    def calls_named(self, name: str) -> list[tuple[tuple[object, ...], dict[str, object]]]:
+        return [(args, kwargs) for call_name, args, kwargs in self.calls if call_name == name]
+
+    def text_values(self) -> list[str]:
+        texts: list[str] = []
+        for _args, kwargs in self.calls_named("create_text"):
+            text = kwargs.get("text")
+            if isinstance(text, str):
+                texts.append(text)
+        return texts
+
+    def fill_values(self, call_name: str) -> list[object]:
+        return [kwargs.get("fill") for _args, kwargs in self.calls_named(call_name)]
 
 
 class DesktopTest(unittest.TestCase):
@@ -149,6 +200,74 @@ class DesktopTest(unittest.TestCase):
         self.assertIn("com clima", view_data.baseline_comparison)
         self.assertEqual(view_data.baseline_rows[-1].method, "clima")
         self.assertEqual(view_data.baseline_chart_points[-1].method, "clima")
+
+    def test_generation_chart_draws_source_bars_without_tk_window(self) -> None:
+        canvas = FakeCanvas(width=520, height=160)
+
+        _draw_generation_chart(
+            canvas,  # type: ignore[arg-type]
+            (
+                DesktopGenerationChartBar("hidraulica", 100.0, "renovavel"),
+                DesktopGenerationChartBar("termica", 40.0, "nao renovavel"),
+                DesktopGenerationChartBar("biomassa", 10.0, "desconhecida"),
+            ),
+        )
+
+        self.assertEqual(canvas.calls[0][0], "delete")
+        self.assertIn("hidraulica", canvas.text_values())
+        self.assertIn("#2e7d32", canvas.fill_values("create_rectangle"))
+        self.assertIn("#c62828", canvas.fill_values("create_rectangle"))
+        self.assertIn("#607d8b", canvas.fill_values("create_rectangle"))
+
+    def test_generation_chart_draws_empty_state_without_tk_window(self) -> None:
+        canvas = FakeCanvas(width=520, height=160)
+
+        _draw_generation_chart(canvas, ())  # type: ignore[arg-type]
+
+        self.assertIn("Sem dados de geracao", canvas.text_values())
+
+    def test_baseline_chart_draws_legend_and_weather_markers_without_tk_window(self) -> None:
+        canvas = FakeCanvas(width=520, height=220)
+
+        _draw_baseline_chart(
+            canvas,  # type: ignore[arg-type]
+            (
+                DesktopBaselineChartPoint("2026-01-01 01:00", 0.8, 0.7, "media movel"),
+                DesktopBaselineChartPoint("2026-01-01 02:00", 0.75, 0.78, "clima"),
+            ),
+        )
+
+        self.assertIn("real", canvas.text_values())
+        self.assertIn("prev media", canvas.text_values())
+        self.assertIn("prev clima", canvas.text_values())
+        self.assertIn("100%", canvas.text_values())
+        self.assertIn("0%", canvas.text_values())
+        self.assertIn("#2e7d32", canvas.fill_values("create_oval"))
+        self.assertIn("#1565c0", canvas.fill_values("create_oval"))
+        self.assertIn("#ef6c00", canvas.fill_values("create_oval"))
+        self.assertGreaterEqual(len(canvas.calls_named("create_line")), 3)
+
+    def test_baseline_chart_draws_empty_state_without_tk_window(self) -> None:
+        canvas = FakeCanvas(width=520, height=220)
+
+        _draw_baseline_chart(canvas, ())  # type: ignore[arg-type]
+
+        self.assertIn("Sem comparacoes de baseline", canvas.text_values())
+
+    def test_desktop_redraw_charts_uses_last_view_data_without_tk_window(self) -> None:
+        result = run_analysis(write_cache=False)
+        view_data = build_desktop_view_data(result)
+        generation_canvas = FakeCanvas(width=520, height=160)
+        baseline_canvas = FakeCanvas(width=520, height=220)
+        app = object.__new__(RadarDesktopApp)
+        app.current_view_data = view_data
+        app.generation_canvas = generation_canvas
+        app.baseline_canvas = baseline_canvas
+
+        RadarDesktopApp._redraw_charts(app)
+
+        self.assertGreater(len(generation_canvas.calls_named("create_rectangle")), 0)
+        self.assertGreater(len(baseline_canvas.calls_named("create_oval")), 0)
 
     def test_build_desktop_analysis_options_rejects_unknown_source(self) -> None:
         with self.assertRaisesRegex(ValueError, "Fonte de dados desconhecida"):
