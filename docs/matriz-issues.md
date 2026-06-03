@@ -39,7 +39,7 @@ Este documento organiza as primeiras issues planejadas para o **Radar da Transi�
 8. `ISSUE-008`: modelo baseline.
 9. `ISSUE-010`: alerta interpretável.
 
-Essa ordem permite entregar valor observável antes de avançar para QA manual, refinamento visual, modelagem mais sofisticada e empacotamento.
+Essa ordem permite entregar valor observável antes de avançar para QA manual remanescente, refinamento visual, modelagem mais sofisticada e empacotamento.
 
 ## Estado Atual da Implementação
 
@@ -57,7 +57,7 @@ Essa ordem permite entregar valor observável antes de avançar para QA manual, 
 
 Pendências principais:
 
-- registrar QA manual da interface desktop inicial, incluindo gráficos Canvas e cenários com/sem clima;
+- registrar QA manual remanescente da interface desktop inicial, incluindo leitura visual dos gráficos Canvas e cenários com/sem clima;
 - refinar estados visuais, acessibilidade e eventual biblioteca gráfica rica quando houver necessidade real;
 - transformar o primeiro `.exe` local em release validada depois do gate retornar `public-ready`.
 
@@ -70,7 +70,7 @@ A primeira fatia funcional foi planejada para se limitar a:
 - `ISSUE-005`: cálculo de participação renovável;
 - testes automatizados para o cálculo e dados sintéticos.
 
-Parte de `ISSUE-006`, `ISSUE-009` e `ISSUE-010` já foi antecipada para viabilizar o primeiro `.exe` local e a primeira tela desktop. A comparação visual inicial já existe; as próximas versões devem focar QA manual, estados visuais e refinamento da experiência.
+Parte de `ISSUE-006`, `ISSUE-009` e `ISSUE-010` já foi antecipada para viabilizar o primeiro `.exe` local e a primeira tela desktop. A comparação visual inicial já existe e possui QA automatizado sem janela; as próximas versões devem focar QA manual remanescente, estados visuais e refinamento da experiência.
 
 Critérios já atendidos para `ISSUE-003`:
 
@@ -144,7 +144,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - criar dados sintéticos de teste;
 - melhorar mensagens de erro para dados ausentes;
 - revisar clareza de alertas educacionais;
-- melhorar estados, acessibilidade e QA manual da interface desktop inicial;
+- melhorar estados, acessibilidade e QA manual remanescente da interface desktop inicial;
 - validar links de dados públicos e instruções do README;
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
 - evoluir política de expiração ou invalidação do cache ONS.

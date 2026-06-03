@@ -41,12 +41,12 @@ Contribuições úteis agora incluem:
 - evoluir políticas de expiração ou invalidação do cache ONS;
 - ampliar fixtures climáticas e validar cenários Open-Meteo sem rede;
 - melhorar ou explicar as features climáticas simples usadas no baseline;
-- melhorar estados, mensagens, acessibilidade e QA manual da interface desktop inicial;
+- melhorar estados, mensagens, acessibilidade e QA manual remanescente da interface desktop inicial;
 - refinar a visualização e interpretação da comparação baseline em cenários com muitos períodos;
 - evoluir critérios de release do `.exe` sem publicar artefato antes do gate;
 - revisar critérios de aceite.
 
-A próxima evolução recomendada é registrar QA manual da interface desktop inicial e refinar estados visuais antes de avaliar bibliotecas gráficas mais ricas ou `scikit-learn`. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
+A próxima evolução recomendada é registrar o QA manual remanescente da interface desktop inicial e refinar estados visuais antes de avaliar bibliotecas gráficas mais ricas ou `scikit-learn`. O QA automatizado dos gráficos já roda sem abrir janela e sem Docker; os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
 
 ## Padrão de Trabalho
 
@@ -62,6 +62,7 @@ Exemplos de bons escopos:
 - adicionar teste para cache ou serialização;
 - adicionar teste de comparação real vs previsto do baseline;
 - adicionar teste para dados de gráfico da interface desktop;
+- adicionar teste de desenho com `FakeCanvas` para edge cases visuais;
 - adicionar teste para modelo de apresentação da interface sem abrir janela;
 - adicionar teste para critérios de release ou packaging;
 - melhorar mensagem de erro para dados indisponíveis;
@@ -105,6 +106,7 @@ Prioridades iniciais:
 - testes de integração leve para cache local e serialização;
 - validações offline para a fonte ONS;
 - validações offline para a fonte climática Open-Meteo;
+- testes sem janela para gráficos Canvas e modelo de apresentação da UI;
 - QA manual documentado para visualizações e alertas.
 
 Se uma mudança ainda não puder ser testada automaticamente, descreva claramente a validação manual feita.

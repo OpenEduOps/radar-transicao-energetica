@@ -85,14 +85,14 @@ radar-transicao-energetica/
 | `baseline.py` | Baseline por média móvel, MAE, analogia climática simples e comparação walk-forward real vs previsto. |
 | `alerts.py` | Regras textuais de alerta educacional. |
 | `charts.py` | Visualização textual inicial por fonte, tendência e comparação real vs previsto. |
-| `desktop.py` | Interface desktop inicial em Tkinter, gráficos Canvas e modelo de apresentação testável sem abrir janela. |
+| `desktop.py` | Interface desktop inicial em Tkinter, gráficos Canvas, helpers de desenho testáveis por `CanvasLike` e modelo de apresentação testável sem abrir janela. |
 | `features.py` | Alinhamento de clima por período, criação de features horárias simples e distância climática entre períodos. |
 | `weather.py` | Construção da URL Open-Meteo, download limitado, normalização horária, resumo climático e validações de coordenadas. |
 | `release.py` | Critérios de readiness e mensagens do gate de release pública do `.exe`. |
 | `serialization.py` | Contrato JSON compartilhado entre CLI e cache. |
 | `cache.py` | Escrita e leitura do cache SQLite local. |
 | `scripts/build_exe.py` | Build local experimental com PyInstaller, status de release e bloqueio de release pública prematura. |
-| `tests` | Testes unitários, integração leve e QA automatizável. |
+| `tests` | Testes unitários, integração leve, QA automatizado sem janela e `FakeCanvas` para gráficos desktop. |
 
 O JSON e o cache incluem `data_source` para registrar a origem da análise. Na fonte ONS, esse bloco carrega o tipo da fonte, período mensal, URL do dataset e URL do recurso CSV usado.
 
@@ -170,5 +170,5 @@ Fonte pública ONS, CSV local ou exemplo embutido
 - Definir quando a heurística climática simples deve evoluir para modelo estatístico ou `scikit-learn`, após estabilizar a leitura visual.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
 - Definir se Matplotlib ou Plotly serão necessários além dos gráficos Canvas atuais.
-- Evoluir a interface Tkinter inicial para uma experiência desktop mais completa e validada manualmente.
+- Registrar o QA manual remanescente da interface Tkinter inicial e evoluir a experiência desktop gradualmente.
 - Definir quando o `.exe` local poderá virar artefato de release.

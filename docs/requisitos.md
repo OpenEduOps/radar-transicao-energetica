@@ -95,7 +95,7 @@ Observação sobre `REQ-005`: a integração climática inicial usa Open-Meteo d
 | `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, escrita do cache SQLite, persistência e reuso de registros normalizados em diretório temporário. |
 | `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE e comparação walk-forward do baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
-| `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar o modelo de apresentação da interface sem abrir janela, gráficos Canvas iniciais e verificar manualmente se geração por fonte, comparação e alerta são compreensíveis. |
+| `TEST-006` | Unitário, Canvas sem janela e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar o modelo de apresentação da interface sem abrir janela, desenho em `FakeCanvas`, gráficos Canvas iniciais, edge cases visuais e verificar manualmente se geração por fonte, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
 | `TEST-008` | Unitário e packaging | `NFR-006` | Validar release gate, `--release-status`, bloqueio de `--public-release`, ausência de build/upload/checksum na CI e ignore de artefatos locais. |
 | `TEST-009` | Unitário e integração leve | `REQ-005` | Validar URL Open-Meteo, normalização de fixture horária, resumo climático, features climáticas simples, comparação real vs previsto com clima, tratamento de falhas, contrato JSON/cache, CLI e modelo de apresentação desktop sem rede. |
@@ -113,4 +113,4 @@ Observação sobre `REQ-005`: a integração climática inicial usa Open-Meteo d
 - suporte multiusuário;
 - empacotamento final de release como `.exe`, até que o fluxo principal esteja estável.
 
-O primeiro `.exe` local experimental é permitido para validação técnica da versão CLI e não substitui o empacotamento final de release. A interface desktop inicial também não implica release pública enquanto QA manual, refinamento visual, smoke test de artefato, checksum e build automático de artefato estiverem pendentes.
+O primeiro `.exe` local experimental é permitido para validação técnica da versão CLI e não substitui o empacotamento final de release. A interface desktop inicial também não implica release pública enquanto QA manual remanescente, refinamento visual, smoke test de artefato, checksum e build automático de artefato estiverem pendentes.

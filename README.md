@@ -176,6 +176,8 @@ python -m unittest discover -s tests
 python -m compileall src tests scripts
 ```
 
+A suíte automatizada cobre a interface desktop sem abrir janela e sem Docker. Os testes validam o modelo de apresentação, os dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios, geração zerada, muitas barras, baseline com único ponto, marcação de média móvel/clima e redraw dos gráficos.
+
 ## Primeiro Executável Local
 
 O executável local experimental é gerado com PyInstaller. Ele não é commitado no repositório e fica em `dist/`.
@@ -208,7 +210,7 @@ python scripts\build_exe.py --public-release
 
 O gate atual bloqueia release pública enquanto estes itens estiverem pendentes:
 
-- interface desktop inicial estável e validada manualmente;
+- interface desktop inicial com QA automatizado sem janela e QA manual registrado;
 - smoke test formal do executável;
 - checksum do artefato;
 - build automático de artefato na CI;
@@ -439,7 +441,7 @@ A implementação atual já atende parte desses critérios com dados de exemplo,
 
 Próxima sequência técnica recomendada:
 
-1. Registrar QA manual da interface desktop inicial, incluindo gráficos Canvas e cenários com/sem clima.
+1. Registrar o QA manual remanescente da interface desktop inicial, incluindo leitura visual dos gráficos Canvas e cenários com/sem clima.
 2. Refinar estados visuais e acessibilidade da tela antes de trocar Tkinter ou adicionar bibliotecas gráficas.
 3. Definir política de expiração ou invalidação do cache ONS quando necessário.
 4. Avaliar `scikit-learn` apenas depois que a leitura visual do baseline estiver estável.

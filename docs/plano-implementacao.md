@@ -448,7 +448,7 @@ Commits sugeridos:
 
 Status: concluída para visualização inicial.
 
-A implementação atual entrega visualização textual por fonte, tendência de participação renovável, comparação textual real vs previsto e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, geração por fonte em tabela e gráfico Canvas, alerta interpretável, baseline da próxima janela, MAE, tabela de comparação real vs previsto e gráfico Canvas do baseline. Estados visuais mais completos, acessibilidade e QA manual continuam planejados.
+A implementação atual entrega visualização textual por fonte, tendência de participação renovável, comparação textual real vs previsto e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, geração por fonte em tabela e gráfico Canvas, alerta interpretável, baseline da próxima janela, MAE, tabela de comparação real vs previsto e gráfico Canvas do baseline. O QA automatizado dos gráficos roda sem janela e sem Docker, usando `FakeCanvas`; estados visuais mais completos, acessibilidade e QA manual remanescente continuam planejados.
 
 Rastreabilidade:
 
@@ -465,6 +465,7 @@ Entregáveis:
 - tabela desktop de geração por fonte;
 - gráfico Canvas inicial de geração por fonte;
 - modelo de apresentação testável sem abrir janela;
+- desenho de gráficos testado com `FakeCanvas`;
 - estado sem dados;
 - estado de erro;
 - QA manual documentado.
@@ -491,7 +492,7 @@ Critérios de aceite:
 - dados ausentes não quebram a visualização;
 - usuário entende o período e as fontes exibidas;
 - testes automatizados validam o modelo de apresentação sem abrir janela;
-- QA manual registra o cenário validado.
+- QA automatizado cobre o desenho sem janela e QA manual registra o cenário visual validado.
 
 Commits sugeridos:
 
