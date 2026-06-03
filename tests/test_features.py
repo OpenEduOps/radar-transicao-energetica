@@ -63,6 +63,40 @@ class FeaturesTest(unittest.TestCase):
         self.assertEqual(feature.period, datetime(2026, 1, 1, 1))
         self.assertEqual(feature.temperature_2m_c, 24.0)
 
+    def test_weather_features_ignore_periods_without_any_available_value(self) -> None:
+        summaries = summarize_by_period(
+            [
+                GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 50.0),
+                GenerationRecord(datetime(2026, 1, 1, 0), "termica", 50.0),
+            ]
+        )
+        weather = [
+            WeatherRecord(datetime(2026, 1, 1, 0), None, None, None, None),
+        ]
+
+        features = build_weather_features_by_period(summaries, weather)
+
+        self.assertEqual(features, {})
+
+    def test_find_next_weather_feature_skips_empty_future_periods(self) -> None:
+        summaries = summarize_by_period(
+            [
+                GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 50.0),
+                GenerationRecord(datetime(2026, 1, 1, 0), "termica", 50.0),
+            ]
+        )
+        weather = [
+            WeatherRecord(datetime(2026, 1, 1, 1), None, None, None, None),
+            WeatherRecord(datetime(2026, 1, 1, 2), 26.0, 12.0, 140.0, 70.0),
+        ]
+
+        feature = find_next_weather_feature(summaries, weather)
+
+        self.assertIsNotNone(feature)
+        assert feature is not None
+        self.assertEqual(feature.period, datetime(2026, 1, 1, 2))
+        self.assertEqual(feature.available_feature_count, 4)
+
     def test_weather_feature_distance_uses_available_common_values(self) -> None:
         summaries = summarize_by_period(
             [

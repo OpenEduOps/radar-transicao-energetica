@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Iterable
 
 from radar_transicao_energetica.domain import PeriodRenewableSummary
 from radar_transicao_energetica.weather import WeatherRecord
@@ -58,17 +58,14 @@ def build_weather_features_by_period(
         if key in summary_periods:
             grouped_records.setdefault(key, []).append(record)
 
-    return {
-        period: WeatherFeature(
-            period=period,
-            temperature_2m_c=_average(record.temperature_2m_c for record in records),
-            wind_speed_10m_kmh=_average(record.wind_speed_10m_kmh for record in records),
-            shortwave_radiation_w_m2=_average(
-                record.shortwave_radiation_w_m2 for record in records
-            ),
-            cloud_cover_percent=_average(record.cloud_cover_percent for record in records),
-        )
+    features = {
+        period: _weather_feature_from_records(period, records)
         for period, records in grouped_records.items()
+    }
+    return {
+        period: feature
+        for period, feature in features.items()
+        if feature.available_feature_count > 0
     }
 
 
@@ -86,14 +83,25 @@ def find_next_weather_feature(
     ]
     if not future_records:
         return None
-    next_period = min(normalize_feature_period(record.period) for record in future_records)
-    records = [
-        record
-        for record in future_records
-        if normalize_feature_period(record.period) == next_period
-    ]
+    future_periods = sorted({normalize_feature_period(record.period) for record in future_records})
+    for next_period in future_periods:
+        records = [
+            record
+            for record in future_records
+            if normalize_feature_period(record.period) == next_period
+        ]
+        feature = _weather_feature_from_records(next_period, records)
+        if feature.available_feature_count > 0:
+            return feature
+    return None
+
+
+def _weather_feature_from_records(
+    period: datetime,
+    records: list[WeatherRecord],
+) -> WeatherFeature:
     return WeatherFeature(
-        period=next_period,
+        period=period,
         temperature_2m_c=_average(record.temperature_2m_c for record in records),
         wind_speed_10m_kmh=_average(record.wind_speed_10m_kmh for record in records),
         shortwave_radiation_w_m2=_average(
