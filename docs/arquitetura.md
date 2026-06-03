@@ -4,7 +4,7 @@ Este documento descreve a arquitetura inicial do **Radar da Transição Energét
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite, baseline por média móvel com MAE, comparação real vs previsto e alerta textual. As próximas camadas devem avançar para reuso offline do cache, integração climática, gráficos ricos e executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período, baseline por média móvel com MAE, comparação real vs previsto e alerta textual. As próximas camadas devem avançar para integração climática, gráficos ricos e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 

@@ -16,7 +16,7 @@ A primeira fatia funcional deve ser menor que a V0 completa. Ela deve entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-A primeira implementação já entrega essa fatia como CLI local e interface desktop inicial, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache SQLite, visualização textual, tabela desktop de geração por fonte, baseline por média móvel com MAE, comparação real vs previsto, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Integração climática, gráficos ricos, reuso offline do cache e empacotamento de release continuam para etapas posteriores do MVP funcional.
+A primeira implementação já entrega essa fatia como CLI local e interface desktop inicial, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache SQLite com reuso ONS por período, visualização textual, tabela desktop de geração por fonte, baseline por média móvel com MAE, comparação real vs previsto, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Integração climática, gráficos ricos e empacotamento de release continuam para etapas posteriores do MVP funcional.
 
 Na decisão da primeira fonte pública real, ONS foi priorizado por entregar geração horária em CSV público e sem credenciais. ANEEL e CCEE permanecem candidatas para etapas complementares: ANEEL para dados estruturais do setor e CCEE para sinais econômicos, como PLD horário.
 

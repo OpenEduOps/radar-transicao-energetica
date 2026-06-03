@@ -131,6 +131,6 @@ Não inclua:
 
 ## Como Escolher Uma Issue
 
-Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial, cálculo de participação renovável, cache SQLite, baseline e interface desktop inicial já existem. Boas contribuições agora estão em reuso offline do cache, fixtures ONS, documentação de limites, integração climática, QA da tela e visualização mais clara do baseline.
+Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial, cálculo de participação renovável, cache SQLite com reuso ONS, baseline e interface desktop inicial já existem. Boas contribuições agora estão em integração climática, fixtures ONS, política de expiração do cache, QA da tela e visualização mais clara do baseline.
 
 Se uma issue parecer grande demais, divida em uma etapa menor com critério de aceite próprio.
