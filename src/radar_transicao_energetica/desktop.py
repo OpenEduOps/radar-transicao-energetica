@@ -1034,8 +1034,8 @@ def _source_category_label(category: str) -> str:
     if category == "renovavel":
         return "renovavel"
     if category == "nao renovavel":
-        return "nao renovavel"
-    return "fonte indefinida"
+        return "nao renov."
+    return "indefinida"
 
 
 def _canvas_size(value: int, *, fallback: int) -> int:

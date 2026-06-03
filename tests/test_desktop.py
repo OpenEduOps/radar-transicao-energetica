@@ -359,6 +359,7 @@ class DesktopTest(unittest.TestCase):
             ["#166534", "#991b1b", "#374151"],
         )
         self.assertIn("100 MW", canvas.text_values())
+        self.assertIn("biomassa (indefinida)", canvas.text_values())
 
     def test_generation_chart_draws_empty_state_without_tk_window(self) -> None:
         canvas = FakeCanvas(width=520, height=160)
