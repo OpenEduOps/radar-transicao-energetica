@@ -14,6 +14,7 @@ from radar_transicao_energetica.desktop import (
     MAX_DESKTOP_BASELINE_POINTS,
     DesktopBaselineChartPoint,
     DesktopGenerationChartBar,
+    DesktopStateMessage,
     RadarDesktopApp,
     build_desktop_analysis_options,
     build_desktop_error_view_data,
@@ -21,6 +22,7 @@ from radar_transicao_energetica.desktop import (
     format_desktop_status,
     _draw_baseline_chart,
     _draw_generation_chart,
+    _format_state_messages,
 )
 from radar_transicao_energetica.weather import WeatherDataError, WeatherRecord
 
@@ -94,6 +96,7 @@ class DesktopTest(unittest.TestCase):
         self.assertIn("real", view_data.baseline_comparison)
         self.assertIn("previsto", view_data.baseline_comparison)
         self.assertEqual(view_data.weather, "nao solicitado")
+        self.assertEqual(view_data.state_messages, ())
         self.assertGreater(len(view_data.baseline_rows), 0)
         self.assertGreater(len(view_data.baseline_chart_points), 0)
         self.assertEqual(view_data.baseline_rows[-1].method, "media movel")
@@ -317,6 +320,20 @@ class DesktopTest(unittest.TestCase):
         self.assertEqual(view_data.state_messages[0].title, "Sem dados")
         self.assertIn("nao retornou registros", view_data.state_messages[0].detail)
         self.assertIn("aviso", view_data.alert)
+
+    def test_format_state_messages_exposes_level_title_and_detail(self) -> None:
+        text = _format_state_messages(
+            (
+                DesktopStateMessage("aviso", "Clima indisponivel", "sem conexao"),
+                DesktopStateMessage("info", "Cache reutilizado", "cache local"),
+            )
+        )
+
+        self.assertIn("AVISO - Clima indisponivel: sem conexao", text)
+        self.assertIn("INFO - Cache reutilizado: cache local", text)
+
+    def test_format_state_messages_reports_no_warnings(self) -> None:
+        self.assertEqual(_format_state_messages(()), "Sem avisos")
 
     def test_generation_chart_draws_source_bars_without_tk_window(self) -> None:
         canvas = FakeCanvas(width=520, height=160)
