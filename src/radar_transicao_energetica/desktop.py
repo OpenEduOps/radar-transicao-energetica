@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
-from typing import Protocol
+from typing import Literal, Protocol
 import tkinter as tk
 
 from radar_transicao_energetica.app import AnalysisResult, run_analysis
@@ -20,6 +20,7 @@ from radar_transicao_energetica.weather import (
 
 
 MAX_DESKTOP_BASELINE_POINTS = 8
+DesktopStateLevel = Literal["info", "aviso", "erro"]
 
 
 class CanvasLike(Protocol):
@@ -58,7 +59,7 @@ class DesktopMetric:
 
 @dataclass(frozen=True)
 class DesktopStateMessage:
-    level: str
+    level: DesktopStateLevel
     title: str
     detail: str
 
