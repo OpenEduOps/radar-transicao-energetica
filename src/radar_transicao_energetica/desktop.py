@@ -659,7 +659,17 @@ class RadarDesktopApp:
 
     def _configure_keyboard_shortcuts(self) -> None:
         self.root.bind("<Control-r>", self._run_from_keyboard)
-        self.root.bind("<Return>", self._run_from_keyboard)
+        submit_widgets: tuple[tk.Widget, ...] = (
+            *self.source_buttons,
+            self.csv_entry,
+            self.ons_entry,
+            self.weather_checkbutton,
+            self.weather_latitude_entry,
+            self.weather_longitude_entry,
+            self.weather_days_entry,
+        )
+        for widget in submit_widgets:
+            widget.bind("<Return>", self._run_from_keyboard)
 
     def _run_from_keyboard(self, _event: tk.Event[object]) -> str:
         self.run_current_analysis()
