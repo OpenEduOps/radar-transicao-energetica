@@ -34,6 +34,9 @@ class DesktopTest(unittest.TestCase):
         self.assertIn("real", view_data.baseline_comparison)
         self.assertIn("previsto", view_data.baseline_comparison)
         self.assertEqual(view_data.weather, "nao solicitado")
+        self.assertGreater(len(view_data.baseline_rows), 0)
+        self.assertGreater(len(view_data.baseline_chart_points), 0)
+        self.assertEqual(view_data.baseline_rows[-1].method, "media movel")
 
     def test_build_desktop_view_data_sorts_generation_rows_by_source(self) -> None:
         result = run_analysis(write_cache=False)
@@ -43,6 +46,23 @@ class DesktopTest(unittest.TestCase):
         self.assertEqual(
             [row.source for row in view_data.generation_rows],
             ["eolica", "hidraulica", "solar", "termica"],
+        )
+
+    def test_build_desktop_view_data_orders_generation_chart_by_volume(self) -> None:
+        result = run_analysis(write_cache=False)
+
+        view_data = build_desktop_view_data(result)
+        chart_by_source = {bar.source: bar for bar in view_data.generation_chart_bars}
+
+        self.assertEqual(view_data.generation_chart_bars[0].source, "hidraulica")
+        self.assertEqual(view_data.generation_chart_bars[0].category, "renovavel")
+        self.assertEqual(chart_by_source["termica"].category, "nao renovavel")
+        self.assertEqual(
+            [bar.generation_mw for bar in view_data.generation_chart_bars],
+            sorted(
+                (bar.generation_mw for bar in view_data.generation_chart_bars),
+                reverse=True,
+            ),
         )
 
     def test_build_desktop_analysis_options_accepts_csv_source(self) -> None:
@@ -101,6 +121,8 @@ class DesktopTest(unittest.TestCase):
         self.assertIn("com clima", metrics["Baseline proxima janela"])
         self.assertIn("/", metrics["Comparacoes com clima"])
         self.assertIn("com clima", view_data.baseline_comparison)
+        self.assertEqual(view_data.baseline_rows[-1].method, "clima")
+        self.assertEqual(view_data.baseline_chart_points[-1].method, "clima")
 
     def test_build_desktop_analysis_options_rejects_unknown_source(self) -> None:
         with self.assertRaisesRegex(ValueError, "Fonte de dados desconhecida"):

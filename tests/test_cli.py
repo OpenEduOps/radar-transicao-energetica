@@ -242,6 +242,8 @@ class CliTest(unittest.TestCase):
         self.assertIn("Ultima comparacao baseline:", result.stdout)
         self.assertIn("real", result.stdout)
         self.assertIn("previsto", result.stdout)
+        self.assertIn("Comparacao real vs previsto por periodo:", result.stdout)
+        self.assertIn("[media]", result.stdout)
 
     def test_cli_reports_missing_ons_period_without_network(self) -> None:
         env = os.environ.copy()

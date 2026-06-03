@@ -7,7 +7,11 @@ from typing import Sequence
 
 from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.baseline import BaselinePrediction
-from radar_transicao_energetica.charts import render_share_trend, render_source_chart
+from radar_transicao_energetica.charts import (
+    render_baseline_comparison_chart,
+    render_share_trend,
+    render_source_chart,
+)
 from radar_transicao_energetica.data import DataSourceMetadata, GenerationDataError
 from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
 from radar_transicao_energetica.ons import parse_ons_period
@@ -217,6 +221,8 @@ def render_report(
             render_source_chart(summary),
             "",
             render_share_trend(period_summaries),
+            "",
+            render_baseline_comparison_chart(baseline.comparisons),
             "",
             f"Alerta: {alert_message}",
         ]

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from radar_transicao_energetica.baseline import BaselineComparison
 from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
 
 
@@ -27,6 +28,27 @@ def render_share_trend(summaries: list[PeriodRenewableSummary], width: int = 24)
             continue
         bar = _bar(share, 1.0, width)
         lines.append(f"- {summary.period:%Y-%m-%d %H:%M} {bar} {share:.1%}")
+    return "\n".join(lines)
+
+
+def render_baseline_comparison_chart(
+    comparisons: tuple[BaselineComparison, ...],
+    width: int = 18,
+) -> str:
+    if not comparisons:
+        return "Sem comparacoes de baseline para exibir."
+
+    lines = ["Comparacao real vs previsto por periodo:"]
+    for comparison in comparisons:
+        method = "clima" if comparison.weather_adjusted else "media"
+        actual_bar = _bar(comparison.actual_renewable_share, 1.0, width)
+        predicted_bar = _bar(comparison.predicted_renewable_share, 1.0, width)
+        lines.append(
+            f"- {comparison.period:<19} [{method:<5}] "
+            f"real {actual_bar} {comparison.actual_renewable_share:.1%} | "
+            f"prev {predicted_bar} {comparison.predicted_renewable_share:.1%} | "
+            f"erro {comparison.absolute_error * 100:.1f} p.p."
+        )
     return "\n".join(lines)
 
 

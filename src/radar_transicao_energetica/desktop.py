@@ -9,6 +9,7 @@ from radar_transicao_energetica.app import AnalysisResult, run_analysis
 from radar_transicao_energetica.baseline import BaselineComparison, BaselinePrediction
 from radar_transicao_energetica.cli import DEFAULT_CACHE_PATH
 from radar_transicao_energetica.data import GenerationDataError
+from radar_transicao_energetica.domain import NON_RENEWABLE_SOURCES, RENEWABLE_SOURCES
 from radar_transicao_energetica.ons import parse_ons_period
 from radar_transicao_energetica.weather import (
     DEFAULT_WEATHER_FORECAST_DAYS,
@@ -42,13 +43,40 @@ class DesktopGenerationRow:
 
 
 @dataclass(frozen=True)
+class DesktopGenerationChartBar:
+    source: str
+    generation_mw: float
+    category: str
+
+
+@dataclass(frozen=True)
+class DesktopBaselineRow:
+    period: str
+    actual: str
+    predicted: str
+    error: str
+    method: str
+
+
+@dataclass(frozen=True)
+class DesktopBaselineChartPoint:
+    period: str
+    actual_renewable_share: float
+    predicted_renewable_share: float
+    method: str
+
+
+@dataclass(frozen=True)
 class DesktopViewData:
     source: str
     period: str
     metrics: tuple[DesktopMetric, ...]
     generation_rows: tuple[DesktopGenerationRow, ...]
+    generation_chart_bars: tuple[DesktopGenerationChartBar, ...]
     alert: str
     baseline_comparison: str
+    baseline_rows: tuple[DesktopBaselineRow, ...]
+    baseline_chart_points: tuple[DesktopBaselineChartPoint, ...]
     weather: str
 
 
@@ -72,13 +100,37 @@ def build_desktop_view_data(result: AnalysisResult) -> DesktopViewData:
         DesktopGenerationRow(source=source, generation_mw=_format_mw(generation))
         for source, generation in sorted(summary.generation_by_source.items())
     )
+    generation_chart_bars = tuple(
+        DesktopGenerationChartBar(
+            source=source,
+            generation_mw=generation,
+            category=_source_category(source),
+        )
+        for source, generation in sorted(
+            summary.generation_by_source.items(),
+            key=lambda item: (-item[1], item[0]),
+        )
+    )
+    baseline_rows = tuple(_comparison_to_desktop_row(item) for item in baseline.comparisons)
+    baseline_chart_points = tuple(
+        DesktopBaselineChartPoint(
+            period=_format_period_label(item.period),
+            actual_renewable_share=item.actual_renewable_share,
+            predicted_renewable_share=item.predicted_renewable_share,
+            method=_comparison_method_label(item),
+        )
+        for item in baseline.comparisons
+    )
     return DesktopViewData(
         source=_format_data_source(result),
         period=f"{summary.period_start:%Y-%m-%d %H:%M} -> {summary.period_end:%Y-%m-%d %H:%M}",
         metrics=metrics,
         generation_rows=generation_rows,
+        generation_chart_bars=generation_chart_bars,
         alert=f"{result.alert.level}: {result.alert.message}",
         baseline_comparison=_format_baseline_comparison(latest_comparison),
+        baseline_rows=baseline_rows,
+        baseline_chart_points=baseline_chart_points,
         weather=_format_weather(result),
     )
 
@@ -181,7 +233,7 @@ class RadarDesktopApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title("Radar da Transicao Energetica")
-        self.root.minsize(900, 620)
+        self.root.minsize(980, 760)
 
         self.source_var = tk.StringVar(value="exemplo")
         self.csv_path_var = tk.StringVar()
@@ -197,6 +249,9 @@ class RadarDesktopApp:
         self.baseline_comparison_var = tk.StringVar(value="-")
         self.weather_var = tk.StringVar(value="-")
         self.metric_vars: dict[str, tk.StringVar] = {}
+        self.generation_canvas: tk.Canvas | None = None
+        self.baseline_canvas: tk.Canvas | None = None
+        self.baseline_table: ttk.Treeview | None = None
 
         self._build_layout()
         self.run_current_analysis()
@@ -272,6 +327,7 @@ class RadarDesktopApp:
         content.columnconfigure(0, weight=1)
         content.columnconfigure(1, weight=1)
         content.rowconfigure(1, weight=1)
+        content.rowconfigure(2, weight=1)
 
         summary = ttk.LabelFrame(content, text="Resumo", padding=12)
         summary.grid(row=0, column=0, columnspan=2, sticky="ew")
@@ -319,6 +375,14 @@ class RadarDesktopApp:
         self.generation_table.column("#0", width=180, anchor="w")
         self.generation_table.column("generation", width=160, anchor="e")
         self.generation_table.grid(row=0, column=0, sticky="nsew")
+        self.generation_canvas = tk.Canvas(
+            generation,
+            height=150,
+            background="#ffffff",
+            highlightthickness=1,
+            highlightbackground="#d6d6d6",
+        )
+        self.generation_canvas.grid(row=1, column=0, sticky="ew", pady=(12, 0))
 
         insights = ttk.LabelFrame(content, text="Alerta e baseline", padding=12)
         insights.grid(row=1, column=1, sticky="nsew", pady=(12, 0), padx=(6, 0))
@@ -344,6 +408,37 @@ class RadarDesktopApp:
             wraplength=390,
             justify="left",
         ).grid(row=5, column=0, sticky="ew", pady=(4, 0))
+
+        baseline = ttk.LabelFrame(content, text="Real vs previsto", padding=12)
+        baseline.grid(row=2, column=0, columnspan=2, sticky="nsew", pady=(12, 0))
+        baseline.columnconfigure(0, weight=1)
+        baseline.columnconfigure(1, weight=1)
+        baseline.rowconfigure(0, weight=1)
+        self.baseline_table = ttk.Treeview(
+            baseline,
+            columns=("actual", "predicted", "error", "method"),
+            show="tree headings",
+            height=5,
+        )
+        self.baseline_table.heading("#0", text="Periodo")
+        self.baseline_table.heading("actual", text="Real")
+        self.baseline_table.heading("predicted", text="Previsto")
+        self.baseline_table.heading("error", text="Erro")
+        self.baseline_table.heading("method", text="Metodo")
+        self.baseline_table.column("#0", width=150, anchor="w")
+        self.baseline_table.column("actual", width=90, anchor="e")
+        self.baseline_table.column("predicted", width=90, anchor="e")
+        self.baseline_table.column("error", width=90, anchor="e")
+        self.baseline_table.column("method", width=110, anchor="w")
+        self.baseline_table.grid(row=0, column=0, sticky="nsew", padx=(0, 8))
+        self.baseline_canvas = tk.Canvas(
+            baseline,
+            height=190,
+            background="#ffffff",
+            highlightthickness=1,
+            highlightbackground="#d6d6d6",
+        )
+        self.baseline_canvas.grid(row=0, column=1, sticky="nsew", padx=(8, 0))
 
         status = ttk.Frame(self.root, padding=(12, 0, 12, 8))
         status.grid(row=2, column=0, sticky="ew")
@@ -417,6 +512,20 @@ class RadarDesktopApp:
             self.generation_table.delete(item)
         for row in data.generation_rows:
             self.generation_table.insert("", "end", text=row.source, values=(row.generation_mw,))
+        if self.baseline_table is not None:
+            for item in self.baseline_table.get_children():
+                self.baseline_table.delete(item)
+            for row in data.baseline_rows:
+                self.baseline_table.insert(
+                    "",
+                    "end",
+                    text=row.period,
+                    values=(row.actual, row.predicted, row.error, row.method),
+                )
+        if self.generation_canvas is not None:
+            _draw_generation_chart(self.generation_canvas, data.generation_chart_bars)
+        if self.baseline_canvas is not None:
+            _draw_baseline_chart(self.baseline_canvas, data.baseline_chart_points)
 
 
 def main() -> int:
@@ -467,6 +576,192 @@ def _format_baseline_comparison(comparison: BaselineComparison | None) -> str:
         f"erro {_format_points(comparison.absolute_error)}"
         f"{'; com clima' if comparison.weather_adjusted else ''}"
     )
+
+
+def _comparison_to_desktop_row(comparison: BaselineComparison) -> DesktopBaselineRow:
+    return DesktopBaselineRow(
+        period=_format_period_label(comparison.period),
+        actual=_format_percent(comparison.actual_renewable_share),
+        predicted=_format_percent(comparison.predicted_renewable_share),
+        error=_format_points(comparison.absolute_error),
+        method=_comparison_method_label(comparison),
+    )
+
+
+def _format_period_label(period: str) -> str:
+    return period.replace("T", " ")[:16]
+
+
+def _comparison_method_label(comparison: BaselineComparison) -> str:
+    return "clima" if comparison.weather_adjusted else "media movel"
+
+
+def _source_category(source: str) -> str:
+    normalized_source = source.lower()
+    if normalized_source in RENEWABLE_SOURCES:
+        return "renovavel"
+    if normalized_source in NON_RENEWABLE_SOURCES:
+        return "nao renovavel"
+    return "desconhecida"
+
+
+def _draw_generation_chart(
+    canvas: tk.Canvas,
+    bars: tuple[DesktopGenerationChartBar, ...],
+) -> None:
+    canvas.delete("all")
+    width = _canvas_size(canvas.winfo_width(), fallback=420)
+    height = _canvas_size(canvas.winfo_height(), fallback=150)
+    if not bars:
+        _draw_empty_canvas(canvas, width, height, "Sem dados de geracao")
+        return
+
+    max_generation = max(bar.generation_mw for bar in bars)
+    if max_generation <= 0:
+        _draw_empty_canvas(canvas, width, height, "Geracao sem valor positivo")
+        return
+
+    left = 96
+    right = 16
+    top = 16
+    bottom = 16
+    row_height = max(22, (height - top - bottom) // max(len(bars), 1))
+    bar_height = max(10, min(18, row_height - 8))
+    chart_width = max(40, width - left - right)
+
+    for index, bar in enumerate(bars):
+        y = top + index * row_height + row_height // 2
+        bar_width = round((bar.generation_mw / max_generation) * chart_width)
+        color = _generation_color(bar.category)
+        canvas.create_text(8, y, text=bar.source[:13], anchor="w", fill="#263238")
+        canvas.create_rectangle(
+            left,
+            y - bar_height // 2,
+            left + bar_width,
+            y + bar_height // 2,
+            fill=color,
+            outline=color,
+        )
+        canvas.create_text(
+            left + min(bar_width + 6, chart_width - 8),
+            y,
+            text=f"{bar.generation_mw:,.0f}",
+            anchor="w",
+            fill="#37474f",
+        )
+
+
+def _draw_baseline_chart(
+    canvas: tk.Canvas,
+    points: tuple[DesktopBaselineChartPoint, ...],
+) -> None:
+    canvas.delete("all")
+    width = _canvas_size(canvas.winfo_width(), fallback=420)
+    height = _canvas_size(canvas.winfo_height(), fallback=190)
+    if not points:
+        _draw_empty_canvas(canvas, width, height, "Sem comparacoes de baseline")
+        return
+
+    left = 42
+    right = 18
+    top = 34
+    bottom = 34
+    plot_width = max(40, width - left - right)
+    plot_height = max(40, height - top - bottom)
+
+    canvas.create_line(left, top, left, top + plot_height, fill="#b0bec5")
+    canvas.create_line(left, top + plot_height, left + plot_width, top + plot_height, fill="#b0bec5")
+    canvas.create_text(left - 8, top, text="100%", anchor="e", fill="#607d8b")
+    canvas.create_text(left - 8, top + plot_height, text="0%", anchor="e", fill="#607d8b")
+    _draw_baseline_legend(canvas, left, 14)
+
+    actual_coordinates: list[tuple[int, int]] = []
+    predicted_coordinates: list[tuple[int, int]] = []
+    for index, point in enumerate(points):
+        x = _chart_x(index, len(points), left, plot_width)
+        actual_y = _share_y(point.actual_renewable_share, top, plot_height)
+        predicted_y = _share_y(point.predicted_renewable_share, top, plot_height)
+        actual_coordinates.append((x, actual_y))
+        predicted_coordinates.append((x, predicted_y))
+
+    _draw_line(canvas, actual_coordinates, color="#2e7d32")
+    _draw_line(canvas, predicted_coordinates, color="#546e7a", dash=(4, 3))
+
+    for index, point in enumerate(points):
+        x = _chart_x(index, len(points), left, plot_width)
+        actual_y = _share_y(point.actual_renewable_share, top, plot_height)
+        predicted_y = _share_y(point.predicted_renewable_share, top, plot_height)
+        predicted_color = "#ef6c00" if point.method == "clima" else "#1565c0"
+        canvas.create_oval(x - 4, actual_y - 4, x + 4, actual_y + 4, fill="#2e7d32", outline="")
+        canvas.create_oval(
+            x - 4,
+            predicted_y - 4,
+            x + 4,
+            predicted_y + 4,
+            fill=predicted_color,
+            outline="",
+        )
+        if len(points) <= 6 or index in (0, len(points) - 1):
+            canvas.create_text(
+                x,
+                top + plot_height + 14,
+                text=point.period[-5:],
+                anchor="n",
+                fill="#607d8b",
+            )
+
+
+def _draw_baseline_legend(canvas: tk.Canvas, left: int, y: int) -> None:
+    legend_items = (
+        ("real", "#2e7d32"),
+        ("prev media", "#1565c0"),
+        ("prev clima", "#ef6c00"),
+    )
+    x = left
+    for label, color in legend_items:
+        canvas.create_oval(x, y - 4, x + 8, y + 4, fill=color, outline="")
+        canvas.create_text(x + 14, y, text=label, anchor="w", fill="#37474f")
+        x += 92
+
+
+def _draw_line(
+    canvas: tk.Canvas,
+    coordinates: list[tuple[int, int]],
+    *,
+    color: str,
+    dash: tuple[int, int] | None = None,
+) -> None:
+    if len(coordinates) < 2:
+        return
+    flattened = [value for coordinate in coordinates for value in coordinate]
+    canvas.create_line(*flattened, fill=color, width=2, dash=dash)
+
+
+def _chart_x(index: int, total: int, left: int, plot_width: int) -> int:
+    if total <= 1:
+        return left + plot_width // 2
+    return left + round((index / (total - 1)) * plot_width)
+
+
+def _share_y(value: float, top: int, plot_height: int) -> int:
+    clamped = max(0.0, min(1.0, value))
+    return top + round((1 - clamped) * plot_height)
+
+
+def _generation_color(category: str) -> str:
+    if category == "renovavel":
+        return "#2e7d32"
+    if category == "nao renovavel":
+        return "#c62828"
+    return "#607d8b"
+
+
+def _canvas_size(value: int, *, fallback: int) -> int:
+    return value if value > 10 else fallback
+
+
+def _draw_empty_canvas(canvas: tk.Canvas, width: int, height: int, text: str) -> None:
+    canvas.create_text(width // 2, height // 2, text=text, fill="#607d8b")
 
 
 def _format_weather(result: AnalysisResult) -> str:
