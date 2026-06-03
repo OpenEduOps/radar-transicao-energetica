@@ -116,7 +116,7 @@ Esse contrato é validado por testes de modelo de apresentação sem abrir janel
 A acessibilidade básica fica na própria camada desktop:
 
 - labels de controles usam nomes mais explícitos;
-- controles principais usam `takefocus` e suporte a execução por teclado;
+- controles principais recebem foco de teclado e suporte a execução por atalho;
 - gráficos Canvas usam contraste maior e texto complementar;
 - geração por fonte mostra categoria textual além da cor;
 - baseline usa círculo para real, quadrado para média móvel e losango para clima.

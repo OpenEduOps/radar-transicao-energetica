@@ -64,7 +64,7 @@ Acessibilidade básica coberta sem janela:
 - contraste maior nos textos, eixos e séries dos gráficos Canvas;
 - geração por fonte com categoria textual além da cor;
 - comparação real vs previsto com círculo, quadrado e losango para evitar dependência exclusiva de cor;
-- `Ctrl+R` e `Enter` em controles principais para executar análise sem mouse.
+- `Ctrl+R` global e `Enter` em campos e seletores principais para executar análise sem mouse.
 
 Estados operacionais cobertos pela suíte sem janela:
 
