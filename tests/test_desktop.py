@@ -310,6 +310,14 @@ class DesktopTest(unittest.TestCase):
         self.assertEqual(view_data.state_messages[0].title, "Erro de entrada")
         self.assertIn("Periodo ONS invalido", view_data.state_messages[0].detail)
 
+    def test_build_desktop_error_view_data_reports_no_data_state(self) -> None:
+        view_data = build_desktop_error_view_data("Nao ha registros de geracao para analisar.")
+
+        self.assertEqual(view_data.state_messages[0].level, "aviso")
+        self.assertEqual(view_data.state_messages[0].title, "Sem dados")
+        self.assertIn("nao retornou registros", view_data.state_messages[0].detail)
+        self.assertIn("aviso", view_data.alert)
+
     def test_generation_chart_draws_source_bars_without_tk_window(self) -> None:
         canvas = FakeCanvas(width=520, height=160)
 

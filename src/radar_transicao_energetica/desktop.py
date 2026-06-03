@@ -167,6 +167,8 @@ def build_desktop_view_data(result: AnalysisResult) -> DesktopViewData:
 
 
 def build_desktop_error_view_data(message: str) -> DesktopViewData:
+    state_message = _input_error_state_message(message)
+    alert_level = "erro" if state_message.level == "erro" else "aviso"
     metrics = (
         DesktopMetric("Participacao renovavel", "sem dados"),
         DesktopMetric("Geracao total", "sem dados"),
@@ -179,16 +181,10 @@ def build_desktop_error_view_data(message: str) -> DesktopViewData:
         source="-",
         period="-",
         metrics=metrics,
-        state_messages=(
-            DesktopStateMessage(
-                level="erro",
-                title="Erro de entrada",
-                detail=message,
-            ),
-        ),
+        state_messages=(state_message,),
         generation_rows=(),
         generation_chart_bars=(),
-        alert=f"erro: {message}",
+        alert=f"{alert_level}: {message}",
         baseline_comparison="sem dados suficientes",
         baseline_rows=(),
         baseline_chart_points=(),
@@ -336,10 +332,31 @@ def _build_state_messages(result: AnalysisResult) -> tuple[DesktopStateMessage, 
     return tuple(messages)
 
 
+def _input_error_state_message(message: str) -> DesktopStateMessage:
+    normalized_message = message.lower()
+    if "nao ha registros de geracao" in normalized_message:
+        return DesktopStateMessage(
+            level="aviso",
+            title="Sem dados",
+            detail=(
+                "A fonte selecionada nao retornou registros de geracao "
+                "para analisar."
+            ),
+        )
+    return DesktopStateMessage(
+        level="erro",
+        title="Erro de entrada",
+        detail=message,
+    )
+
+
 def _format_state_messages(messages: tuple[DesktopStateMessage, ...]) -> str:
     if not messages:
         return "Sem avisos"
-    return "\n".join(f"{message.title}: {message.detail}" for message in messages)
+    return "\n".join(
+        f"{message.level.upper()} - {message.title}: {message.detail}"
+        for message in messages
+    )
 
 
 class RadarDesktopApp:
