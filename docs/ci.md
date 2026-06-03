@@ -22,7 +22,7 @@ A automação deve responder, de forma incremental:
 | CI Python mínima | Implementada | Rodar compilação e testes unitários. |
 | CI de dados | Implementada parcialmente | Validar normalização com fixtures e cache em diretório temporário. |
 | CI de clima | Implementada parcialmente | Validar Open-Meteo por fixtures/loaders injetados, sem rede. |
-| CI de UI | Iniciada sem abrir janela | Validar entry point e modelo de apresentação da tela. |
+| CI de UI | Implementada sem janela e sem Docker | Validar entry point, modelo de apresentação, dados de gráficos Canvas, desenho em `FakeCanvas` e edge cases visuais. |
 | CI de release | Bloqueada pelo release gate até fluxo visual estável | Gerar artefato, checksum e smoke test. |
 
 ## Jobs Iniciais Recomendados

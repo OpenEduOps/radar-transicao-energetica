@@ -182,7 +182,7 @@ A suíte automatizada cobre a interface desktop sem abrir janela e sem Docker. O
 
 O executável local experimental é gerado com PyInstaller. Ele não é commitado no repositório e fica em `dist/`.
 
-Esse `.exe` continua sendo apenas uma validação local. Release pública, smoke test formal, checksum e build automático na CI ficam adiados até a interface desktop inicial estar estável e validada manualmente.
+Esse `.exe` continua sendo apenas uma validação local. Release pública, smoke test formal, checksum e build automático na CI ficam adiados até a interface desktop inicial combinar QA automatizado, validação visual manual remanescente e fluxo estável.
 
 Instalar as dependências de desenvolvimento no ambiente escolhido:
 

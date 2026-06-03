@@ -187,7 +187,7 @@ Critérios mínimos do MVP:
 | `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, cache SQLite, diretório temporário e reuso ONS por período. |
 | `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE e comparação walk-forward do baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
-| `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela, dados dos gráficos Canvas e verificar se geração por fonte, comparação e alerta são compreensíveis. |
+| `TEST-006` | Unitário, Canvas sem janela e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela, desenho em `FakeCanvas`, dados dos gráficos Canvas, edge cases visuais e verificar manualmente se geração por fonte, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
 | `TEST-008` | Unitário e packaging | `NFR-006` | Validar release gate, bloqueio de release pública e ausência de build de artefato na CI atual. |
 | `TEST-009` | Unitário e integração leve | `REQ-005` | Validar Open-Meteo com fixture offline, resumo climático, features climáticas simples, JSON/cache, CLI e desktop sem rede. |
