@@ -6,7 +6,7 @@ from tkinter import filedialog, messagebox, ttk
 import tkinter as tk
 
 from radar_transicao_energetica.app import AnalysisResult, run_analysis
-from radar_transicao_energetica.baseline import BaselineComparison
+from radar_transicao_energetica.baseline import BaselineComparison, BaselinePrediction
 from radar_transicao_energetica.cli import DEFAULT_CACHE_PATH
 from radar_transicao_energetica.data import GenerationDataError
 from radar_transicao_energetica.ons import parse_ons_period
@@ -61,8 +61,12 @@ def build_desktop_view_data(result: AnalysisResult) -> DesktopViewData:
         DesktopMetric("Participacao renovavel", _format_percent(summary.renewable_share)),
         DesktopMetric("Geracao total", _format_mw(summary.total_generation_mw)),
         DesktopMetric("Geracao renovavel", _format_mw(summary.renewable_generation_mw)),
-        DesktopMetric("Baseline proxima janela", _format_percent(baseline.predicted_renewable_share)),
+        DesktopMetric("Baseline proxima janela", _format_baseline_prediction(baseline)),
         DesktopMetric("Baseline MAE", _format_points(baseline.mean_absolute_error)),
+        DesktopMetric(
+            "Comparacoes com clima",
+            f"{baseline.weather_adjusted_comparisons}/{baseline.evaluated_points}",
+        ),
     )
     generation_rows = tuple(
         DesktopGenerationRow(source=source, generation_mw=_format_mw(generation))
@@ -286,6 +290,7 @@ class RadarDesktopApp:
                 "Geracao renovavel",
                 "Baseline proxima janela",
                 "Baseline MAE",
+                "Comparacoes com clima",
             )
         ):
             metrics.columnconfigure(index, weight=1)
@@ -446,6 +451,13 @@ def _format_points(value: float | None) -> str:
     return f"{value * 100:.1f} p.p."
 
 
+def _format_baseline_prediction(baseline: BaselinePrediction) -> str:
+    text = _format_percent(baseline.predicted_renewable_share)
+    if text != "sem dados" and baseline.predicted_with_weather:
+        return f"{text} (com clima)"
+    return text
+
+
 def _format_baseline_comparison(comparison: BaselineComparison | None) -> str:
     if comparison is None:
         return "sem dados suficientes"
@@ -453,6 +465,7 @@ def _format_baseline_comparison(comparison: BaselineComparison | None) -> str:
         f"real {_format_percent(comparison.actual_renewable_share)} vs "
         f"previsto {_format_percent(comparison.predicted_renewable_share)}; "
         f"erro {_format_points(comparison.absolute_error)}"
+        f"{'; com clima' if comparison.weather_adjusted else ''}"
     )
 
 

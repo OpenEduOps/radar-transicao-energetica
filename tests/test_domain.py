@@ -14,6 +14,7 @@ from radar_transicao_energetica.baseline import (
 )
 from radar_transicao_energetica.data import GenerationRecord
 from radar_transicao_energetica.domain import summarize_by_period, summarize_generation
+from radar_transicao_energetica.weather import WeatherRecord
 
 
 class DomainTest(unittest.TestCase):
@@ -136,6 +137,63 @@ class DomainTest(unittest.TestCase):
     def test_baseline_rejects_invalid_window(self) -> None:
         with self.assertRaises(ValueError):
             predict_next_renewable_share([], window=0)
+
+    def test_baseline_uses_weather_features_for_walk_forward_comparisons(self) -> None:
+        records = [
+            GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 20.0),
+            GenerationRecord(datetime(2026, 1, 1, 0), "termica", 80.0),
+            GenerationRecord(datetime(2026, 1, 1, 1), "hidraulica", 80.0),
+            GenerationRecord(datetime(2026, 1, 1, 1), "termica", 20.0),
+            GenerationRecord(datetime(2026, 1, 1, 2), "hidraulica", 25.0),
+            GenerationRecord(datetime(2026, 1, 1, 2), "termica", 75.0),
+            GenerationRecord(datetime(2026, 1, 1, 3), "hidraulica", 75.0),
+            GenerationRecord(datetime(2026, 1, 1, 3), "termica", 25.0),
+        ]
+        weather = [
+            WeatherRecord(datetime(2026, 1, 1, 0), 20.0, 5.0, 100.0, 80.0),
+            WeatherRecord(datetime(2026, 1, 1, 1), 28.0, 25.0, 900.0, 10.0),
+            WeatherRecord(datetime(2026, 1, 1, 2), 21.0, 6.0, 110.0, 78.0),
+            WeatherRecord(datetime(2026, 1, 1, 3), 27.0, 24.0, 880.0, 12.0),
+        ]
+
+        prediction = predict_next_renewable_share(
+            summarize_by_period(records),
+            window=1,
+            weather_records=weather,
+        )
+
+        self.assertEqual(prediction.method, "media_movel_com_features_climaticas")
+        self.assertEqual(prediction.weather_feature_periods, 4)
+        self.assertEqual(prediction.weather_adjusted_comparisons, 3)
+        self.assertEqual(prediction.comparisons[2].period, "2026-01-01T03:00:00")
+        self.assertTrue(prediction.comparisons[2].weather_adjusted)
+        self.assertAlmostEqual(prediction.comparisons[2].predicted_renewable_share, 0.8)
+        self.assertAlmostEqual(prediction.comparisons[2].actual_renewable_share, 0.75)
+
+    def test_baseline_uses_future_weather_feature_for_next_prediction(self) -> None:
+        records = [
+            GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 20.0),
+            GenerationRecord(datetime(2026, 1, 1, 0), "termica", 80.0),
+            GenerationRecord(datetime(2026, 1, 1, 1), "hidraulica", 80.0),
+            GenerationRecord(datetime(2026, 1, 1, 1), "termica", 20.0),
+        ]
+        weather = [
+            WeatherRecord(datetime(2026, 1, 1, 0), 20.0, 5.0, 100.0, 80.0),
+            WeatherRecord(datetime(2026, 1, 1, 1), 28.0, 25.0, 900.0, 10.0),
+            WeatherRecord(datetime(2026, 1, 1, 2), 27.5, 24.0, 880.0, 12.0),
+        ]
+
+        prediction = predict_next_renewable_share(
+            summarize_by_period(records),
+            window=1,
+            weather_records=weather,
+        )
+
+        self.assertEqual(prediction.method, "media_movel_com_features_climaticas")
+        self.assertEqual(prediction.points_used, 1)
+        self.assertTrue(prediction.predicted_with_weather)
+        self.assertIsNotNone(prediction.next_weather_feature)
+        self.assertAlmostEqual(prediction.predicted_renewable_share or 0, 0.8)
 
 
 if __name__ == "__main__":

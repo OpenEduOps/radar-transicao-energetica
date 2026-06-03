@@ -170,6 +170,8 @@ def render_report(
         if baseline.predicted_renewable_share is None
         else f"{baseline.predicted_renewable_share:.1%}"
     )
+    if baseline.predicted_with_weather and baseline_text != "sem dados":
+        baseline_text = f"{baseline_text} (com clima)"
     baseline_error_text = (
         "sem dados"
         if baseline.mean_absolute_error is None
@@ -183,9 +185,15 @@ def render_report(
         f"Geracao total: {summary.total_generation_mw:,.2f} MW",
         f"Geracao renovavel: {summary.renewable_generation_mw:,.2f} MW",
         f"Participacao renovavel: {share_text}",
+        f"Baseline metodo: {baseline.method}",
         f"Baseline proxima janela: {baseline_text}",
         f"Baseline MAE: {baseline_error_text}",
     ]
+    if baseline.weather_adjusted_comparisons:
+        lines.append(
+            "Comparacoes com features climaticas: "
+            f"{baseline.weather_adjusted_comparisons}/{baseline.evaluated_points}"
+        )
     weather_lines = _format_weather_lines(
         weather_summary=weather_summary,
         weather_source=weather_source,
@@ -199,6 +207,7 @@ def render_report(
             "Ultima comparacao baseline: "
             f"real {latest_comparison.actual_renewable_share:.1%} vs "
             f"previsto {latest_comparison.predicted_renewable_share:.1%}"
+            f"{' (com clima)' if latest_comparison.weather_adjusted else ''}"
         )
     if summary.unknown_sources:
         lines.append("Fontes nao classificadas na V0: " + ", ".join(summary.unknown_sources))

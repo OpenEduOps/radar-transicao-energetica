@@ -87,14 +87,20 @@ class DesktopTest(unittest.TestCase):
             weather_loader=lambda **_kwargs: [
                 WeatherRecord(datetime(2026, 1, 1, 0), 22.0, 8.0, 0.0, 40.0),
                 WeatherRecord(datetime(2026, 1, 1, 1), 24.0, 10.0, 120.0, 60.0),
+                WeatherRecord(datetime(2026, 1, 1, 2), 23.0, 9.0, 60.0, 50.0),
+                WeatherRecord(datetime(2026, 1, 1, 3), 23.0, 9.0, 60.0, 50.0),
             ],
         )
 
         view_data = build_desktop_view_data(result)
+        metrics = {metric.label: metric.value for metric in view_data.metrics}
 
         self.assertIn("Open-Meteo Forecast", view_data.weather)
         self.assertIn("temperatura media 23.0 C", view_data.weather)
         self.assertIn("nebulosidade 50.0%", view_data.weather)
+        self.assertIn("com clima", metrics["Baseline proxima janela"])
+        self.assertIn("/", metrics["Comparacoes com clima"])
+        self.assertIn("com clima", view_data.baseline_comparison)
 
     def test_build_desktop_analysis_options_rejects_unknown_source(self) -> None:
         with self.assertRaisesRegex(ValueError, "Fonte de dados desconhecida"):

@@ -7,6 +7,7 @@ from radar_transicao_energetica.alerts import RenewableAlert
 from radar_transicao_energetica.baseline import BaselinePrediction
 from radar_transicao_energetica.data import DataSourceMetadata
 from radar_transicao_energetica.domain import PeriodRenewableSummary, RenewableSummary
+from radar_transicao_energetica.features import weather_feature_to_dict
 from radar_transicao_energetica.weather import (
     WeatherRecord,
     WeatherSourceMetadata,
@@ -174,15 +175,29 @@ def baseline_to_dict(baseline: BaselinePrediction) -> dict[str, Any]:
         "points_used": baseline.points_used,
         "window": baseline.window,
         "predicted_renewable_share": baseline.predicted_renewable_share,
+        "predicted_with_weather": baseline.predicted_with_weather,
         "error_metric": baseline.error_metric,
         "mean_absolute_error": baseline.mean_absolute_error,
         "evaluated_points": baseline.evaluated_points,
+        "weather_feature_names": list(baseline.weather_feature_names),
+        "weather_feature_periods": baseline.weather_feature_periods,
+        "weather_adjusted_comparisons": baseline.weather_adjusted_comparisons,
+        "next_weather_feature": weather_feature_to_dict(baseline.next_weather_feature)
+        if baseline.next_weather_feature is not None
+        else None,
         "comparisons": [
             {
                 "period": item.period,
                 "actual_renewable_share": item.actual_renewable_share,
                 "predicted_renewable_share": item.predicted_renewable_share,
                 "absolute_error": item.absolute_error,
+                "method": item.method,
+                "weather_adjusted": item.weather_adjusted,
+                "weather_feature_count": item.weather_feature_count,
+                "weather_distance": item.weather_distance,
+                "weather_feature": weather_feature_to_dict(item.weather_feature)
+                if item.weather_feature is not None
+                else None,
             }
             for item in baseline.comparisons
         ],

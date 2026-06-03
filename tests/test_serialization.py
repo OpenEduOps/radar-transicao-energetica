@@ -35,6 +35,10 @@ class SerializationTest(unittest.TestCase):
         self.assertIn("mean_absolute_error", payload["baseline"])
         self.assertEqual(payload["baseline"]["error_metric"], "mae")
         self.assertEqual(payload["baseline"]["window"], 3)
+        self.assertIn("weather_feature_periods", payload["baseline"])
+        self.assertIn("predicted_with_weather", payload["baseline"])
+        self.assertFalse(payload["baseline"]["predicted_with_weather"])
+        self.assertEqual(payload["baseline"]["weather_feature_periods"], 0)
         self.assertIn("evaluated_points", payload["baseline"])
         self.assertIn("comparisons", payload["baseline"])
         self.assertGreater(payload["baseline"]["evaluated_points"], 0)
@@ -71,6 +75,9 @@ class SerializationTest(unittest.TestCase):
         self.assertEqual(payload["weather"]["summary"]["average_temperature_2m_c"], 23.0)
         self.assertEqual(len(payload["weather"]["records"]), 2)
         self.assertEqual(payload["weather"]["records"][1]["wind_speed_10m_kmh"], 10.0)
+        self.assertEqual(payload["baseline"]["weather_feature_periods"], 2)
+        self.assertIn("weather_adjusted", payload["baseline"]["comparisons"][0])
+        self.assertIn("weather_feature", payload["baseline"]["comparisons"][0])
 
 
 if __name__ == "__main__":

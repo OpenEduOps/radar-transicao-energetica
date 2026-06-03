@@ -80,7 +80,6 @@ def run_analysis(
     summary = summarize_generation(records)
     period_summaries = summarize_by_period(records)
     alert = build_renewable_alert(summary)
-    baseline = predict_next_renewable_share(period_summaries)
     weather_records: list[WeatherRecord] | None = None
     weather_source: WeatherSourceMetadata | None = None
     weather_summary: WeatherSummary | None = None
@@ -103,6 +102,7 @@ def run_analysis(
             weather_error = str(exc)
             weather_records = []
         weather_summary = summarize_weather(weather_records)
+    baseline = predict_next_renewable_share(period_summaries, weather_records=weather_records)
 
     written_cache_path = None
     should_write_cache = write_cache and cache_path is not None and (

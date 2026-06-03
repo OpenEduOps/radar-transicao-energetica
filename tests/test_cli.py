@@ -338,6 +338,8 @@ class CliTest(unittest.TestCase):
             weather_loader=lambda **_kwargs: [
                 WeatherRecord(datetime(2026, 1, 1, 0), 22.0, 8.0, 0.0, 40.0),
                 WeatherRecord(datetime(2026, 1, 1, 1), 24.0, 10.0, 120.0, 60.0),
+                WeatherRecord(datetime(2026, 1, 1, 2), 23.0, 9.0, 60.0, 50.0),
+                WeatherRecord(datetime(2026, 1, 1, 3), 23.0, 9.0, 60.0, 50.0),
             ],
         )
 
@@ -356,6 +358,10 @@ class CliTest(unittest.TestCase):
         self.assertIn("Temperatura media: 23.0 C", report)
         self.assertIn("Vento medio: 9.0 km/h", report)
         self.assertIn("Nebulosidade media: 50.0%", report)
+        self.assertIn("Baseline metodo: media_movel_com_features_climaticas", report)
+        self.assertIn("Baseline proxima janela:", report)
+        self.assertIn("(com clima)", report)
+        self.assertIn("Comparacoes com features climaticas:", report)
 
     def test_render_report_includes_weather_error_without_hiding_generation(self) -> None:
         result = run_analysis(write_cache=False)
