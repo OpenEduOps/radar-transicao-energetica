@@ -57,8 +57,8 @@ Essa ordem permite entregar valor observável antes de avançar para QA manual r
 
 Pendências principais:
 
-- registrar QA manual remanescente da interface desktop inicial, incluindo leitura visual dos gráficos Canvas, painel de estados e cenários com/sem clima;
-- refinar acessibilidade e eventual biblioteca gráfica rica quando houver necessidade real;
+- registrar QA manual remanescente da interface desktop inicial, incluindo leitura visual dos gráficos Canvas, painel de estados, teclado e cenários com/sem clima;
+- avaliar eventual biblioteca gráfica rica quando houver necessidade real;
 - transformar o primeiro `.exe` local em release validada depois do gate retornar `public-ready`.
 
 ## Fatia Funcional Inicial
@@ -70,7 +70,7 @@ A primeira fatia funcional foi planejada para se limitar a:
 - `ISSUE-005`: cálculo de participação renovável;
 - testes automatizados para o cálculo e dados sintéticos.
 
-Parte de `ISSUE-006`, `ISSUE-009` e `ISSUE-010` já foi antecipada para viabilizar o primeiro `.exe` local e a primeira tela desktop. A comparação visual inicial e os estados operacionais já existem e possuem QA automatizado sem janela; as próximas versões devem focar QA manual remanescente, acessibilidade e refinamento da experiência.
+Parte de `ISSUE-006`, `ISSUE-009` e `ISSUE-010` já foi antecipada para viabilizar o primeiro `.exe` local e a primeira tela desktop. A comparação visual inicial, os estados operacionais e a acessibilidade básica já existem e possuem QA automatizado sem janela; as próximas versões devem focar QA manual remanescente e refinamento da experiência.
 
 Critérios já atendidos para `ISSUE-003`:
 
@@ -144,7 +144,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - criar dados sintéticos de teste;
 - melhorar mensagens de erro para dados ausentes;
 - revisar clareza de alertas educacionais;
-- melhorar acessibilidade do painel de estados e registrar QA manual remanescente da interface desktop inicial;
+- registrar QA manual remanescente da interface desktop inicial, incluindo acessibilidade básica na janela real;
 - validar links de dados públicos e instruções do README;
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
 - evoluir política de expiração ou invalidação do cache ONS.

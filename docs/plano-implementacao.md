@@ -448,7 +448,7 @@ Commits sugeridos:
 
 Status: concluída para visualização inicial.
 
-A implementação atual entrega visualização textual por fonte, tendência de participação renovável, comparação textual real vs previsto e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, painel de estados, geração por fonte em tabela e gráfico Canvas, alerta interpretável, baseline da próxima janela, MAE, tabela de comparação real vs previsto e gráfico Canvas do baseline. O QA automatizado dos gráficos e dos estados roda sem janela e sem Docker, usando `FakeCanvas`; acessibilidade e QA manual remanescente continuam planejados.
+A implementação atual entrega visualização textual por fonte, tendência de participação renovável, comparação textual real vs previsto e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, painel de estados, geração por fonte em tabela e gráfico Canvas, alerta interpretável, baseline da próxima janela, MAE, tabela de comparação real vs previsto e gráfico Canvas do baseline. O QA automatizado dos gráficos, estados e acessibilidade básica roda sem janela e sem Docker, usando `FakeCanvas`; QA manual remanescente continua planejado.
 
 Rastreabilidade:
 
@@ -464,6 +464,10 @@ Entregáveis:
 
 - tabela desktop de geração por fonte;
 - gráfico Canvas inicial de geração por fonte;
+- labels mais claros para controles e tabelas;
+- contraste maior nos gráficos Canvas;
+- marcadores visuais distintos para real, média móvel e clima;
+- navegação básica por teclado nos controles principais;
 - modelo de apresentação testável sem abrir janela;
 - desenho de gráficos testado com `FakeCanvas`;
 - estado sem dados;
@@ -485,7 +489,7 @@ Fora de escopo:
 
 - layout final;
 - aplicação desktop completa;
-- acessibilidade completa;
+- acessibilidade completa ou avançada;
 - empacotamento;
 - regressão visual automatizada.
 
@@ -494,6 +498,8 @@ Critérios de aceite:
 - tabela mostra fontes de forma comparável;
 - dados ausentes não quebram a visualização;
 - usuário entende o período e as fontes exibidas;
+- gráficos não dependem apenas de cor para diferenciar categoria ou método;
+- controles principais podem ser navegados ou acionados por teclado onde fizer sentido;
 - testes automatizados validam o modelo de apresentação sem abrir janela;
 - QA automatizado cobre o desenho sem janela e QA manual remanescente está documentado como pendência.
 
@@ -767,4 +773,4 @@ Uma fase só deve avançar quando:
 
 ## Próxima Ação Recomendada
 
-Criar a próxima issue de UI: registrar QA manual remanescente da janela desktop e refinar acessibilidade do painel de estados e dos gráficos Canvas.
+Criar a próxima issue de UI: executar e registrar QA manual remanescente da janela desktop antes de avaliar Matplotlib/Plotly, PySide6 ou `scikit-learn`.

@@ -82,7 +82,7 @@ Na comparação inicial entre ONS, ANEEL e CCEE, o ONS foi escolhido por entrega
 
 O contrato normalizado da primeira fonte pública usa `period`, `source` e `generation_mw`, derivados dos campos ONS `din_instante`, `nom_tipousina` e `val_geracaomwmed`. O cache atual usa SQLite para registrar a análise, metadados da fonte, versão de schema e registros normalizados.
 
-A primeira interface desktop usa Tkinter e reutiliza o fluxo de análise existente. Ela mostra fonte, período, métricas centrais, painel de estados operacionais, geração por fonte em tabela e gráfico Canvas, alerta interpretável e comparação do baseline em tabela e gráfico Canvas sem duplicar regras de domínio na camada visual.
+A primeira interface desktop usa Tkinter e reutiliza o fluxo de análise existente. Ela mostra fonte, período, métricas centrais, painel de estados operacionais, geração por fonte em tabela e gráfico Canvas, alerta interpretável e comparação do baseline em tabela e gráfico Canvas sem duplicar regras de domínio na camada visual. A UI também possui acessibilidade básica: labels mais claros, contraste maior, categorias textuais nos gráficos, marcadores distintos e execução por teclado nos controles principais.
 
 A integração climática inicial usa temperatura, vento, radiação solar e nebulosidade como enriquecimento interpretável. Esses dados já aparecem no CLI, JSON, cache e desktop quando habilitados, e alimentam o baseline por analogia climática simples quando há alinhamento por período.
 
@@ -174,6 +174,7 @@ Critérios mínimos do MVP:
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado um conjunto de dados insuficiente ou indisponível, quando a aplicação tentar carregar informações, então o sistema deve informar o problema sem quebrar o fluxo principal.
 - Dado que a tela desktop encontre sem dados, erro de entrada, clima indisponível, baseline insuficiente ou cache reutilizado, quando a análise for renderizada, então o painel de estados deve tornar esse cenário explícito.
+- Dado que a tela desktop exiba gráficos Canvas, quando o usuário comparar fontes ou métodos de previsão, então a leitura não deve depender apenas de cor.
 - Dado um baseline de média móvel, quando houver pontos anteriores suficientes, então o sistema deve apresentar MAE e comparação real vs previsto por período sem depender de `scikit-learn`.
 - Dado um resultado de participação renovável ou risco, quando o alerta for exibido, então a mensagem deve ser compreensível para usuário não especialista.
 - Dado que o projeto não deve depender de credenciais privadas, quando o ambiente for preparado, então a execução local deve funcionar apenas com dados públicos ou cache.
@@ -188,7 +189,7 @@ Critérios mínimos do MVP:
 | `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, cache SQLite, diretório temporário e reuso ONS por período. |
 | `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE e comparação walk-forward do baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
-| `TEST-006` | Unitário, Canvas sem janela e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela, desenho em `FakeCanvas`, estados operacionais, dados dos gráficos Canvas, edge cases visuais e verificar manualmente se geração por fonte, comparação, estados e alerta são compreensíveis. |
+| `TEST-006` | Unitário, Canvas sem janela e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela, desenho em `FakeCanvas`, estados operacionais, acessibilidade básica, dados dos gráficos Canvas, edge cases visuais e verificar manualmente se geração por fonte, comparação, estados e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
 | `TEST-008` | Unitário e packaging | `NFR-006` | Validar release gate, bloqueio de release pública e ausência de build de artefato na CI atual. |
 | `TEST-009` | Unitário e integração leve | `REQ-005` | Validar Open-Meteo com fixture offline, resumo climático, features climáticas simples, JSON/cache, CLI e desktop sem rede. |
@@ -238,7 +239,7 @@ Responsabilidades:
 - `baseline.py`: baseline por média móvel, MAE e comparação real vs previsto;
 - `alerts.py`: alerta interpretável;
 - `charts.py`: visualização textual inicial;
-- `desktop.py`: interface desktop inicial em Tkinter, incluindo painel de estados operacionais;
+- `desktop.py`: interface desktop inicial em Tkinter, incluindo painel de estados operacionais e acessibilidade básica;
 - `release.py`: gate de release pública do `.exe`;
 - `features.py`: alinhamento de clima por período, features climáticas simples e distância climática;
 - `weather.py`: fonte climática Open-Meteo, validações, normalização e resumo;
@@ -281,4 +282,4 @@ Primeiras issues originalmente recomendadas:
 
 Essas quatro issues criam a base para uma primeira demonstração funcional sem antecipar complexidade visual pesada, empacotamento de release ou modelos avançados.
 
-Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-007` está atendida com integração climática Open-Meteo e features simples no baseline; `ISSUE-008` está implementada como baseline de média móvel com analogia climática simples; `ISSUE-009` está atendida para comparação inicial em JSON, CLI e desktop; `ISSUE-010` está parcialmente atendida com alerta textual; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são QA manual remanescente da interface, acessibilidade, política de expiração do cache ONS quando necessário e só então preparação de release pública.
+Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-007` está atendida com integração climática Open-Meteo e features simples no baseline; `ISSUE-008` está implementada como baseline de média móvel com analogia climática simples; `ISSUE-009` está atendida para comparação inicial em JSON, CLI e desktop; `ISSUE-010` está parcialmente atendida com alerta textual; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são QA manual remanescente da interface, política de expiração do cache ONS quando necessário e só então preparação de release pública.

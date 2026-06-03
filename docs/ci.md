@@ -22,7 +22,7 @@ A automação deve responder, de forma incremental:
 | CI Python mínima | Implementada | Rodar compilação e testes unitários. |
 | CI de dados | Implementada parcialmente | Validar normalização com fixtures e cache em diretório temporário. |
 | CI de clima | Implementada parcialmente | Validar Open-Meteo por fixtures/loaders injetados, sem rede. |
-| CI de UI | Implementada sem janela e sem Docker | Validar entry point, modelo de apresentação, estados operacionais, dados de gráficos Canvas, desenho em `FakeCanvas` e edge cases visuais. |
+| CI de UI | Implementada sem janela e sem Docker | Validar entry point, modelo de apresentação, estados operacionais, acessibilidade básica, dados de gráficos Canvas, desenho em `FakeCanvas` e edge cases visuais. |
 | CI de release | Bloqueada pelo release gate até fluxo visual estável | Gerar artefato, checksum e smoke test. |
 
 ## Jobs Iniciais Recomendados
@@ -55,7 +55,16 @@ A integração ONS é validada na suíte por fixture offline, cobrindo o contrat
 
 A integração climática Open-Meteo também é validada sem rede. A suíte cobre construção de URL, metadados da fonte, normalização horária, resumo climático, features climáticas simples, limite local de 5 MB, JSON inválido, coordenadas inválidas, persistência no payload/cache, relatório CLI e modelo de apresentação desktop com fixtures ou loaders injetados.
 
-A interface desktop inicial é validada de forma automatizada sem abrir janela e sem Docker. A suíte testa o modelo de apresentação, painel de estados, dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios dos gráficos, geração sem valor positivo, muitas barras no gráfico de fontes, baseline com um único ponto, cores de média móvel/clima, redraw dos gráficos, seleção de fonte, status com cache e o entry point `radar-transicao-energetica-ui`. A abertura real da janela continua como QA manual, porque a CI inicial não deve depender de ambiente gráfico.
+A interface desktop inicial é validada de forma automatizada sem abrir janela e sem Docker. A suíte testa o modelo de apresentação, painel de estados, dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios dos gráficos, geração sem valor positivo, muitas barras no gráfico de fontes, contraste dos gráficos, labels de categoria, baseline com um único ponto, marcadores distintos para média móvel/clima, handler de teclado, redraw dos gráficos, seleção de fonte, status com cache e o entry point `radar-transicao-energetica-ui`. A abertura real da janela continua como QA manual, porque a CI inicial não deve depender de ambiente gráfico.
+
+Acessibilidade básica coberta sem janela:
+
+- labels de controles mais explícitos, como `CSV local`, `Periodo ONS`, `Latitude`, `Longitude` e `Executar analise`;
+- painel `Estado da analise` com severidade legível (`INFO`, `ATENCAO`, `ERRO`);
+- contraste maior nos textos, eixos e séries dos gráficos Canvas;
+- geração por fonte com categoria textual além da cor;
+- comparação real vs previsto com círculo, quadrado e losango para evitar dependência exclusiva de cor;
+- `Ctrl+R` e `Enter` em controles principais para executar análise sem mouse.
 
 Estados operacionais cobertos pela suíte sem janela:
 
@@ -71,6 +80,8 @@ QA manual mínimo que ainda exige inspeção humana da janela:
 - validar leitura visual de fonte, período, métricas centrais, geração por fonte e alerta;
 - verificar se tabela e gráfico Canvas de geração por fonte estão legíveis;
 - verificar se tabela e gráfico Canvas real vs previsto estão legíveis;
+- verificar se contraste, labels e marcadores continuam legíveis na janela real;
+- validar navegação básica por teclado nos seletores, campos e execução da análise;
 - executar cenário com clima habilitado e confirmar visualmente a marcação de comparações com clima;
 - redimensionar a janela e confirmar visualmente que os gráficos continuam legíveis;
 - validar leitura visual do painel de estados para erro de entrada, clima indisponível, baseline insuficiente e cache reutilizado.

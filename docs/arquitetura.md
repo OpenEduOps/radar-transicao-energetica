@@ -4,7 +4,7 @@ Este documento descreve a arquitetura inicial do **Radar da Transição Energét
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação real vs previsto, gráficos Canvas iniciais, estados operacionais de tela e alerta textual. As próximas camadas devem avançar para QA manual, refinamento de acessibilidade, gráficos ricos opcionais e executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação real vs previsto, gráficos Canvas iniciais, estados operacionais de tela, acessibilidade básica e alerta textual. As próximas camadas devem avançar para QA manual, refinamento visual avançado, gráficos ricos opcionais e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
@@ -85,7 +85,7 @@ radar-transicao-energetica/
 | `baseline.py` | Baseline por média móvel, MAE, analogia climática simples e comparação walk-forward real vs previsto. |
 | `alerts.py` | Regras textuais de alerta educacional. |
 | `charts.py` | Visualização textual inicial por fonte, tendência e comparação real vs previsto. |
-| `desktop.py` | Interface desktop inicial em Tkinter, gráficos Canvas, estados operacionais, helpers de desenho testáveis por `CanvasLike` e modelo de apresentação testável sem abrir janela. |
+| `desktop.py` | Interface desktop inicial em Tkinter, gráficos Canvas, estados operacionais, acessibilidade básica, helpers de desenho testáveis por `CanvasLike` e modelo de apresentação testável sem abrir janela. |
 | `features.py` | Alinhamento de clima por período, criação de features horárias simples e distância climática entre períodos. |
 | `weather.py` | Construção da URL Open-Meteo, download limitado, normalização horária, resumo climático e validações de coordenadas. |
 | `release.py` | Critérios de readiness e mensagens do gate de release pública do `.exe`. |
@@ -112,6 +112,14 @@ Cada estado visual usa `level`, `title` e `detail`. A V0 cobre:
 - `Cache reutilizado`: registros ONS normalizados reaproveitados do SQLite.
 
 Esse contrato é validado por testes de modelo de apresentação sem abrir janela. A renderização visual completa continua como QA manual remanescente porque a CI inicial não depende de ambiente gráfico.
+
+A acessibilidade básica fica na própria camada desktop:
+
+- labels de controles usam nomes mais explícitos;
+- controles principais usam `takefocus` e suporte a execução por teclado;
+- gráficos Canvas usam contraste maior e texto complementar;
+- geração por fonte mostra categoria textual além da cor;
+- baseline usa círculo para real, quadrado para média móvel e losango para clima.
 
 ## Contrato de Normalização ONS
 
