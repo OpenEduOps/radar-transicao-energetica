@@ -84,7 +84,7 @@ O contrato normalizado da primeira fonte pública usa `period`, `source` e `gene
 
 A primeira interface desktop usa Tkinter e reutiliza o fluxo de análise existente. Ela mostra fonte, período, métricas centrais, geração por fonte em tabela, alerta interpretável e comparação do baseline sem duplicar regras de domínio na camada visual.
 
-A integração climática inicial usa temperatura, vento, radiação solar e nebulosidade como enriquecimento interpretável. Esses dados já aparecem no CLI, JSON, cache e desktop quando habilitados, mas ainda não alimentam o baseline como feature de previsão.
+A integração climática inicial usa temperatura, vento, radiação solar e nebulosidade como enriquecimento interpretável. Esses dados já aparecem no CLI, JSON, cache e desktop quando habilitados, e alimentam o baseline por analogia climática simples quando há alinhamento por período.
 
 O primeiro `.exe` local é experimental. A release pública fica bloqueada por gate técnico até a UI inicial estar estável, com smoke test formal, checksum, build automático na CI e workflow de release definidos.
 
@@ -131,9 +131,10 @@ Fluxo esperado da primeira experiência útil:
 5. O sistema calcula geração por fonte e participação renovável.
 6. O sistema exibe geração hidráulica, térmica, eólica e solar de forma comparável.
 7. Se clima estiver habilitado, o sistema carrega variáveis climáticas públicas e exibe um resumo.
-8. O sistema executa um modelo baseline para previsão ou classificação.
-9. O sistema compara resultado real e estimado quando houver dados suficientes.
-10. O sistema exibe um alerta interpretável sobre a janela analisada.
+8. O sistema transforma clima alinhado em features simples para o baseline quando possível.
+9. O sistema executa um modelo baseline para previsão ou classificação.
+10. O sistema compara resultado real e estimado quando houver dados suficientes.
+11. O sistema exibe um alerta interpretável sobre a janela analisada.
 
 Linha de corte:
 
@@ -147,7 +148,7 @@ Linha de corte:
 | `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Implementado |
 | `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
 | `REQ-004` | Exibir geração por fonte de forma comparável. | Alta | Parcial |
-| `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Parcial |
+| `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Implementado |
 | `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Implementado |
 | `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Parcial |
 | `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Implementado |
@@ -169,6 +170,7 @@ Critérios mínimos do MVP:
 - Dado que a fonte ONS esteja indisponível, com encoding inválido ou acima do limite local, quando a coleta for executada, então o sistema deve informar erro claro sem traceback.
 - Dado que clima seja habilitado, quando a fonte Open-Meteo retornar dados horários válidos, então o sistema deve expor resumo e registros climáticos sem tornar rede obrigatória nos testes.
 - Dado que a fonte climática falhe, quando a análise elétrica puder continuar, então o sistema deve registrar erro climático sem quebrar participação renovável, baseline e alerta.
+- Dado que clima esteja alinhado ao período de geração, quando o baseline comparar real vs previsto, então o sistema deve indicar quando features climáticas foram usadas.
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado um conjunto de dados insuficiente ou indisponível, quando a aplicação tentar carregar informações, então o sistema deve informar o problema sem quebrar o fluxo principal.
 - Dado um baseline de média móvel, quando houver pontos anteriores suficientes, então o sistema deve apresentar MAE e comparação real vs previsto sem depender de `scikit-learn`.
@@ -188,7 +190,7 @@ Critérios mínimos do MVP:
 | `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar modelo de apresentação da interface sem abrir janela e verificar se geração por fonte, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
 | `TEST-008` | Unitário e packaging | `NFR-006` | Validar release gate, bloqueio de release pública e ausência de build de artefato na CI atual. |
-| `TEST-009` | Unitário e integração leve | `REQ-005` | Validar Open-Meteo com fixture offline, resumo climático, JSON/cache, CLI e desktop sem rede. |
+| `TEST-009` | Unitário e integração leve | `REQ-005` | Validar Open-Meteo com fixture offline, resumo climático, features climáticas simples, JSON/cache, CLI e desktop sem rede. |
 
 ## Arquitetura Inicial
 
@@ -218,6 +220,7 @@ radar-transicao-energetica/
 │       ├── charts.py
 │       ├── desktop.py
 │       ├── release.py
+│       ├── features.py
 │       ├── weather.py
 │       ├── serialization.py
 │       └── cache.py
@@ -236,6 +239,7 @@ Responsabilidades:
 - `charts.py`: visualização textual inicial;
 - `desktop.py`: interface desktop inicial em Tkinter;
 - `release.py`: gate de release pública do `.exe`;
+- `features.py`: alinhamento de clima por período, features climáticas simples e distância climática;
 - `weather.py`: fonte climática Open-Meteo, validações, normalização e resumo;
 - `cache.py`: cache SQLite local;
 - `serialization.py`: contrato JSON compartilhado entre CLI e cache, incluindo `data_source`;
@@ -276,4 +280,4 @@ Primeiras issues originalmente recomendadas:
 
 Essas quatro issues criam a base para uma primeira demonstração funcional sem antecipar complexidade visual pesada, empacotamento de release ou modelos avançados.
 
-Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-007` está parcialmente atendida com integração climática Open-Meteo; `ISSUE-008` está implementada como baseline de média móvel; `ISSUE-009` e `ISSUE-010` estão parcialmente atendidas com comparação e alerta; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são uso de clima como feature do baseline, evolução da interface para gráficos e QA manual, política de expiração do cache ONS quando necessário e só então preparação de release pública.
+Estado atual: `ISSUE-001` a `ISSUE-006` já possuem implementação inicial; `ISSUE-007` está atendida com integração climática Open-Meteo e features simples no baseline; `ISSUE-008` está implementada como baseline de média móvel com analogia climática simples; `ISSUE-009` e `ISSUE-010` estão parcialmente atendidas com comparação e alerta; `ISSUE-011` bloqueia release pública prematura do `.exe`. As próximas frentes recomendadas são visualização mais clara da comparação real vs previsto, evolução da interface para gráficos e QA manual, política de expiração do cache ONS quando necessário e só então preparação de release pública.

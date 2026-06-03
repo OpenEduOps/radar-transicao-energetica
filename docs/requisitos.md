@@ -16,7 +16,7 @@ A primeira fatia funcional deve ser menor que a V0 completa. Ela deve entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-A primeira implementação já entrega essa fatia como CLI local e interface desktop inicial, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache SQLite com reuso ONS por período, integração climática opcional via Open-Meteo, visualização textual, tabela desktop de geração por fonte, baseline por média móvel com MAE, comparação real vs previsto, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Uso do clima como feature do baseline, gráficos ricos e empacotamento de release continuam para etapas posteriores do MVP funcional.
+A primeira implementação já entrega essa fatia como CLI local e interface desktop inicial, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache SQLite com reuso ONS por período, integração climática opcional via Open-Meteo, features climáticas simples no baseline, visualização textual, tabela desktop de geração por fonte, baseline por média móvel com MAE, comparação real vs previsto, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Gráficos ricos, modelos com `scikit-learn` e empacotamento de release continuam para etapas posteriores do MVP funcional.
 
 Na decisão da primeira fonte pública real, ONS foi priorizado por entregar geração horária em CSV público e sem credenciais. ANEEL e CCEE permanecem candidatas para etapas complementares: ANEEL para dados estruturais do setor e CCEE para sinais econômicos, como PLD horário.
 
@@ -42,7 +42,7 @@ Contribuidores:
 | `REQ-002` | Persistir cache local dos dados coletados para reduzir novas chamadas e facilitar repetição de análises. | Alta | Implementado |
 | `REQ-003` | Calcular participação renovável por período a partir das fontes disponíveis. | Alta | Implementado |
 | `REQ-004` | Exibir geração por fonte de forma comparável. | Alta | Parcial |
-| `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Parcial |
+| `REQ-005` | Integrar variáveis climáticas úteis para previsão ou interpretação. | Média | Implementado |
 | `REQ-006` | Treinar e executar modelo baseline para previsão de participação renovável ou risco de pressão térmica. | Alta | Implementado |
 | `REQ-007` | Comparar dado real e previsão por métrica e visualização. | Média | Parcial |
 | `REQ-008` | Gerar alerta interpretável para o usuário final. | Alta | Implementado |
@@ -61,7 +61,7 @@ Contribuidores:
 
 Observação sobre `REQ-002` e `NFR-005`: a implementação atual grava cache SQLite em `data/cache/analises.sqlite`, com payload da análise, metadados da fonte, versão de schema e registros normalizados. Para a fonte ONS, a aplicação reutiliza registros normalizados do mesmo período antes de tentar novo download.
 
-Observação sobre `REQ-005`: a integração climática inicial usa Open-Meteo de forma opcional, com temperatura a 2 m, vento a 10 m, radiação solar de onda curta e nebulosidade. Ela já aparece no CLI, JSON, cache e interface desktop, mas ainda não entra como feature do baseline.
+Observação sobre `REQ-005`: a integração climática inicial usa Open-Meteo de forma opcional, com temperatura a 2 m, vento a 10 m, radiação solar de onda curta e nebulosidade. Ela aparece no CLI, JSON, cache e interface desktop, e também entra no baseline como feature simples quando há clima alinhado por período. A V0 ainda não usa `scikit-learn`.
 
 ## Critérios de Aceite do MVP
 
@@ -72,6 +72,9 @@ Observação sobre `REQ-005`: a integração climática inicial usa Open-Meteo d
 - Dado que a fonte pública ONS esteja indisponível, acima do limite local ou com encoding inválido, quando a coleta for executada, então o sistema deve informar erro claro sem traceback.
 - Dado que o usuário habilite `--clima open-meteo`, quando a fonte climática responder com dados horários válidos, então o resultado deve incluir `weather.data_source`, `weather.summary` e `weather.records`.
 - Dado que a fonte climática falhe por download, JSON inválido ou payload incompatível, quando a análise elétrica ainda puder ser calculada, então o resultado deve registrar `weather.error` sem interromper participação renovável, baseline e alerta.
+- Dado que existam dados climáticos alinhados ao período de geração, quando o baseline comparar real vs previsto, então o sistema deve indicar quais comparações usaram features climáticas.
+- Dado que exista clima futuro útil após o último período de geração, quando houver histórico climático comparável, então a previsão da próxima janela deve indicar `predicted_with_weather`.
+- Dado que um período climático não tenha nenhuma variável disponível, quando as features forem montadas, então esse período não deve contar como feature climática.
 - Dado que a suíte automatizada seja executada, quando testes climáticos rodarem, então eles devem usar fixtures ou loaders injetados e não depender de rede.
 - Dado um período com dados por fonte, quando a análise for concluída, então o sistema deve exibir geração hidráulica, térmica, eólica e solar de forma comparável.
 - Dado que a interface desktop inicial seja aberta, quando a análise usar exemplo embutido, CSV local ou ONS, então a tela deve apresentar fonte, período, geração por fonte, participação renovável, alerta e baseline sem duplicar regras de domínio na UI.
@@ -95,7 +98,7 @@ Observação sobre `REQ-005`: a integração climática inicial usa Open-Meteo d
 | `TEST-006` | Unitário e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar o modelo de apresentação da interface sem abrir janela e verificar manualmente se geração por fonte, comparação e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |
 | `TEST-008` | Unitário e packaging | `NFR-006` | Validar release gate, `--release-status`, bloqueio de `--public-release`, ausência de build/upload/checksum na CI e ignore de artefatos locais. |
-| `TEST-009` | Unitário e integração leve | `REQ-005` | Validar URL Open-Meteo, normalização de fixture horária, resumo climático, tratamento de falhas, contrato JSON/cache, CLI e modelo de apresentação desktop sem rede. |
+| `TEST-009` | Unitário e integração leve | `REQ-005` | Validar URL Open-Meteo, normalização de fixture horária, resumo climático, features climáticas simples, comparação real vs previsto com clima, tratamento de falhas, contrato JSON/cache, CLI e modelo de apresentação desktop sem rede. |
 
 ## Fora de Escopo da V0
 

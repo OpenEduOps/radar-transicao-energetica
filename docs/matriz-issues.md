@@ -49,16 +49,16 @@ Essa ordem permite entregar valor observável antes de avançar para uso climát
 - `ISSUE-004`: implementada com cache SQLite local que registra payload da análise, origem dos dados, versão de schema, registros normalizados e reuso ONS por período.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
 - `ISSUE-006`: parcialmente implementada com visualização textual e primeira interface desktop em Tkinter com tabela de geração por fonte.
-- `ISSUE-007`: parcialmente implementada com integração climática opcional Open-Meteo, fixtures offline, contrato `weather` no JSON/cache e resumo no CLI/desktop.
-- `ISSUE-008`: implementada com baseline por média móvel, MAE e comparação walk-forward.
+- `ISSUE-007`: implementada com integração climática opcional Open-Meteo, fixtures offline, contrato `weather` no JSON/cache, resumo no CLI/desktop e features climáticas simples para o baseline.
+- `ISSUE-008`: implementada com baseline por média móvel, analogia climática simples, MAE e comparação walk-forward.
 - `ISSUE-009`: parcialmente implementada com comparação textual e JSON entre real e previsto.
 - `ISSUE-010`: parcialmente implementada com alerta interpretável.
 - `ISSUE-011`: implementada com release gate, `--release-status`, bloqueio de `--public-release` e testes de packaging.
 
 Pendências principais:
 
-- usar clima como feature exploratória do baseline;
 - evoluir a interface desktop inicial para gráficos ricos, estados visuais e QA manual;
+- melhorar a visualização da comparação real vs previsto por período, destacando uso de clima;
 - transformar o primeiro `.exe` local em release validada depois do gate retornar `public-ready`.
 
 ## Fatia Funcional Inicial
@@ -149,7 +149,7 @@ O build local experimental do `.exe` não altera esse backlog: release, smoke te
 - ampliar fixtures ONS para cobrir novas fontes ainda não classificadas na V0.
 - evoluir política de expiração ou invalidação do cache ONS.
 - ampliar fixtures climáticas e testar novos cenários Open-Meteo sem rede.
-- melhorar visualização da comparação real vs previsto do baseline.
+- melhorar visualização da comparação real vs previsto do baseline, incluindo marcação de comparações com clima.
 - evoluir critérios de release somente depois de QA manual da UI inicial.
 
 ## Evitar Como Primeira Issue

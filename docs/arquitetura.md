@@ -4,7 +4,7 @@ Este documento descreve a arquitetura inicial do **Radar da Transição Energét
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período, integração climática opcional Open-Meteo, baseline por média móvel com MAE, comparação real vs previsto e alerta textual. As próximas camadas devem avançar para uso do clima como feature do baseline, gráficos ricos e executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação real vs previsto e alerta textual. As próximas camadas devem avançar para visualização mais clara dessas comparações, gráficos ricos e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
@@ -13,7 +13,7 @@ A arquitetura deve permitir evolução incremental: a base atual é uma aplicaç
 | Linguagem | Python 3.11+ | Boa aderência a dados, automação, ML e desktop. |
 | Dados | Biblioteca padrão agora; `pandas` planejado | A V0 reduz dependências; `pandas` entra quando volume e análise tabular justificarem. |
 | HTTP/APIs | `urllib` agora; `requests` planejado | Coleta ONS inicial sem dependências externas; `requests` entra se a camada de dados crescer. |
-| ML | Média móvel avaliada; `scikit-learn` planejado | Baseline interpretável com MAE antes de modelos mais complexos. |
+| ML | Média móvel e analogia climática simples; `scikit-learn` planejado | Baseline interpretável com MAE antes de modelos mais complexos. |
 | Cache local | SQLite | Banco local sem dependência externa para análise, metadados e registros normalizados. |
 | UI desktop | Tkinter inicial; PySide6 planejado | Tkinter permite a primeira tela sem dependências novas; PySide6 fica para uma experiência mais rica. |
 | Gráficos | Texto e tabela agora; Matplotlib ou Plotly planejado | Visualização textual e tabela desktop validam o conceito antes de gráficos ricos. |
@@ -61,6 +61,7 @@ radar-transicao-energetica/
 │       ├── alerts.py
 │       ├── charts.py
 │       ├── desktop.py
+│       ├── features.py
 │       ├── weather.py
 │       ├── release.py
 │       ├── serialization.py
@@ -81,10 +82,11 @@ radar-transicao-energetica/
 | `data.py` | Leitura, normalização e validação de dados de geração. |
 | `ons.py` | Construção da URL pública e carregamento do dataset ONS Geração por Usina em Base Horária. |
 | `domain.py` | Cálculo de participação renovável e agregações por período. |
-| `baseline.py` | Baseline por média móvel, MAE e comparação walk-forward real vs previsto. |
+| `baseline.py` | Baseline por média móvel, MAE, analogia climática simples e comparação walk-forward real vs previsto. |
 | `alerts.py` | Regras textuais de alerta educacional. |
 | `charts.py` | Visualização textual inicial. |
 | `desktop.py` | Interface desktop inicial em Tkinter e modelo de apresentação testável sem abrir janela. |
+| `features.py` | Alinhamento de clima por período, criação de features horárias simples e distância climática entre períodos. |
 | `weather.py` | Construção da URL Open-Meteo, download limitado, normalização horária, resumo climático e validações de coordenadas. |
 | `release.py` | Critérios de readiness e mensagens do gate de release pública do `.exe`. |
 | `serialization.py` | Contrato JSON compartilhado entre CLI e cache. |
@@ -94,7 +96,7 @@ radar-transicao-energetica/
 
 O JSON e o cache incluem `data_source` para registrar a origem da análise. Na fonte ONS, esse bloco carrega o tipo da fonte, período mensal, URL do dataset e URL do recurso CSV usado.
 
-Quando clima é habilitado, o JSON inclui `weather` com `data_source`, `summary`, `records` e, quando aplicável, `error`. O cache SQLite não cria uma tabela climática nesta V0; o payload da última análise registra o bloco climático, enquanto `generation_records` segue dedicado aos registros de geração normalizados. Se a geração ONS vier do cache e clima for solicitado, a aplicação grava uma nova análise enriquecida sem baixar novamente o CSV ONS.
+Quando clima é habilitado, o JSON inclui `weather` com `data_source`, `summary`, `records` e, quando aplicável, `error`. O bloco `baseline` também registra `weather_feature_names`, `weather_adjusted_comparisons`, `predicted_with_weather`, `next_weather_feature` e, em cada comparação, se a previsão usou features climáticas. O cache SQLite não cria uma tabela climática nesta V0; o payload da última análise registra os blocos climático e baseline, enquanto `generation_records` segue dedicado aos registros de geração normalizados. Se a geração ONS vier do cache e clima for solicitado, a aplicação grava uma nova análise enriquecida sem baixar novamente o CSV ONS.
 
 ## Contrato de Normalização ONS
 
@@ -121,8 +123,8 @@ Fonte pública ONS, CSV local ou exemplo embutido
 -> cache local
 -> cálculo de participação renovável
 -> enriquecimento climático opcional
--> criação de features
--> modelo baseline
+-> criação de features climáticas por período
+-> baseline por média móvel ou analogia climática simples
 -> visualização por CLI ou desktop, baseline e alerta interpretável
 ```
 
@@ -142,7 +144,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 | --- | --- | --- |
 | UI | `app.py` e modelos de apresentação próprios | A tela não deve esconder regra de domínio nem chamar coleta, cache ou cálculo diretamente. |
 | `features` | dados normalizados | Features devem ser testáveis sem UI. |
-| `models` | features e alvo | Modelo não deve depender de fonte externa diretamente. |
+| `models` | features e alvo | Modelo não deve depender de fonte externa diretamente nem exigir `scikit-learn` na V0. |
 | `data` | fontes públicas e normalização | Rede e persistência ficam isoladas de domínio e UI. |
 | `weather` | fonte climática pública e normalização | Clima é opcional, testado por fixture e não deve bloquear o cálculo de geração. |
 | `cache` | resultado de análise e registros normalizados | Cache atual usa SQLite e mantém schema versionado. |
@@ -156,7 +158,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 | Arquivo público cresce além do esperado | Consumo excessivo de memória | Limitar download por arquivo na V0 e evoluir para processamento incremental quando necessário. |
 | Rede indisponível | Fluxo interrompido | Usar cache local e mensagens claras. |
 | Fonte climática instável | Perda de enriquecimento | Registrar `weather.error` sem bloquear a análise elétrica. |
-| Modelo baseline parecer sofisticado demais | Baixa interpretabilidade | Priorizar métricas simples e explicação textual. |
+| Modelo baseline parecer sofisticado demais | Baixa interpretabilidade | Priorizar média móvel, analogia climática simples, métricas e explicação textual. |
 | UI crescer antes do domínio | Dificuldade de teste | Implementar cálculo e features antes de telas complexas. |
 | Empacotamento antecipado | Custo sem fluxo estável | Manter primeiro `.exe` como validação local, sem release pública. |
 | Release pública acidental | Artefato sem QA, checksum ou smoke test | Bloquear `--public-release` e testar ausência de build/upload/checksum na CI atual. |
@@ -165,7 +167,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 
 - Evoluir a fonte ONS para filtros de período e agregações mais eficientes quando o volume de dados exigir.
 - Definir política de expiração ou invalidação para cache ONS quando necessário.
-- Definir como variáveis climáticas entram como features do baseline sem reduzir interpretabilidade.
+- Definir quando a heurística climática simples deve evoluir para modelo estatístico ou `scikit-learn`.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
 - Definir Matplotlib ou Plotly para os primeiros gráficos ricos.
 - Evoluir a interface Tkinter inicial para uma experiência desktop mais completa.

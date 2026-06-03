@@ -62,7 +62,8 @@ A implementação deve seguir uma ordem incremental:
 9. adicionar modelo baseline e avaliação por métrica;
 10. adicionar comparação e alerta interpretável;
 11. integrar variáveis climáticas iniciais quando a base estiver estável;
-12. usar clima como feature exploratória do baseline.
+12. usar clima como feature simples do baseline, sem `scikit-learn`;
+13. evoluir a visualização da comparação real vs previsto.
 
 Cada etapa deve gerar uma entrega revisável, com commit próprio quando representar avanço verificável.
 
@@ -83,11 +84,11 @@ Decisões tomadas para reduzir risco:
 Limites assumidos:
 
 - o executável inicial não valida ainda PySide6, pandas, scikit-learn ou gráficos ricos;
-- o baseline atual é média móvel avaliada por MAE, não modelo de machine learning com `scikit-learn`;
+- o baseline atual é média móvel avaliada por MAE com analogia climática simples, não modelo de machine learning com `scikit-learn`;
 - a visualização atual combina CLI textual e tela desktop inicial em tabela, ainda sem gráfico rico;
 - o cache atual é SQLite, com análise, metadados, versão de schema, registros normalizados e reuso ONS por período;
 - a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
-- a primeira fonte climática foi consolidada com Open-Meteo Forecast API, de forma opcional, com limite local de 5 MB, fixtures offline e sem uso ainda como feature do baseline;
+- a primeira fonte climática foi consolidada com Open-Meteo Forecast API, de forma opcional, com limite local de 5 MB, fixtures offline e uso simples como feature do baseline quando há alinhamento por período;
 - não há release workflow, checksum, assinatura, smoke test formal ou build automático de artefato.
 - `python scripts/build_exe.py --release-status` deve indicar `local-experimental`;
 - `python scripts/build_exe.py --public-release` deve falhar enquanto o gate estiver incompleto.
@@ -500,9 +501,9 @@ Commits sugeridos:
 
 ## Fase 7: Variáveis Climáticas
 
-Status: parcialmente concluída para integração inicial Open-Meteo.
+Status: concluída para integração inicial Open-Meteo e features climáticas simples.
 
-A implementação atual adiciona fonte climática opcional via Open-Meteo, com temperatura a 2 m, vento a 10 m, radiação solar de onda curta e nebulosidade. O CLI aceita `--clima open-meteo`, o JSON/cache registram o bloco `weather`, a interface desktop exibe resumo climático quando habilitado e a suíte usa fixtures/loaders injetados sem rede. A próxima evolução é usar essas variáveis como features exploratórias do baseline.
+A implementação atual adiciona fonte climática opcional via Open-Meteo, com temperatura a 2 m, vento a 10 m, radiação solar de onda curta e nebulosidade. O CLI aceita `--clima open-meteo`, o JSON/cache registram o bloco `weather`, a interface desktop exibe resumo climático quando habilitado e a suíte usa fixtures/loaders injetados sem rede. Quando há clima alinhado por hora, o baseline usa uma analogia climática simples para comparar real vs previsto sem `scikit-learn`.
 
 Rastreabilidade:
 
@@ -521,6 +522,7 @@ Entregáveis:
 - normalização por período;
 - resumo climático no CLI, JSON, cache e desktop;
 - integração com features.
+- comparação real vs previsto indicando quando features climáticas foram usadas.
 
 Variáveis candidatas:
 
@@ -537,6 +539,7 @@ Critérios de aceite:
 - documentação registra limitações.
 - a suíte automatizada continua podendo rodar sem rede.
 - falha de download, encoding ou JSON climático inválido não impede a análise de geração.
+- features climáticas vazias são ignoradas.
 
 Fora de escopo:
 
@@ -544,7 +547,7 @@ Fora de escopo:
 - otimização de previsão;
 - decisões operacionais baseadas em clima;
 - dependência obrigatória de API externa em testes.
-- uso de clima como feature do baseline nesta etapa.
+- modelo com `scikit-learn`.
 
 Commits sugeridos:
 
@@ -557,7 +560,7 @@ Commits sugeridos:
 
 Status: concluída para baseline inicial sem `scikit-learn`.
 
-A implementação atual usa média móvel como baseline interpretável, com previsão da próxima janela, comparação walk-forward entre real e previsto, MAE em pontos percentuais no relatório textual e campos estruturados no JSON. Modelos com `scikit-learn` e validação mais completa seguem planejados para etapas posteriores.
+A implementação atual usa média móvel como baseline interpretável e adiciona analogia climática simples quando há features climáticas alinhadas por período. O resultado inclui previsão da próxima janela, comparação walk-forward entre real e previsto, MAE em pontos percentuais no relatório textual, contagem de comparações com clima e campos estruturados no JSON. Modelos com `scikit-learn` e validação mais completa seguem planejados para etapas posteriores.
 
 Rastreabilidade:
 
@@ -567,22 +570,19 @@ Rastreabilidade:
 
 Objetivo:
 
-Implementar um baseline interpretável para previsão de participação renovável ou classificação de risco.
+Implementar um baseline interpretável para previsão de participação renovável.
 
-Decisão pendente:
+Decisão adotada:
 
-- regressão para participação renovável;
-- classificação para risco baixo, médio ou alto.
+- começar por regressão de participação renovável, porque a métrica é direta e a classificação pode ser derivada depois por faixas interpretáveis;
+- manter classificação de risco como evolução posterior, conectada ao alerta interpretável.
 
-Recomendação inicial:
-
-Começar por regressão de participação renovável, porque a métrica é mais direta e a classificação pode ser derivada depois por faixas interpretáveis.
-
-O primeiro baseline pode usar apenas variáveis temporais e histórico de geração, mesmo com a integração climática inicial disponível. Variáveis climáticas devem melhorar o modelo, não bloquear o treino mínimo.
+O primeiro baseline continua podendo usar apenas variáveis temporais e histórico de geração. Quando clima está alinhado, as variáveis climáticas melhoram a comparação por analogia simples, mas não bloqueiam o treino mínimo.
 
 Entregáveis:
 
 - cálculo baseline por média móvel;
+- uso opcional de features climáticas simples;
 - divisão simples entre treino e validação;
 - métrica inicial;
 - teste com dataset mínimo;
@@ -601,6 +601,7 @@ Commits sugeridos:
 
 - `Define alvo inicial do modelo baseline`;
 - `Implementa baseline por media movel`;
+- `Adiciona features climaticas ao baseline`;
 - `Valida predicao baseline com dataset minimo`.
 
 ## Fase 9: Comparação e Alerta Interpretável
@@ -760,4 +761,4 @@ Uma fase só deve avançar quando:
 
 ## Próxima Ação Recomendada
 
-Criar a próxima issue de modelagem: usar as variáveis climáticas já normalizadas como features exploratórias do baseline, ainda sem `scikit-learn`, mantendo comparação real vs previsto e testes com fixtures offline.
+Criar a próxima issue de visualização: tornar a comparação real vs previsto mais clara por período, destacando quando a previsão usou média móvel pura ou features climáticas simples.

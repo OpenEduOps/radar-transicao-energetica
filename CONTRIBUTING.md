@@ -25,7 +25,7 @@ A primeira fatia funcional já foi implementada. O projeto atualmente:
 - grava cache SQLite local com análise e registros normalizados;
 - reutiliza cache ONS por período antes de baixar novamente a fonte pública;
 - integra clima opcional via Open-Meteo, com temperatura, vento, radiação solar e nebulosidade;
-- avalia o baseline de média móvel com MAE e comparação real vs previsto;
+- avalia o baseline de média móvel com MAE, comparação real vs previsto e features climáticas simples quando há clima alinhado;
 - abre uma interface desktop inicial em Tkinter para exemplo embutido, CSV local ou ONS mensal;
 - executa testes automatizados com `unittest`;
 - pode gerar um `.exe` local experimental com PyInstaller;
@@ -40,13 +40,13 @@ Contribuições úteis agora incluem:
 - melhorar consultas, validações e rastreabilidade do cache SQLite;
 - evoluir políticas de expiração ou invalidação do cache ONS;
 - ampliar fixtures climáticas e validar cenários Open-Meteo sem rede;
-- usar variáveis climáticas já normalizadas como features exploratórias do baseline;
+- melhorar ou explicar as features climáticas simples usadas no baseline;
 - melhorar estados, mensagens e QA manual da interface desktop inicial;
 - melhorar visualização e interpretação da comparação baseline;
 - evoluir critérios de release do `.exe` sem publicar artefato antes do gate;
 - revisar critérios de aceite.
 
-A próxima evolução recomendada é usar a fonte climática já integrada como feature exploratória do baseline, em paralelo com melhorias incrementais da interface desktop. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
+A próxima evolução recomendada é tornar a comparação real vs previsto mais visual e clara por período, destacando quando a previsão usou média móvel pura ou features climáticas simples. Os testes devem continuar offline, com diretórios temporários e sem credenciais privadas.
 
 ## Padrão de Trabalho
 
@@ -58,6 +58,7 @@ Exemplos de bons escopos:
 - documentar o contrato de normalização entre campos ONS e campos internos;
 - adicionar fixture ONS com nova fonte ainda não classificada;
 - adicionar fixture climática com novo cenário de temperatura, vento, radiação ou nebulosidade;
+- adicionar teste para analogia climática do baseline;
 - adicionar teste para cache ou serialização;
 - adicionar teste de comparação real vs previsto do baseline;
 - adicionar teste para modelo de apresentação da interface sem abrir janela;
@@ -136,6 +137,6 @@ Não inclua:
 
 ## Como Escolher Uma Issue
 
-Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial, cálculo de participação renovável, cache SQLite com reuso ONS, integração climática inicial, baseline e interface desktop inicial já existem. Boas contribuições agora estão em features climáticas para baseline, fixtures ONS/Open-Meteo, política de expiração do cache, QA da tela e visualização mais clara do baseline.
+Comece pela [matriz de issues](docs/matriz-issues.md). Como scaffold, fonte ONS inicial, cálculo de participação renovável, cache SQLite com reuso ONS, integração climática inicial, features climáticas simples, baseline e interface desktop inicial já existem. Boas contribuições agora estão em visualização mais clara do baseline, fixtures ONS/Open-Meteo, política de expiração do cache e QA da tela.
 
 Se uma issue parecer grande demais, divida em uma etapa menor com critério de aceite próprio.

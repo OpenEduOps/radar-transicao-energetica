@@ -53,7 +53,7 @@ O comando com `pytest` é opcional nesta fase, porque os testes foram escritos c
 
 A integração ONS é validada na suíte por fixture offline, cobrindo o contrato `din_instante` -> `period`, `nom_tipousina` -> `source` e `val_geracaomwmed` -> `generation_mw`. A suíte também valida `data_source`, erro de download, payload não UTF-8 e limite local de tamanho. O comando real com `--fonte ons --ons-periodo YYYY-MM` é uma validação manual com rede e não faz parte da CI obrigatória.
 
-A integração climática Open-Meteo também é validada sem rede. A suíte cobre construção de URL, metadados da fonte, normalização horária, resumo climático, limite local de 5 MB, JSON inválido, coordenadas inválidas, persistência no payload/cache, relatório CLI e modelo de apresentação desktop com fixtures ou loaders injetados.
+A integração climática Open-Meteo também é validada sem rede. A suíte cobre construção de URL, metadados da fonte, normalização horária, resumo climático, features climáticas simples, limite local de 5 MB, JSON inválido, coordenadas inválidas, persistência no payload/cache, relatório CLI e modelo de apresentação desktop com fixtures ou loaders injetados.
 
 A interface desktop inicial é validada de forma automatizada sem abrir janela. A suíte testa o modelo de apresentação, a seleção de fonte, o status com cache e o entry point `radar-transicao-energetica-ui`. A abertura real da janela continua como QA manual, porque a CI inicial não deve depender de ambiente gráfico.
 
