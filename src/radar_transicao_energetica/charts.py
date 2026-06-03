@@ -38,7 +38,10 @@ def render_baseline_comparison_chart(
     if not comparisons:
         return "Sem comparacoes de baseline para exibir."
 
-    lines = ["Comparacao real vs previsto por periodo:"]
+    lines = [
+        "Comparacao real vs previsto por periodo:",
+        "Legenda: [media] media movel pura; [clima] analogia climatica.",
+    ]
     for comparison in comparisons:
         method = "clima" if comparison.weather_adjusted else "media"
         actual_bar = _bar(comparison.actual_renewable_share, 1.0, width)

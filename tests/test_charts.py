@@ -32,6 +32,7 @@ class ChartTest(unittest.TestCase):
         )
 
         self.assertIn("Comparacao real vs previsto por periodo", chart)
+        self.assertIn("Legenda: [media] media movel pura; [clima] analogia climatica.", chart)
         self.assertIn("[media]", chart)
         self.assertIn("[clima]", chart)
         self.assertIn("erro 30.0 p.p.", chart)
