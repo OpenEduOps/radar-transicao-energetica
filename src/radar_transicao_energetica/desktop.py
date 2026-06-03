@@ -661,20 +661,21 @@ def _draw_generation_chart(
     right = 16
     top = 16
     bottom = 16
-    row_height = max(22, (height - top - bottom) // max(len(bars), 1))
-    bar_height = max(10, min(18, row_height - 8))
+    available_height = max(1, height - top - bottom)
+    row_height = available_height / len(bars)
+    bar_height = max(4.0, min(18.0, row_height * 0.65))
     chart_width = max(40, width - left - right)
 
     for index, bar in enumerate(bars):
-        y = top + index * row_height + row_height // 2
+        y = top + index * row_height + row_height / 2
         bar_width = round((bar.generation_mw / max_generation) * chart_width)
         color = _generation_color(bar.category)
         canvas.create_text(8, y, text=bar.source[:13], anchor="w", fill="#263238")
         canvas.create_rectangle(
             left,
-            y - bar_height // 2,
+            y - bar_height / 2,
             left + bar_width,
-            y + bar_height // 2,
+            y + bar_height / 2,
             fill=color,
             outline=color,
         )

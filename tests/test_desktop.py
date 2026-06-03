@@ -69,6 +69,13 @@ class FakeCanvas:
     def fill_values(self, call_name: str) -> list[object]:
         return [kwargs.get("fill") for _args, kwargs in self.calls_named(call_name)]
 
+    def rectangle_coordinates(self) -> list[tuple[float, float, float, float]]:
+        coordinates = []
+        for args, _kwargs in self.calls_named("create_rectangle"):
+            x1, y1, x2, y2 = args
+            coordinates.append((float(x1), float(y1), float(x2), float(y2)))
+        return coordinates
+
 
 class DesktopTest(unittest.TestCase):
     def test_build_desktop_view_data_exposes_core_metrics(self) -> None:
@@ -229,6 +236,37 @@ class DesktopTest(unittest.TestCase):
         self.assertIn("Sem dados de geracao", canvas.text_values())
         self.assertEqual(canvas.calls_named("create_rectangle"), [])
 
+    def test_generation_chart_draws_zero_generation_state_without_tk_window(self) -> None:
+        canvas = FakeCanvas(width=520, height=160)
+
+        _draw_generation_chart(
+            canvas,
+            (
+                DesktopGenerationChartBar("hidraulica", 0.0, "renovavel"),
+                DesktopGenerationChartBar("termica", 0.0, "nao renovavel"),
+            ),
+        )
+
+        self.assertIn("Geracao sem valor positivo", canvas.text_values())
+        self.assertEqual(canvas.calls_named("create_rectangle"), [])
+
+    def test_generation_chart_keeps_many_bars_inside_canvas_without_tk_window(self) -> None:
+        canvas = FakeCanvas(width=520, height=160)
+
+        _draw_generation_chart(
+            canvas,
+            tuple(
+                DesktopGenerationChartBar(f"fonte_{index}", float(20 - index), "desconhecida")
+                for index in range(20)
+            ),
+        )
+
+        rectangles = canvas.rectangle_coordinates()
+
+        self.assertEqual(len(rectangles), 20)
+        self.assertTrue(all(y1 >= 16 for _x1, y1, _x2, _y2 in rectangles))
+        self.assertTrue(all(y2 <= 144 for _x1, _y1, _x2, y2 in rectangles))
+
     def test_baseline_chart_draws_legend_and_weather_markers_without_tk_window(self) -> None:
         canvas = FakeCanvas(width=520, height=220)
 
@@ -266,6 +304,23 @@ class DesktopTest(unittest.TestCase):
 
         self.assertIn("Sem comparacoes de baseline", canvas.text_values())
         self.assertEqual(canvas.calls_named("create_oval"), [])
+
+    def test_baseline_chart_draws_single_point_without_series_line(self) -> None:
+        canvas = FakeCanvas(width=520, height=220)
+
+        _draw_baseline_chart(
+            canvas,
+            (DesktopBaselineChartPoint("2026-01-01 01:00", 0.8, 0.7, "media movel"),),
+        )
+
+        data_lines = [
+            kwargs
+            for _args, kwargs in canvas.calls_named("create_line")
+            if kwargs.get("width") == 2
+        ]
+
+        self.assertEqual(data_lines, [])
+        self.assertEqual(len(canvas.calls_named("create_oval")), 5)
 
     def test_desktop_redraw_charts_uses_last_view_data_without_tk_window(self) -> None:
         result = run_analysis(write_cache=False)
