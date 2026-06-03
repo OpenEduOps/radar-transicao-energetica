@@ -261,4 +261,6 @@ def _format_weather_lines(
 def _format_optional_number(value: float | None, unit: str) -> str:
     if value is None:
         return "sem dados"
+    if unit == "%":
+        return f"{value:.1f}%"
     return f"{value:.1f} {unit}"

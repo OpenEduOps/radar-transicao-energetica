@@ -355,7 +355,7 @@ class CliTest(unittest.TestCase):
         self.assertIn("Clima: Open-Meteo Forecast", report)
         self.assertIn("Temperatura media: 23.0 C", report)
         self.assertIn("Vento medio: 9.0 km/h", report)
-        self.assertIn("Nebulosidade media: 50.0 %", report)
+        self.assertIn("Nebulosidade media: 50.0%", report)
 
     def test_render_report_includes_weather_error_without_hiding_generation(self) -> None:
         result = run_analysis(write_cache=False)
