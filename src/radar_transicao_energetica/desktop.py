@@ -57,6 +57,13 @@ class DesktopMetric:
 
 
 @dataclass(frozen=True)
+class DesktopStateMessage:
+    level: str
+    title: str
+    detail: str
+
+
+@dataclass(frozen=True)
 class DesktopGenerationRow:
     source: str
     generation_mw: str
@@ -91,6 +98,7 @@ class DesktopViewData:
     source: str
     period: str
     metrics: tuple[DesktopMetric, ...]
+    state_messages: tuple[DesktopStateMessage, ...]
     generation_rows: tuple[DesktopGenerationRow, ...]
     generation_chart_bars: tuple[DesktopGenerationChartBar, ...]
     alert: str
@@ -116,6 +124,7 @@ def build_desktop_view_data(result: AnalysisResult) -> DesktopViewData:
             f"{baseline.weather_adjusted_comparisons}/{baseline.evaluated_points}",
         ),
     )
+    state_messages = _build_state_messages(result)
     generation_rows = tuple(
         DesktopGenerationRow(source=source, generation_mw=_format_mw(generation))
         for source, generation in sorted(summary.generation_by_source.items())
@@ -146,6 +155,7 @@ def build_desktop_view_data(result: AnalysisResult) -> DesktopViewData:
         source=_format_data_source(result),
         period=f"{summary.period_start:%Y-%m-%d %H:%M} -> {summary.period_end:%Y-%m-%d %H:%M}",
         metrics=metrics,
+        state_messages=state_messages,
         generation_rows=generation_rows,
         generation_chart_bars=generation_chart_bars,
         alert=f"{result.alert.level}: {result.alert.message}",
@@ -153,6 +163,36 @@ def build_desktop_view_data(result: AnalysisResult) -> DesktopViewData:
         baseline_rows=baseline_rows,
         baseline_chart_points=baseline_chart_points,
         weather=_format_weather(result),
+    )
+
+
+def build_desktop_error_view_data(message: str) -> DesktopViewData:
+    metrics = (
+        DesktopMetric("Participacao renovavel", "sem dados"),
+        DesktopMetric("Geracao total", "sem dados"),
+        DesktopMetric("Geracao renovavel", "sem dados"),
+        DesktopMetric("Baseline proxima janela", "sem dados"),
+        DesktopMetric("Baseline MAE", "sem dados"),
+        DesktopMetric("Comparacoes com clima", "0/0"),
+    )
+    return DesktopViewData(
+        source="-",
+        period="-",
+        metrics=metrics,
+        state_messages=(
+            DesktopStateMessage(
+                level="erro",
+                title="Erro de entrada",
+                detail=message,
+            ),
+        ),
+        generation_rows=(),
+        generation_chart_bars=(),
+        alert=f"erro: {message}",
+        baseline_comparison="sem dados suficientes",
+        baseline_rows=(),
+        baseline_chart_points=(),
+        weather="-",
     )
 
 
@@ -250,6 +290,58 @@ def format_desktop_status(result: AnalysisResult) -> str:
     return f"Analise atualizada; cache: {result.cache_path}"
 
 
+def _build_state_messages(result: AnalysisResult) -> tuple[DesktopStateMessage, ...]:
+    messages: list[DesktopStateMessage] = []
+    if result.summary.renewable_share is None or result.summary.total_generation_mw <= 0:
+        messages.append(
+            DesktopStateMessage(
+                level="aviso",
+                title="Sem dados uteis",
+                detail=(
+                    "A geracao total do periodo esta zerada; indicadores percentuais "
+                    "ficam indisponiveis."
+                ),
+            )
+        )
+    if result.weather_error is not None:
+        messages.append(
+            DesktopStateMessage(
+                level="aviso",
+                title="Clima indisponivel",
+                detail=result.weather_error,
+            )
+        )
+    if result.baseline.evaluated_points == 0:
+        messages.append(
+            DesktopStateMessage(
+                level="aviso",
+                title="Baseline sem pontos suficientes",
+                detail=(
+                    "Inclua pelo menos dois periodos com participacao renovavel "
+                    "para comparar real vs previsto."
+                ),
+            )
+        )
+    if result.cache_hit:
+        detail = "Registros normalizados foram reutilizados do cache local."
+        if result.cache_path is not None:
+            detail = f"{detail} Cache: {result.cache_path}"
+        messages.append(
+            DesktopStateMessage(
+                level="info",
+                title="Cache reutilizado",
+                detail=detail,
+            )
+        )
+    return tuple(messages)
+
+
+def _format_state_messages(messages: tuple[DesktopStateMessage, ...]) -> str:
+    if not messages:
+        return "Sem avisos"
+    return "\n".join(f"{message.title}: {message.detail}" for message in messages)
+
+
 class RadarDesktopApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
@@ -270,6 +362,7 @@ class RadarDesktopApp:
         self.baseline_comparison_var = tk.StringVar(value="-")
         self.weather_var = tk.StringVar(value="-")
         self.metric_vars: dict[str, tk.StringVar] = {}
+        self.state_text_var = tk.StringVar(value="Sem avisos")
         self.generation_canvas: tk.Canvas | None = None
         self.baseline_canvas: tk.Canvas | None = None
         self.baseline_table: ttk.Treeview | None = None
@@ -348,8 +441,8 @@ class RadarDesktopApp:
         content.grid(row=1, column=0, sticky="nsew")
         content.columnconfigure(0, weight=1)
         content.columnconfigure(1, weight=1)
-        content.rowconfigure(1, weight=1)
         content.rowconfigure(2, weight=1)
+        content.rowconfigure(3, weight=1)
 
         summary = ttk.LabelFrame(content, text="Resumo", padding=12)
         summary.grid(row=0, column=0, columnspan=2, sticky="ew")
@@ -382,8 +475,18 @@ class RadarDesktopApp:
                 sticky="w",
             )
 
+        states = ttk.LabelFrame(content, text="Estados", padding=12)
+        states.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(12, 0))
+        states.columnconfigure(0, weight=1)
+        ttk.Label(
+            states,
+            textvariable=self.state_text_var,
+            wraplength=880,
+            justify="left",
+        ).grid(row=0, column=0, sticky="ew")
+
         generation = ttk.LabelFrame(content, text="Geracao por fonte", padding=12)
-        generation.grid(row=1, column=0, sticky="nsew", pady=(12, 0), padx=(0, 6))
+        generation.grid(row=2, column=0, sticky="nsew", pady=(12, 0), padx=(0, 6))
         generation.rowconfigure(0, weight=1)
         generation.columnconfigure(0, weight=1)
         self.generation_table = ttk.Treeview(
@@ -408,7 +511,7 @@ class RadarDesktopApp:
         self.generation_canvas.bind("<Configure>", lambda _event: self._redraw_charts())
 
         insights = ttk.LabelFrame(content, text="Alerta e baseline", padding=12)
-        insights.grid(row=1, column=1, sticky="nsew", pady=(12, 0), padx=(6, 0))
+        insights.grid(row=2, column=1, sticky="nsew", pady=(12, 0), padx=(6, 0))
         insights.columnconfigure(0, weight=1)
         ttk.Label(insights, text="Alerta").grid(row=0, column=0, sticky="w")
         ttk.Label(
@@ -433,7 +536,7 @@ class RadarDesktopApp:
         ).grid(row=5, column=0, sticky="ew", pady=(4, 0))
 
         baseline = ttk.LabelFrame(content, text="Real vs previsto", padding=12)
-        baseline.grid(row=2, column=0, columnspan=2, sticky="nsew", pady=(12, 0))
+        baseline.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(12, 0))
         baseline.columnconfigure(0, weight=1)
         baseline.columnconfigure(1, weight=1)
         baseline.rowconfigure(0, weight=1)
@@ -497,6 +600,7 @@ class RadarDesktopApp:
             result = self._run_selected_source()
         except (GenerationDataError, ValueError) as exc:
             self.status_var.set(f"Erro: {exc}")
+            self._render_result(build_desktop_error_view_data(str(exc)))
             messagebox.showerror("Erro", str(exc))
             return
         self._render_result(build_desktop_view_data(result))
@@ -530,6 +634,7 @@ class RadarDesktopApp:
         self.period_var.set(data.period)
         for metric in data.metrics:
             self.metric_vars[metric.label].set(metric.value)
+        self.state_text_var.set(_format_state_messages(data.state_messages))
         self.alert_var.set(data.alert)
         self.baseline_comparison_var.set(data.baseline_comparison)
         self.weather_var.set(data.weather)

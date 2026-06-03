@@ -16,12 +16,13 @@ from radar_transicao_energetica.desktop import (
     DesktopGenerationChartBar,
     RadarDesktopApp,
     build_desktop_analysis_options,
+    build_desktop_error_view_data,
     build_desktop_view_data,
     format_desktop_status,
     _draw_baseline_chart,
     _draw_generation_chart,
 )
-from radar_transicao_energetica.weather import WeatherRecord
+from radar_transicao_energetica.weather import WeatherDataError, WeatherRecord
 
 
 class FakeCanvas:
@@ -207,6 +208,107 @@ class DesktopTest(unittest.TestCase):
         self.assertIn("com clima", view_data.baseline_comparison)
         self.assertEqual(view_data.baseline_rows[-1].method, "clima")
         self.assertEqual(view_data.baseline_chart_points[-1].method, "clima")
+
+    def test_build_desktop_view_data_reports_weather_unavailable_state(self) -> None:
+        def failing_weather_loader(**_kwargs: object) -> list[WeatherRecord]:
+            raise WeatherDataError("servico fora do ar")
+
+        result = run_analysis(
+            write_cache=False,
+            include_weather=True,
+            weather_loader=failing_weather_loader,
+        )
+
+        view_data = build_desktop_view_data(result)
+        messages_by_title = {message.title: message for message in view_data.state_messages}
+
+        self.assertIn("Clima indisponivel", messages_by_title)
+        self.assertEqual(messages_by_title["Clima indisponivel"].level, "aviso")
+        self.assertIn("servico fora do ar", messages_by_title["Clima indisponivel"].detail)
+        self.assertIn("indisponivel", view_data.weather)
+
+    def test_build_desktop_view_data_reports_baseline_without_enough_points(self) -> None:
+        result = run_analysis(
+            write_cache=False,
+            source="ons",
+            ons_year=2026,
+            ons_month=1,
+            ons_loader=lambda _year, _month: [
+                GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 80.0),
+                GenerationRecord(datetime(2026, 1, 1, 0), "termica", 20.0),
+            ],
+        )
+
+        view_data = build_desktop_view_data(result)
+        titles = [message.title for message in view_data.state_messages]
+
+        self.assertEqual(result.baseline.evaluated_points, 0)
+        self.assertIn("Baseline sem pontos suficientes", titles)
+        self.assertEqual(view_data.baseline_rows, ())
+        self.assertEqual(view_data.baseline_chart_points, ())
+
+    def test_build_desktop_view_data_reports_no_useful_generation_state(self) -> None:
+        result = run_analysis(
+            write_cache=False,
+            source="ons",
+            ons_year=2026,
+            ons_month=1,
+            ons_loader=lambda _year, _month: [
+                GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 0.0),
+                GenerationRecord(datetime(2026, 1, 1, 0), "termica", 0.0),
+            ],
+        )
+
+        view_data = build_desktop_view_data(result)
+        metrics = {metric.label: metric.value for metric in view_data.metrics}
+        titles = [message.title for message in view_data.state_messages]
+
+        self.assertEqual(metrics["Participacao renovavel"], "sem dados")
+        self.assertIn("Sem dados uteis", titles)
+        self.assertIn("Baseline sem pontos suficientes", titles)
+
+    def test_build_desktop_view_data_reports_cache_reused_state(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "analises.sqlite"
+            run_analysis(
+                cache_path=cache_path,
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                ons_loader=lambda _year, _month: [
+                    GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 90.0),
+                    GenerationRecord(datetime(2026, 1, 1, 0), "termica", 10.0),
+                ],
+            )
+            result = run_analysis(
+                cache_path=cache_path,
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                ons_loader=lambda _year, _month: [],
+            )
+
+        view_data = build_desktop_view_data(result)
+        messages_by_title = {message.title: message for message in view_data.state_messages}
+
+        self.assertIn("Cache reutilizado", messages_by_title)
+        self.assertEqual(messages_by_title["Cache reutilizado"].level, "info")
+        self.assertIn(str(cache_path), messages_by_title["Cache reutilizado"].detail)
+
+    def test_build_desktop_error_view_data_clears_results_and_reports_error(self) -> None:
+        view_data = build_desktop_error_view_data("Periodo ONS invalido")
+        metrics = {metric.label: metric.value for metric in view_data.metrics}
+
+        self.assertEqual(view_data.source, "-")
+        self.assertEqual(view_data.period, "-")
+        self.assertEqual(metrics["Participacao renovavel"], "sem dados")
+        self.assertEqual(view_data.generation_rows, ())
+        self.assertEqual(view_data.generation_chart_bars, ())
+        self.assertEqual(view_data.baseline_rows, ())
+        self.assertEqual(view_data.baseline_chart_points, ())
+        self.assertEqual(view_data.state_messages[0].level, "erro")
+        self.assertEqual(view_data.state_messages[0].title, "Erro de entrada")
+        self.assertIn("Periodo ONS invalido", view_data.state_messages[0].detail)
 
     def test_generation_chart_draws_source_bars_without_tk_window(self) -> None:
         canvas = FakeCanvas(width=520, height=160)
