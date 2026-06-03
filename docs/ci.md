@@ -55,7 +55,7 @@ A integração ONS é validada na suíte por fixture offline, cobrindo o contrat
 
 A integração climática Open-Meteo também é validada sem rede. A suíte cobre construção de URL, metadados da fonte, normalização horária, resumo climático, features climáticas simples, limite local de 5 MB, JSON inválido, coordenadas inválidas, persistência no payload/cache, relatório CLI e modelo de apresentação desktop com fixtures ou loaders injetados.
 
-A interface desktop inicial é validada de forma automatizada sem abrir janela e sem Docker. A suíte testa o modelo de apresentação, dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios dos gráficos, cores de média móvel/clima, redraw dos gráficos, seleção de fonte, status com cache e o entry point `radar-transicao-energetica-ui`. A abertura real da janela continua como QA manual, porque a CI inicial não deve depender de ambiente gráfico.
+A interface desktop inicial é validada de forma automatizada sem abrir janela e sem Docker. A suíte testa o modelo de apresentação, dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios dos gráficos, geração sem valor positivo, muitas barras no gráfico de fontes, baseline com um único ponto, cores de média móvel/clima, redraw dos gráficos, seleção de fonte, status com cache e o entry point `radar-transicao-energetica-ui`. A abertura real da janela continua como QA manual, porque a CI inicial não deve depender de ambiente gráfico.
 
 QA manual mínimo que ainda exige inspeção humana da janela:
 
