@@ -57,6 +57,16 @@ A integração climática Open-Meteo também é validada sem rede. A suíte cobr
 
 A interface desktop inicial é validada de forma automatizada sem abrir janela. A suíte testa o modelo de apresentação, dados dos gráficos Canvas, seleção de fonte, status com cache e o entry point `radar-transicao-energetica-ui`. A abertura real da janela continua como QA manual, porque a CI inicial não deve depender de ambiente gráfico.
 
+QA manual mínimo pendente para a interface desktop:
+
+- abrir `radar-transicao-energetica-ui` com exemplo embutido;
+- validar fonte, período, métricas centrais, geração por fonte e alerta;
+- verificar tabela e gráfico Canvas de geração por fonte;
+- verificar tabela e gráfico Canvas real vs previsto;
+- executar cenário com clima habilitado e confirmar marcação de comparações com clima;
+- redimensionar a janela e confirmar que os gráficos continuam legíveis;
+- validar mensagem de erro para CSV ausente ou período ONS inválido.
+
 Para o primeiro build local experimental:
 
 ```text
