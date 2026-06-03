@@ -98,6 +98,21 @@ O JSON e o cache incluem `data_source` para registrar a origem da análise. Na f
 
 Quando clima é habilitado, o JSON inclui `weather` com `data_source`, `summary`, `records` e, quando aplicável, `error`. O bloco `baseline` também registra `weather_feature_names`, `weather_adjusted_comparisons`, `predicted_with_weather`, `next_weather_feature` e, em cada comparação, se a previsão usou features climáticas. O cache SQLite não cria uma tabela climática nesta V0; o payload da última análise registra os blocos climático e baseline, enquanto `generation_records` segue dedicado aos registros de geração normalizados. Se a geração ONS vier do cache e clima for solicitado, a aplicação grava uma nova análise enriquecida sem baixar novamente o CSV ONS.
 
+## Modelo de Apresentação Desktop
+
+`desktop.py` transforma `AnalysisResult` em `DesktopViewData` antes de renderizar a janela Tkinter. Esse modelo concentra textos, métricas, linhas de tabela, pontos dos gráficos Canvas e `state_messages`, mantendo a tela sem regras de domínio duplicadas.
+
+Cada estado visual usa `level`, `title` e `detail`. A V0 cobre:
+
+- `Sem dados`: fonte sem registros de geração para analisar;
+- `Sem dados uteis`: registros carregados, mas geração total zerada;
+- `Erro de entrada`: CSV inválido, CSV ausente ou período ONS inválido;
+- `Clima indisponivel`: falha controlada da fonte climática opcional;
+- `Baseline sem pontos suficientes`: histórico insuficiente para comparar real vs previsto;
+- `Cache reutilizado`: registros ONS normalizados reaproveitados do SQLite.
+
+Esse contrato é validado por testes de modelo de apresentação sem abrir janela. A renderização visual completa continua como QA manual remanescente porque a CI inicial não depende de ambiente gráfico.
+
 ## Contrato de Normalização ONS
 
 A integração ONS V0 converte o CSV público mensal para o mesmo contrato usado pelo exemplo embutido e por CSV local:
