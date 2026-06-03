@@ -16,6 +16,7 @@ def analysis_payload(
     baseline: BaselinePrediction,
     cache_path: str | Path | None = None,
     data_source: DataSourceMetadata | None = None,
+    cache_hit: bool = False,
 ) -> dict[str, Any]:
     payload = {
         "summary": summary_to_dict(summary),
@@ -27,6 +28,7 @@ def analysis_payload(
         payload["data_source"] = data_source_to_dict(data_source)
     if cache_path is not None:
         payload["cache_path"] = str(cache_path)
+    payload["cache_hit"] = cache_hit
     return payload
 
 

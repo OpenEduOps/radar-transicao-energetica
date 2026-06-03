@@ -72,6 +72,64 @@ class AppTest(unittest.TestCase):
         self.assertEqual(result.data_source.period, "2026-01")
         self.assertIn("GERACAO_USINA-2_2026_01.csv", result.data_source.resource_url or "")
 
+    def test_run_analysis_reuses_cached_ons_records_by_period(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "analise.sqlite"
+            run_analysis(
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                cache_path=cache_path,
+                ons_loader=lambda _year, _month: [
+                    GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 75.0),
+                    GenerationRecord(datetime(2026, 1, 1, 0), "termica", 25.0),
+                ],
+            )
+
+            def failing_loader(_year: int, _month: int) -> list[GenerationRecord]:
+                raise AssertionError("ONS loader should not be called on cache hit")
+
+            result = run_analysis(
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                cache_path=cache_path,
+                ons_loader=failing_loader,
+            )
+
+        self.assertTrue(result.cache_hit)
+        self.assertEqual(result.cache_path, cache_path)
+        self.assertEqual(result.summary.renewable_share, 0.75)
+
+    def test_run_analysis_can_bypass_cached_ons_records(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "analise.sqlite"
+            run_analysis(
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                cache_path=cache_path,
+                ons_loader=lambda _year, _month: [
+                    GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 75.0),
+                    GenerationRecord(datetime(2026, 1, 1, 0), "termica", 25.0),
+                ],
+            )
+
+            result = run_analysis(
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                cache_path=cache_path,
+                prefer_cache=False,
+                ons_loader=lambda _year, _month: [
+                    GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 50.0),
+                    GenerationRecord(datetime(2026, 1, 1, 0), "termica", 50.0),
+                ],
+            )
+
+        self.assertFalse(result.cache_hit)
+        self.assertEqual(result.summary.renewable_share, 0.5)
+
     def test_run_analysis_requires_ons_period(self) -> None:
         with self.assertRaisesRegex(ValueError, "--ons-periodo"):
             run_analysis(source="ons")

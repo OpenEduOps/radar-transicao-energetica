@@ -105,11 +105,53 @@ def read_latest_generation_records(path: str | Path) -> list[GenerationRecord]:
         raise AnalysisCacheError(f"Nao foi possivel ler o cache em {cache_path}: {exc}") from exc
 
     return [
-        GenerationRecord(
-            period=datetime.fromisoformat(period),
-            source=source,
-            generation_mw=generation_mw,
-        )
+        _generation_record_from_row(period, source, generation_mw)
+        for period, source, generation_mw in rows
+    ]
+
+
+def find_generation_records_by_source_period(
+    path: str | Path,
+    *,
+    source_kind: str,
+    source_period: str,
+) -> list[GenerationRecord] | None:
+    cache_path = Path(path)
+    if not cache_path.exists():
+        return None
+    if not cache_path.is_file():
+        raise AnalysisCacheError(f"Caminho do cache nao e um arquivo SQLite: {cache_path}")
+
+    try:
+        with closing(sqlite3.connect(str(cache_path))) as connection:
+            _ensure_schema(connection)
+            analysis_row = connection.execute(
+                """
+                SELECT id
+                FROM analyses
+                WHERE data_source_kind = ?
+                  AND data_source_period = ?
+                ORDER BY id DESC
+                LIMIT 1
+                """,
+                (source_kind, source_period),
+            ).fetchone()
+            if analysis_row is None:
+                return None
+            rows = connection.execute(
+                """
+                SELECT period, source, generation_mw
+                FROM generation_records
+                WHERE analysis_id = ?
+                ORDER BY period, source
+                """,
+                (analysis_row[0],),
+            ).fetchall()
+    except (OSError, sqlite3.Error) as exc:
+        raise AnalysisCacheError(f"Nao foi possivel ler o cache em {cache_path}: {exc}") from exc
+
+    return [
+        _generation_record_from_row(period, source, generation_mw)
         for period, source, generation_mw in rows
     ]
 
@@ -119,6 +161,18 @@ def _validate_existing_cache_path(cache_path: Path) -> None:
         raise AnalysisCacheError(f"Cache nao encontrado: {cache_path}")
     if not cache_path.is_file():
         raise AnalysisCacheError(f"Caminho do cache nao e um arquivo SQLite: {cache_path}")
+
+
+def _generation_record_from_row(
+    period: str,
+    source: str,
+    generation_mw: float,
+) -> GenerationRecord:
+    return GenerationRecord(
+        period=datetime.fromisoformat(period),
+        source=source,
+        generation_mw=generation_mw,
+    )
 
 
 def _ensure_schema(connection: sqlite3.Connection) -> None:

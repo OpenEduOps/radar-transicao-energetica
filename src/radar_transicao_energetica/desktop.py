@@ -93,6 +93,8 @@ def build_desktop_analysis_options(
 def format_desktop_status(result: AnalysisResult) -> str:
     if result.cache_path is None:
         return "Analise atualizada"
+    if result.cache_hit:
+        return f"Analise atualizada; cache reutilizado: {result.cache_path}"
     return f"Analise atualizada; cache: {result.cache_path}"
 
 

@@ -6,11 +6,14 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.cache import read_latest_analysis_cache
+from radar_transicao_energetica.data import GenerationRecord
 
 
 class CliTest(unittest.TestCase):
@@ -68,6 +71,48 @@ class CliTest(unittest.TestCase):
         self.assertIn("summary", payload)
         self.assertIn("alert", payload)
         self.assertEqual(payload["data_source"]["kind"], "exemplo")
+
+    def test_cli_reuses_cached_ons_records_without_network(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "cache.sqlite"
+            run_analysis(
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                cache_path=cache_path,
+                ons_loader=lambda _year, _month: [
+                    GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 80.0),
+                    GenerationRecord(datetime(2026, 1, 1, 0), "termica", 20.0),
+                ],
+            )
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "radar_transicao_energetica",
+                    "--fonte",
+                    "ons",
+                    "--ons-periodo",
+                    "2026-01",
+                    "--cache",
+                    str(cache_path),
+                    "--json",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+
+            payload = json.loads(result.stdout)
+
+        self.assertTrue(payload["cache_hit"])
+        self.assertEqual(payload["data_source"]["kind"], "ons")
+        self.assertEqual(payload["summary"]["renewable_share"], 0.8)
 
     def test_cli_json_includes_cache_path_when_cache_is_enabled(self) -> None:
         env = os.environ.copy()

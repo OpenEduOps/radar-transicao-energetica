@@ -3,11 +3,13 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from radar_transicao_energetica.app import run_analysis
+from radar_transicao_energetica.data import GenerationRecord
 from radar_transicao_energetica.desktop import (
     build_desktop_analysis_options,
     build_desktop_view_data,
@@ -64,6 +66,34 @@ class DesktopTest(unittest.TestCase):
             result = run_analysis(cache_path=cache_path)
 
         self.assertEqual(format_desktop_status(result), f"Analise atualizada; cache: {cache_path}")
+
+    def test_format_desktop_status_reports_cache_hit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "analises.sqlite"
+            first_result = run_analysis(
+                cache_path=cache_path,
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                ons_loader=lambda _year, _month: [
+                    GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 90.0),
+                    GenerationRecord(datetime(2026, 1, 1, 0), "termica", 10.0),
+                ],
+            )
+            result = run_analysis(
+                cache_path=cache_path,
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                ons_loader=lambda _year, _month: [],
+            )
+
+        self.assertFalse(first_result.cache_hit)
+        self.assertTrue(result.cache_hit)
+        self.assertEqual(
+            format_desktop_status(result),
+            f"Analise atualizada; cache reutilizado: {cache_path}",
+        )
 
 
 if __name__ == "__main__":

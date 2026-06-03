@@ -36,6 +36,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             source=args.fonte,
             ons_year=ons_year,
             ons_month=ons_month,
+            prefer_cache=not args.sem_cache,
         )
     except (GenerationDataError, ValueError) as exc:
         parser.exit(status=1, message=f"Erro: {exc}\n")
@@ -50,6 +51,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     baseline=result.baseline,
                     cache_path=result.cache_path,
                     data_source=result.data_source,
+                    cache_hit=result.cache_hit,
                 ),
                 ensure_ascii=False,
                 indent=2,
@@ -66,7 +68,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         )
         if result.cache_path:
-            print(f"\nCache gravado em: {result.cache_path}")
+            cache_action = "reutilizado" if result.cache_hit else "gravado"
+            print(f"\nCache {cache_action} em: {result.cache_path}")
 
     return 0
 
@@ -99,7 +102,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--sem-cache",
         action="store_true",
-        help="Nao grava cache local da ultima analise.",
+        help="Nao le nem grava cache local da ultima analise.",
     )
     parser.add_argument(
         "--json",
