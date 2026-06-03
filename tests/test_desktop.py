@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.data import GenerationRecord
 from radar_transicao_energetica.desktop import (
+    MAX_DESKTOP_BASELINE_POINTS,
     build_desktop_analysis_options,
     build_desktop_view_data,
     format_desktop_status,
@@ -64,6 +65,31 @@ class DesktopTest(unittest.TestCase):
                 reverse=True,
             ),
         )
+
+    def test_build_desktop_view_data_limits_baseline_points_for_first_screen(self) -> None:
+        records = []
+        for hour in range(10):
+            records.extend(
+                [
+                    GenerationRecord(datetime(2026, 1, 1, hour), "hidraulica", 50.0 + hour),
+                    GenerationRecord(datetime(2026, 1, 1, hour), "termica", 50.0 - hour),
+                ]
+            )
+
+        result = run_analysis(
+            write_cache=False,
+            source="ons",
+            ons_year=2026,
+            ons_month=1,
+            ons_loader=lambda _year, _month: records,
+        )
+
+        view_data = build_desktop_view_data(result)
+
+        self.assertGreater(result.baseline.evaluated_points, MAX_DESKTOP_BASELINE_POINTS)
+        self.assertEqual(len(view_data.baseline_rows), MAX_DESKTOP_BASELINE_POINTS)
+        self.assertEqual(len(view_data.baseline_chart_points), MAX_DESKTOP_BASELINE_POINTS)
+        self.assertEqual(view_data.baseline_rows[0].period, "2026-01-01 02:00")
 
     def test_build_desktop_analysis_options_accepts_csv_source(self) -> None:
         options = build_desktop_analysis_options(source="csv", csv_path=" examples/dados.csv ")

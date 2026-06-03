@@ -18,6 +18,9 @@ from radar_transicao_energetica.weather import (
 )
 
 
+MAX_DESKTOP_BASELINE_POINTS = 8
+
+
 @dataclass(frozen=True)
 class DesktopAnalysisOptions:
     source_path: Path | None = None
@@ -111,7 +114,8 @@ def build_desktop_view_data(result: AnalysisResult) -> DesktopViewData:
             key=lambda item: (-item[1], item[0]),
         )
     )
-    baseline_rows = tuple(_comparison_to_desktop_row(item) for item in baseline.comparisons)
+    visible_comparisons = baseline.comparisons[-MAX_DESKTOP_BASELINE_POINTS:]
+    baseline_rows = tuple(_comparison_to_desktop_row(item) for item in visible_comparisons)
     baseline_chart_points = tuple(
         DesktopBaselineChartPoint(
             period=_format_period_label(item.period),
@@ -119,7 +123,7 @@ def build_desktop_view_data(result: AnalysisResult) -> DesktopViewData:
             predicted_renewable_share=item.predicted_renewable_share,
             method=_comparison_method_label(item),
         )
-        for item in baseline.comparisons
+        for item in visible_comparisons
     )
     return DesktopViewData(
         source=_format_data_source(result),
