@@ -973,8 +973,8 @@ def _draw_baseline_legend(canvas: CanvasLike, left: int, y: int) -> None:
         fill=MOVING_AVERAGE_COLOR,
         outline=TEXT_COLOR,
     )
-    canvas.create_text(x + 16, y, text="Prev. media", anchor="w", fill=TEXT_COLOR)
-    x += 122
+    canvas.create_text(x + 16, y, text="Prev. media movel", anchor="w", fill=TEXT_COLOR)
+    x += 154
     _draw_diamond(canvas, x + 5, y, fill=WEATHER_COLOR)
     canvas.create_text(x + 16, y, text="Prev. clima", anchor="w", fill=TEXT_COLOR)
 

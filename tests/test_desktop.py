@@ -412,7 +412,7 @@ class DesktopTest(unittest.TestCase):
         )
 
         self.assertIn("Real", canvas.text_values())
-        self.assertIn("Prev. media", canvas.text_values())
+        self.assertIn("Prev. media movel", canvas.text_values())
         self.assertIn("Prev. clima", canvas.text_values())
         self.assertIn("100%", canvas.text_values())
         self.assertIn("0%", canvas.text_values())
