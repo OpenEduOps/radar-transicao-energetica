@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
+from typing import Protocol
 import tkinter as tk
 
 from radar_transicao_energetica.app import AnalysisResult, run_analysis
@@ -19,6 +20,22 @@ from radar_transicao_energetica.weather import (
 
 
 MAX_DESKTOP_BASELINE_POINTS = 8
+
+
+class CanvasLike(Protocol):
+    def delete(self, *args: object) -> None: ...
+
+    def winfo_width(self) -> int: ...
+
+    def winfo_height(self) -> int: ...
+
+    def create_text(self, *args: object, **kwargs: object) -> int: ...
+
+    def create_rectangle(self, *args: object, **kwargs: object) -> int: ...
+
+    def create_line(self, *args: object, **kwargs: object) -> int: ...
+
+    def create_oval(self, *args: object, **kwargs: object) -> int: ...
 
 
 @dataclass(frozen=True)
@@ -625,7 +642,7 @@ def _source_category(source: str) -> str:
 
 
 def _draw_generation_chart(
-    canvas: tk.Canvas,
+    canvas: CanvasLike,
     bars: tuple[DesktopGenerationChartBar, ...],
 ) -> None:
     canvas.delete("all")
@@ -671,7 +688,7 @@ def _draw_generation_chart(
 
 
 def _draw_baseline_chart(
-    canvas: tk.Canvas,
+    canvas: CanvasLike,
     points: tuple[DesktopBaselineChartPoint, ...],
 ) -> None:
     canvas.delete("all")
@@ -730,7 +747,7 @@ def _draw_baseline_chart(
             )
 
 
-def _draw_baseline_legend(canvas: tk.Canvas, left: int, y: int) -> None:
+def _draw_baseline_legend(canvas: CanvasLike, left: int, y: int) -> None:
     legend_items = (
         ("real", "#2e7d32"),
         ("prev media", "#1565c0"),
@@ -744,7 +761,7 @@ def _draw_baseline_legend(canvas: tk.Canvas, left: int, y: int) -> None:
 
 
 def _draw_line(
-    canvas: tk.Canvas,
+    canvas: CanvasLike,
     coordinates: list[tuple[int, int]],
     *,
     color: str,
@@ -779,7 +796,7 @@ def _canvas_size(value: int, *, fallback: int) -> int:
     return value if value > 10 else fallback
 
 
-def _draw_empty_canvas(canvas: tk.Canvas, width: int, height: int, text: str) -> None:
+def _draw_empty_canvas(canvas: CanvasLike, width: int, height: int, text: str) -> None:
     canvas.create_text(width // 2, height // 2, text=text, fill="#607d8b")
 
 

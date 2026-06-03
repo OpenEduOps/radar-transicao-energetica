@@ -205,7 +205,7 @@ class DesktopTest(unittest.TestCase):
         canvas = FakeCanvas(width=520, height=160)
 
         _draw_generation_chart(
-            canvas,  # type: ignore[arg-type]
+            canvas,
             (
                 DesktopGenerationChartBar("hidraulica", 100.0, "renovavel"),
                 DesktopGenerationChartBar("termica", 40.0, "nao renovavel"),
@@ -215,22 +215,25 @@ class DesktopTest(unittest.TestCase):
 
         self.assertEqual(canvas.calls[0][0], "delete")
         self.assertIn("hidraulica", canvas.text_values())
-        self.assertIn("#2e7d32", canvas.fill_values("create_rectangle"))
-        self.assertIn("#c62828", canvas.fill_values("create_rectangle"))
-        self.assertIn("#607d8b", canvas.fill_values("create_rectangle"))
+        self.assertEqual(len(canvas.calls_named("create_rectangle")), 3)
+        self.assertEqual(
+            canvas.fill_values("create_rectangle"),
+            ["#2e7d32", "#c62828", "#607d8b"],
+        )
 
     def test_generation_chart_draws_empty_state_without_tk_window(self) -> None:
         canvas = FakeCanvas(width=520, height=160)
 
-        _draw_generation_chart(canvas, ())  # type: ignore[arg-type]
+        _draw_generation_chart(canvas, ())
 
         self.assertIn("Sem dados de geracao", canvas.text_values())
+        self.assertEqual(canvas.calls_named("create_rectangle"), [])
 
     def test_baseline_chart_draws_legend_and_weather_markers_without_tk_window(self) -> None:
         canvas = FakeCanvas(width=520, height=220)
 
         _draw_baseline_chart(
-            canvas,  # type: ignore[arg-type]
+            canvas,
             (
                 DesktopBaselineChartPoint("2026-01-01 01:00", 0.8, 0.7, "media movel"),
                 DesktopBaselineChartPoint("2026-01-01 02:00", 0.75, 0.78, "clima"),
@@ -242,17 +245,27 @@ class DesktopTest(unittest.TestCase):
         self.assertIn("prev clima", canvas.text_values())
         self.assertIn("100%", canvas.text_values())
         self.assertIn("0%", canvas.text_values())
-        self.assertIn("#2e7d32", canvas.fill_values("create_oval"))
-        self.assertIn("#1565c0", canvas.fill_values("create_oval"))
-        self.assertIn("#ef6c00", canvas.fill_values("create_oval"))
+        self.assertEqual(
+            canvas.fill_values("create_oval"),
+            [
+                "#2e7d32",
+                "#1565c0",
+                "#ef6c00",
+                "#2e7d32",
+                "#1565c0",
+                "#2e7d32",
+                "#ef6c00",
+            ],
+        )
         self.assertGreaterEqual(len(canvas.calls_named("create_line")), 3)
 
     def test_baseline_chart_draws_empty_state_without_tk_window(self) -> None:
         canvas = FakeCanvas(width=520, height=220)
 
-        _draw_baseline_chart(canvas, ())  # type: ignore[arg-type]
+        _draw_baseline_chart(canvas, ())
 
         self.assertIn("Sem comparacoes de baseline", canvas.text_values())
+        self.assertEqual(canvas.calls_named("create_oval"), [])
 
     def test_desktop_redraw_charts_uses_last_view_data_without_tk_window(self) -> None:
         result = run_analysis(write_cache=False)
