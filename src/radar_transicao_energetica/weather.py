@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
-from collections.abc import Iterable
+from math import isfinite
 from typing import Any, Callable
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -135,6 +136,8 @@ def load_open_meteo_weather(
         data = json.loads(payload.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise WeatherDataError("Dados climaticos nao estao em JSON UTF-8 valido.") from exc
+    if not isinstance(data, dict):
+        raise WeatherDataError("Dados climaticos nao possuem objeto JSON raiz.")
 
     return parse_open_meteo_weather(data)
 
@@ -200,6 +203,10 @@ def summarize_weather(records: list[WeatherRecord]) -> WeatherSummary | None:
 
 
 def _validate_coordinates(*, latitude: float, longitude: float) -> None:
+    if not isfinite(latitude):
+        raise WeatherDataError("Latitude climatica deve ser um numero finito.")
+    if not isfinite(longitude):
+        raise WeatherDataError("Longitude climatica deve ser um numero finito.")
     if latitude < -90 or latitude > 90:
         raise WeatherDataError("Latitude climatica deve estar entre -90 e 90.")
     if longitude < -180 or longitude > 180:

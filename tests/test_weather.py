@@ -121,11 +121,20 @@ class WeatherTest(unittest.TestCase):
         with self.assertRaisesRegex(WeatherDataError, "Latitude"):
             build_open_meteo_url(latitude=91.0)
 
+        with self.assertRaisesRegex(WeatherDataError, "Latitude"):
+            build_open_meteo_url(latitude=float("nan"))
+
         with self.assertRaisesRegex(WeatherDataError, "Longitude"):
             build_open_meteo_url(longitude=-181.0)
 
+        with self.assertRaisesRegex(WeatherDataError, "Longitude"):
+            build_open_meteo_url(longitude=float("inf"))
+
         with self.assertRaisesRegex(WeatherDataError, "Dias"):
             build_open_meteo_url(forecast_days=0)
+
+        with self.assertRaisesRegex(WeatherDataError, "Dias"):
+            build_open_meteo_url(forecast_days=17)
 
     def test_load_open_meteo_weather_rejects_large_or_invalid_payloads(self) -> None:
         large_response = FakeWeatherResponse(b"{}")
@@ -137,6 +146,11 @@ class WeatherTest(unittest.TestCase):
 
         with self.assertRaisesRegex(WeatherDataError, "JSON UTF-8"):
             load_open_meteo_weather(opener=lambda *_args, **_kwargs: invalid_response)
+
+        invalid_root_response = FakeWeatherResponse(b"[]")
+
+        with self.assertRaisesRegex(WeatherDataError, "objeto JSON raiz"):
+            load_open_meteo_weather(opener=lambda *_args, **_kwargs: invalid_root_response)
 
 
 if __name__ == "__main__":
