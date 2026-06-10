@@ -96,6 +96,7 @@ class DesktopTest(unittest.TestCase):
         self.assertEqual(metrics["Participacao renovavel"], "79.0%")
         self.assertIn("MW", metrics["Geracao total"])
         self.assertIn("p.p.", metrics["Baseline MAE"])
+        self.assertIn("p.p.", metrics["Baseline RMSE"])
         self.assertIn("boa_janela_renovavel", view_data.alert)
         self.assertIn("real", view_data.baseline_comparison)
         self.assertIn("previsto", view_data.baseline_comparison)

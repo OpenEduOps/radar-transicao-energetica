@@ -20,7 +20,7 @@ A primeira fatia funcional foi definida para entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-Essa fatia já foi concluída como CLI local e interface desktop inicial, com fonte ONS, cálculo de renovabilidade, testes, cache SQLite e instruções de execução. O plano original não dependia de integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, tela Tkinter, integração climática opcional Open-Meteo, baseline avaliado por MAE, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
+Essa fatia já foi concluída como CLI local e interface desktop inicial, com fonte ONS, cálculo de renovabilidade, testes, cache SQLite e instruções de execução. O plano original não dependia de integração climática, modelo de machine learning, empacotamento como executável ou CI completa. A implementação antecipou visualização textual, tela Tkinter, integração climática opcional Open-Meteo, baseline avaliado por MAE e RMSE, alerta e primeiro `.exe` local apenas como validações técnicas incrementais, sem transformar isso em release pública.
 
 ### MVP Funcional
 
@@ -84,7 +84,7 @@ Decisões tomadas para reduzir risco:
 Limites assumidos:
 
 - o executável inicial não valida ainda PySide6, pandas, scikit-learn ou bibliotecas gráficas ricas;
-- o baseline atual é média móvel avaliada por MAE com analogia climática simples, não modelo de machine learning com `scikit-learn`;
+- o baseline atual é média móvel avaliada por MAE e RMSE com analogia climática simples, não modelo de machine learning com `scikit-learn`;
 - a visualização atual combina CLI textual, tabela desktop e gráficos Canvas iniciais, ainda sem biblioteca gráfica rica;
 - o cache atual é SQLite, com análise, metadados, versão de schema, registros normalizados, reuso ONS por período e política configurável de revalidação por idade máxima;
 - a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
@@ -454,7 +454,7 @@ Commits sugeridos:
 
 Status: concluída para visualização inicial.
 
-A implementação atual entrega visualização textual por fonte, tendência de participação renovável, comparação textual real vs previsto e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, painel de estados, geração por fonte em tabela e gráfico Canvas, alerta interpretável, baseline da próxima janela, MAE, tabela de comparação real vs previsto e gráfico Canvas do baseline. O QA automatizado dos gráficos, estados e acessibilidade básica roda sem janela e sem Docker, usando `FakeCanvas`; QA manual remanescente continua planejado.
+A implementação atual entrega visualização textual por fonte, tendência de participação renovável, comparação textual real vs previsto e uma primeira interface desktop em Tkinter. A tela mostra fonte, período, métricas centrais, painel de estados, geração por fonte em tabela e gráfico Canvas, alerta interpretável, baseline da próxima janela, MAE, RMSE, tabela de comparação real vs previsto e gráfico Canvas do baseline. O QA automatizado dos gráficos, estados e acessibilidade básica roda sem janela e sem Docker, usando `FakeCanvas`; QA manual remanescente continua planejado.
 
 Rastreabilidade:
 
@@ -577,7 +577,7 @@ Commits sugeridos:
 
 Status: concluída para baseline inicial sem `scikit-learn`.
 
-A implementação atual usa média móvel como baseline interpretável e adiciona analogia climática simples quando há features climáticas alinhadas por período. O resultado inclui previsão da próxima janela, comparação walk-forward entre real e previsto, MAE em pontos percentuais no relatório textual, contagem de comparações com clima e campos estruturados no JSON. Modelos com `scikit-learn` e validação mais completa seguem planejados para etapas posteriores.
+A implementação atual usa média móvel como baseline interpretável e adiciona analogia climática simples quando há features climáticas alinhadas por período. O resultado inclui previsão da próxima janela, comparação walk-forward entre real e previsto, MAE e RMSE em pontos percentuais no relatório textual, contagem de comparações com clima e campos estruturados no JSON. Modelos com `scikit-learn` e validação mais completa seguem planejados para etapas posteriores.
 
 Rastreabilidade:
 
@@ -601,7 +601,7 @@ Entregáveis:
 - cálculo baseline por média móvel;
 - uso opcional de features climáticas simples;
 - divisão simples entre treino e validação;
-- métrica inicial;
+- métricas iniciais MAE e RMSE;
 - teste com dataset mínimo;
 - documentação de limitações.
 

@@ -4,7 +4,7 @@ Este documento descreve a arquitetura inicial do **Radar da Transição Energét
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período e política configurável de revalidação, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação real vs previsto, gráficos Canvas iniciais, estados operacionais de tela, acessibilidade básica e alerta textual. As próximas camadas devem avançar para QA manual, refinamento visual avançado, gráficos ricos opcionais e executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período e política configurável de revalidação, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, RMSE, comparação real vs previsto, gráficos Canvas iniciais, estados operacionais de tela, acessibilidade básica e alerta textual. As próximas camadas devem avançar para QA manual, refinamento visual avançado, gráficos ricos opcionais e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
@@ -13,7 +13,7 @@ A arquitetura deve permitir evolução incremental: a base atual é uma aplicaç
 | Linguagem | Python 3.11+ | Boa aderência a dados, automação, ML e desktop. |
 | Dados | Biblioteca padrão agora; `pandas` planejado | A V0 reduz dependências; `pandas` entra quando volume e análise tabular justificarem. |
 | HTTP/APIs | `urllib` agora; `requests` planejado | Coleta ONS inicial sem dependências externas; `requests` entra se a camada de dados crescer. |
-| ML | Média móvel e analogia climática simples; `scikit-learn` planejado | Baseline interpretável com MAE antes de modelos mais complexos. |
+| ML | Média móvel e analogia climática simples; `scikit-learn` planejado | Baseline interpretável com MAE e RMSE antes de modelos mais complexos. |
 | Cache local | SQLite | Banco local sem dependência externa para análise, metadados e registros normalizados. |
 | UI desktop | Tkinter inicial; PySide6 planejado | Tkinter permite a primeira tela sem dependências novas; PySide6 fica para uma experiência mais rica. |
 | Gráficos | Texto e Canvas Tkinter agora; Matplotlib ou Plotly planejado | Visualização textual e gráficos locais validam o conceito antes de bibliotecas ricas. |
@@ -85,7 +85,7 @@ radar-transicao-energetica/
 | `data.py` | Leitura, normalização e validação de dados de geração. |
 | `ons.py` | Construção da URL pública e carregamento do dataset ONS Geração por Usina em Base Horária. |
 | `domain.py` | Cálculo de participação renovável e agregações por período. |
-| `baseline.py` | Baseline por média móvel, MAE, analogia climática simples e comparação walk-forward real vs previsto. |
+| `baseline.py` | Baseline por média móvel, MAE, RMSE, analogia climática simples e comparação walk-forward real vs previsto. |
 | `alerts.py` | Regras textuais de alerta educacional. |
 | `charts.py` | Visualização textual inicial por fonte, tendência e comparação real vs previsto. |
 | `desktop.py` | Interface desktop inicial em Tkinter, gráficos Canvas, estados operacionais, acessibilidade básica, helpers de desenho testáveis por `CanvasLike` e modelo de apresentação testável sem abrir janela. |

@@ -66,7 +66,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 - [x] A fonte ONS registra `data_source`.
 - [x] A análise calcula participação renovável sem UI.
 - [x] A análise gera alerta interpretável.
-- [x] O baseline calcula MAE e comparação real vs previsto.
+- [x] O baseline calcula MAE, RMSE e comparação real vs previsto.
 - [x] Falha climática opcional não interrompe cálculo elétrico.
 - [x] Cache ONS reutiliza registros normalizados do mesmo período.
 - [x] Cache ONS ignora registros vencidos quando a idade máxima é configurada.
@@ -84,7 +84,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 | `TEST-001` | [x] | Unitário | Participação renovável | `tests/test_domain.py` |
 | `TEST-002` | [x] | Unitário | Fontes ausentes, zeradas e desconhecidas | `tests/test_domain.py`, `tests/test_data.py` |
 | `TEST-003` | [x] | Integração leve | ONS, CSV, `data_source`, cache SQLite e revalidação por idade máxima | `tests/test_ons.py`, `tests/test_cache.py`, `tests/test_app.py` |
-| `TEST-004` | [x] | Unitário | Baseline, MAE e comparação walk-forward | `tests/test_app.py`, `tests/test_charts.py` |
+| `TEST-004` | [x] | Unitário | Baseline, MAE, RMSE e comparação walk-forward | `tests/test_app.py`, `tests/test_charts.py`, `tests/test_domain.py` |
 | `TEST-005` | [x] | Unitário | Alertas interpretáveis | `tests/test_app.py` |
 | `TEST-006` | [x] | Unitário e Canvas sem janela | Modelo desktop, estados, gráficos, acessibilidade básica | `tests/test_desktop.py` |
 | `TEST-007` | [x] | Documentação | Setup, execução e testes documentados | `README.md`, `docs/ci.md`, este documento |

@@ -178,6 +178,7 @@ def baseline_to_dict(baseline: BaselinePrediction) -> dict[str, Any]:
         "predicted_with_weather": baseline.predicted_with_weather,
         "error_metric": baseline.error_metric,
         "mean_absolute_error": baseline.mean_absolute_error,
+        "root_mean_squared_error": baseline.root_mean_squared_error,
         "evaluated_points": baseline.evaluated_points,
         "weather_feature_names": list(baseline.weather_feature_names),
         "weather_feature_periods": baseline.weather_feature_periods,

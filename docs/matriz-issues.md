@@ -50,7 +50,7 @@ Essa ordem permite entregar valor observável antes de avançar para QA manual r
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
 - `ISSUE-006`: implementada para visualização inicial com gráfico textual, tabela desktop, painel de estados e gráfico Canvas de geração por fonte.
 - `ISSUE-007`: implementada com integração climática opcional Open-Meteo, fixtures offline, contrato `weather` no JSON/cache, resumo no CLI/desktop e features climáticas simples para o baseline.
-- `ISSUE-008`: implementada com baseline por média móvel, analogia climática simples, MAE e comparação walk-forward.
+- `ISSUE-008`: implementada com baseline por média móvel, analogia climática simples, MAE, RMSE e comparação walk-forward.
 - `ISSUE-009`: implementada para comparação inicial com JSON, gráfico textual na CLI, tabela desktop e gráfico Canvas real vs previsto.
 - `ISSUE-010`: parcialmente implementada com alerta interpretável.
 - `ISSUE-011`: implementada com release gate, `--release-status`, bloqueio de `--public-release` e testes de packaging.

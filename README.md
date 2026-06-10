@@ -24,7 +24,7 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 - permite limitar a idade máxima do cache ONS antes de revalidar a fonte pública;
 - integra previsão climática horária opcional via Open-Meteo, com temperatura, vento, radiação solar e nebulosidade;
 - exibe gráfico textual por fonte, tendência por período e comparação real vs previsto;
-- calcula baseline por média móvel com MAE, comparação real vs previsto e features climáticas simples quando há clima alinhado por período;
+- calcula baseline por média móvel com MAE, RMSE, comparação real vs previsto e features climáticas simples quando há clima alinhado por período;
 - gera alerta interpretável;
 - abre uma primeira interface desktop em Tkinter para visualizar fonte, período, métricas centrais, estados operacionais, geração por fonte, gráficos Canvas com acessibilidade básica, clima opcional, alerta e comparação do baseline;
 - possui testes automatizados com `unittest`;
@@ -87,7 +87,7 @@ $env:PYTHONPATH='src'
 python -m radar_transicao_energetica.desktop
 ```
 
-A interface desktop inicial permite escolher exemplo embutido, CSV local ou fonte ONS mensal. Ela mostra geração por fonte em tabela e gráfico Canvas, participação renovável, geração total, geração renovável, alerta interpretável, baseline da próxima janela, MAE, contagem de comparações com clima, tabela e gráfico real vs previsto por período e, quando habilitado, um resumo climático Open-Meteo. O painel `Estado da analise` explicita cenários sem dados, erro de entrada para CSV ou período ONS inválido, clima indisponível, baseline sem pontos suficientes e cache reutilizado. A UI também usa labels mais claros, contraste maior nos gráficos, marcadores diferentes para média móvel e clima e atalhos básicos de teclado nos controles principais. Quando o cache está habilitado, a tela usa o caminho padrão `data/cache/analises.sqlite`.
+A interface desktop inicial permite escolher exemplo embutido, CSV local ou fonte ONS mensal. Ela mostra geração por fonte em tabela e gráfico Canvas, participação renovável, geração total, geração renovável, alerta interpretável, baseline da próxima janela, MAE, RMSE, contagem de comparações com clima, tabela e gráfico real vs previsto por período e, quando habilitado, um resumo climático Open-Meteo. O painel `Estado da analise` explicita cenários sem dados, erro de entrada para CSV ou período ONS inválido, clima indisponível, baseline sem pontos suficientes e cache reutilizado. A UI também usa labels mais claros, contraste maior nos gráficos, marcadores diferentes para média móvel e clima e atalhos básicos de teclado nos controles principais. Quando o cache está habilitado, a tela usa o caminho padrão `data/cache/analises.sqlite`.
 
 Executar com o CSV de exemplo:
 
@@ -136,7 +136,7 @@ O JSON retornado possui estes blocos principais:
 - `summary`: totais, período analisado, participação renovável e geração por fonte;
 - `period_summaries`: participação renovável agregada por período;
 - `alert`: nível e mensagem interpretável;
-- `baseline`: método, janela, pontos usados, previsão simples da próxima janela, MAE, features climáticas usadas e comparações real vs previsto.
+- `baseline`: método, janela, pontos usados, previsão simples da próxima janela, MAE, RMSE, features climáticas usadas e comparações real vs previsto.
 - `weather`: bloco opcional com fonte climática, resumo, registros horários e erro, quando `--clima open-meteo` é usado.
 
 Quando o cache está habilitado, o JSON também inclui `cache_path` com o caminho do banco SQLite e `cache_hit` para indicar se registros ONS foram reutilizados.
@@ -176,10 +176,10 @@ O baseline atual continua sem `scikit-learn`. A melhoria desta etapa é que a ap
 - compara a feature climática do período alvo com períodos anteriores e usa os períodos climaticamente mais próximos como referência;
 - cai automaticamente para média móvel quando não há clima alinhado ou clima futuro útil;
 - compara previsão e valor real por período;
-- calcula MAE, em pontos percentuais no relatório textual;
+- calcula MAE e RMSE, em pontos percentuais no relatório textual;
 - mantém a previsão da próxima janela para demonstração.
 
-No JSON, o bloco `baseline` inclui `error_metric`, `mean_absolute_error`, `evaluated_points`, `weather_feature_names`, `weather_adjusted_comparisons`, `predicted_with_weather` e `comparisons`. No relatório textual, a CLI mostra `Baseline MAE`, contagem de comparações com features climáticas, última comparação e um gráfico textual por período com legenda para média móvel pura e analogia climática. Na interface desktop, a primeira tela limita a visualização do baseline aos últimos 8 pontos para manter a leitura legível e diferencia real, média móvel e clima por legenda, cor e formato de marcador.
+No JSON, o bloco `baseline` inclui `error_metric`, `mean_absolute_error`, `root_mean_squared_error`, `evaluated_points`, `weather_feature_names`, `weather_adjusted_comparisons`, `predicted_with_weather` e `comparisons`. No relatório textual, a CLI mostra `Baseline MAE`, `Baseline RMSE`, contagem de comparações com features climáticas, última comparação e um gráfico textual por período com legenda para média móvel pura e analogia climática. Na interface desktop, a primeira tela limita a visualização do baseline aos últimos 8 pontos para manter a leitura legível e diferencia real, média móvel e clima por legenda, cor e formato de marcador.
 
 Rodar testes:
 
@@ -363,6 +363,7 @@ Métricas recomendadas:
 
 - MAE;
 - RMSE;
+- classificação de risco derivada do baseline;
 - comparação visual entre dado real e previsão;
 - matriz de confusão, caso o problema seja tratado como classificação;
 - importância de variáveis, quando o modelo permitir interpretação.
@@ -428,7 +429,7 @@ Responsabilidades sugeridas:
 - `data.py`: leitura e normalização de CSV;
 - `ons.py`: construção de URL e carregamento da fonte pública ONS;
 - `domain.py`: cálculo de participação renovável;
-- `baseline.py`: baseline por média móvel, MAE e comparação real vs previsto;
+- `baseline.py`: baseline por média móvel, MAE, RMSE e comparação real vs previsto;
 - `alerts.py`: regras textuais de alerta;
 - `charts.py`: visualização textual inicial;
 - `desktop.py`: primeira interface desktop em Tkinter;
@@ -450,7 +451,7 @@ O MVP funcional será considerado bem-sucedido quando conseguir:
 - rodar localmente sem credenciais privadas;
 - ter instruções claras para instalação, execução e testes.
 
-A implementação atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação textual e visual real vs previsto, alerta textual e primeira interface desktop com gráficos Canvas e acessibilidade básica. O fechamento do MVP ainda depende de QA manual, refinamento visual avançado e decisão de release.
+A implementação atual já atende parte desses critérios com dados de exemplo, CSV local, fonte ONS, cache SQLite, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, RMSE, comparação textual e visual real vs previsto, alerta textual e primeira interface desktop com gráficos Canvas e acessibilidade básica. O fechamento do MVP ainda depende de QA manual, refinamento visual avançado e decisão de release.
 
 ## Próximos Passos
 

@@ -95,6 +95,7 @@ class DomainTest(unittest.TestCase):
         self.assertAlmostEqual(prediction.predicted_renewable_share or 0, 0.65)
         self.assertEqual(prediction.evaluated_points, 1)
         self.assertAlmostEqual(prediction.mean_absolute_error or 0, 0.3)
+        self.assertAlmostEqual(prediction.root_mean_squared_error or 0, 0.3)
         self.assertEqual(prediction.comparisons[0].period, "2026-01-01T01:00:00")
         self.assertAlmostEqual(prediction.comparisons[0].actual_renewable_share, 0.8)
         self.assertAlmostEqual(prediction.comparisons[0].predicted_renewable_share, 0.5)
@@ -133,6 +134,7 @@ class DomainTest(unittest.TestCase):
         self.assertAlmostEqual(prediction.comparisons[0].predicted_renewable_share, 0.5)
         self.assertAlmostEqual(prediction.comparisons[0].actual_renewable_share, 0.75)
         self.assertAlmostEqual(prediction.mean_absolute_error or 0, 0.25)
+        self.assertAlmostEqual(prediction.root_mean_squared_error or 0, 0.25)
 
     def test_baseline_rejects_invalid_window(self) -> None:
         with self.assertRaises(ValueError):

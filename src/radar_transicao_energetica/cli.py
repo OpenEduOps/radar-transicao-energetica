@@ -191,6 +191,11 @@ def render_report(
         if baseline.mean_absolute_error is None
         else f"{baseline.mean_absolute_error * 100:.1f} p.p."
     )
+    baseline_rmse_text = (
+        "sem dados"
+        if baseline.root_mean_squared_error is None
+        else f"{baseline.root_mean_squared_error * 100:.1f} p.p."
+    )
     lines = [
         "Radar da Transicao Energetica",
         "=" * 31,
@@ -202,6 +207,7 @@ def render_report(
         f"Baseline metodo: {baseline.method}",
         f"Baseline proxima janela: {baseline_text}",
         f"Baseline MAE: {baseline_error_text}",
+        f"Baseline RMSE: {baseline_rmse_text}",
     ]
     if baseline.weather_adjusted_comparisons:
         lines.append(

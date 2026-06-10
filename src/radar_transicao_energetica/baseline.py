@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+from math import sqrt
 
 from radar_transicao_energetica.domain import PeriodRenewableSummary
 from radar_transicao_energetica.features import (
@@ -37,6 +38,7 @@ class BaselinePrediction:
     predicted_with_weather: bool = False
     error_metric: str = "mae"
     mean_absolute_error: float | None = None
+    root_mean_squared_error: float | None = None
     evaluated_points: int = 0
     comparisons: tuple[BaselineComparison, ...] = ()
     weather_feature_names: tuple[str, ...] = ()
@@ -66,6 +68,7 @@ def predict_next_renewable_share(
         window=window,
     )
     mean_absolute_error = _mean_absolute_error(comparisons)
+    root_mean_squared_error = _root_mean_squared_error(comparisons)
     weather_adjusted_comparisons = sum(1 for item in comparisons if item.weather_adjusted)
     method = (
         "media_movel_com_features_climaticas"
@@ -80,6 +83,7 @@ def predict_next_renewable_share(
             method=method,
             window=window,
             mean_absolute_error=mean_absolute_error,
+            root_mean_squared_error=root_mean_squared_error,
             evaluated_points=len(comparisons),
             comparisons=tuple(comparisons),
             weather_feature_names=weather_feature_names,
@@ -110,6 +114,7 @@ def predict_next_renewable_share(
         window=window,
         predicted_with_weather=predicted_with_weather,
         mean_absolute_error=mean_absolute_error,
+        root_mean_squared_error=root_mean_squared_error,
         evaluated_points=len(comparisons),
         comparisons=tuple(comparisons),
         weather_feature_names=weather_feature_names,
@@ -274,3 +279,10 @@ def _mean_absolute_error(comparisons: list[BaselineComparison]) -> float | None:
     if not comparisons:
         return None
     return sum(item.absolute_error for item in comparisons) / len(comparisons)
+
+
+def _root_mean_squared_error(comparisons: list[BaselineComparison]) -> float | None:
+    if not comparisons:
+        return None
+    mean_squared_error = sum(item.absolute_error**2 for item in comparisons) / len(comparisons)
+    return sqrt(mean_squared_error)

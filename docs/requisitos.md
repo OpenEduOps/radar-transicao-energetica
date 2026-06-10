@@ -16,7 +16,7 @@ A primeira fatia funcional deve ser menor que a V0 completa. Ela deve entregar:
 - testes automatizados para o cálculo;
 - instruções básicas de execução e teste.
 
-A primeira implementação já entrega essa fatia como CLI local e interface desktop inicial, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache SQLite com reuso ONS por período, integração climática opcional via Open-Meteo, features climáticas simples no baseline, visualização textual, tabela e gráficos Canvas na tela desktop, painel de estados operacionais, acessibilidade básica de UI, baseline por média móvel com MAE, comparação real vs previsto, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Bibliotecas gráficas ricas, modelos com `scikit-learn` e empacotamento de release continuam para etapas posteriores do MVP funcional.
+A primeira implementação já entrega essa fatia como CLI local e interface desktop inicial, com integração ao dataset **ONS Geração por Usina em Base Horária**, cache SQLite com reuso ONS por período, integração climática opcional via Open-Meteo, features climáticas simples no baseline, visualização textual, tabela e gráficos Canvas na tela desktop, painel de estados operacionais, acessibilidade básica de UI, baseline por média móvel com MAE e RMSE, comparação real vs previsto, alerta interpretável e possibilidade de gerar um `.exe` local experimental. Bibliotecas gráficas ricas, modelos com `scikit-learn` e empacotamento de release continuam para etapas posteriores do MVP funcional.
 
 Na decisão da primeira fonte pública real, ONS foi priorizado por entregar geração horária em CSV público e sem credenciais. ANEEL e CCEE permanecem candidatas para etapas complementares: ANEEL para dados estruturais do setor e CCEE para sinais econômicos, como PLD horário.
 
@@ -82,7 +82,7 @@ Observação sobre `REQ-005`: a integração climática inicial usa Open-Meteo d
 - Dado que a interface desktop receba entrada inválida, clima indisponível, baseline sem histórico suficiente ou cache ONS reutilizado, quando a tela for renderizada, então o painel de estados deve informar o cenário de forma explícita.
 - Dado que a interface desktop exiba gráficos Canvas, quando houver comparação por fonte ou por baseline, então a leitura deve usar labels, contraste e marcadores, sem depender apenas de cor.
 - Dado que o usuário navegue pelos controles principais da interface desktop, quando usar teclado, então campos, seletores e ação de análise devem ser focáveis ou acionáveis onde fizer sentido.
-- Dado um baseline de média móvel, quando houver pontos anteriores suficientes, então o sistema deve apresentar MAE e comparação real vs previsto por período sem depender de `scikit-learn`.
+- Dado um baseline de média móvel, quando houver pontos anteriores suficientes, então o sistema deve apresentar MAE, RMSE e comparação real vs previsto por período sem depender de `scikit-learn`.
 - Dado um resultado de participação renovável ou risco, quando o alerta for exibido, então a mensagem deve ser compreensível para usuário não especialista.
 - Dado que o projeto não deve depender de credenciais privadas, quando o ambiente for preparado, então a execução local deve funcionar apenas com dados públicos ou cache.
 - Dado que o projeto é OSS, quando uma pessoa contribuir, então deve haver documentação clara de setup, teste e escopo do MVP.
@@ -96,7 +96,7 @@ Observação sobre `REQ-005`: a integração climática inicial usa Open-Meteo d
 | `TEST-001` | Unitário | `REQ-003` | Validar cálculo de participação renovável com dados sintéticos. |
 | `TEST-002` | Unitário | `REQ-003` | Validar tratamento de fontes ausentes ou valores zerados. |
 | `TEST-003` | Integração | `REQ-001`, `REQ-002` | Validar carregamento de dados, normalização ONS com fixture offline, `data_source`, limite de download, escrita do cache SQLite, persistência e reuso de registros normalizados em diretório temporário. |
-| `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE e comparação walk-forward do baseline com dataset mínimo. |
+| `TEST-004` | Unitário | `REQ-006` | Validar predição, MAE, RMSE e comparação walk-forward do baseline com dataset mínimo. |
 | `TEST-005` | Unitário | `REQ-008` | Validar regras de classificação textual dos alertas. |
 | `TEST-006` | Unitário, Canvas sem janela e QA manual | `REQ-004`, `REQ-007`, `REQ-008` | Validar o modelo de apresentação da interface sem abrir janela, desenho em `FakeCanvas`, gráficos Canvas iniciais, estados operacionais, contraste, marcadores não dependentes só de cor, handler de teclado, edge cases visuais e verificar manualmente se geração por fonte, comparação, estados e alerta são compreensíveis. |
 | `TEST-007` | Documentação | `REQ-009` | Confirmar que instruções de instalação, execução e testes estão atualizadas. |

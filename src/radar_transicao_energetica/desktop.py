@@ -130,6 +130,7 @@ def build_desktop_view_data(result: AnalysisResult) -> DesktopViewData:
         DesktopMetric("Geracao renovavel", _format_mw(summary.renewable_generation_mw)),
         DesktopMetric("Baseline proxima janela", _format_baseline_prediction(baseline)),
         DesktopMetric("Baseline MAE", _format_points(baseline.mean_absolute_error)),
+        DesktopMetric("Baseline RMSE", _format_points(baseline.root_mean_squared_error)),
         DesktopMetric(
             "Comparacoes com clima",
             f"{baseline.weather_adjusted_comparisons}/{baseline.evaluated_points}",
@@ -186,6 +187,7 @@ def build_desktop_error_view_data(message: str) -> DesktopViewData:
         DesktopMetric("Geracao renovavel", "sem dados"),
         DesktopMetric("Baseline proxima janela", "sem dados"),
         DesktopMetric("Baseline MAE", "sem dados"),
+        DesktopMetric("Baseline RMSE", "sem dados"),
         DesktopMetric("Comparacoes com clima", "0/0"),
     )
     return DesktopViewData(
@@ -545,6 +547,7 @@ class RadarDesktopApp:
                 "Geracao renovavel",
                 "Baseline proxima janela",
                 "Baseline MAE",
+                "Baseline RMSE",
                 "Comparacoes com clima",
             )
         ):

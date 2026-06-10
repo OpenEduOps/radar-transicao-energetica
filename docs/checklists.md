@@ -130,7 +130,7 @@ adiados de propósito.
 - [ ] Modelo com `scikit-learn`.
 - [ ] Regressão linear ou modelos comparativos.
 - [ ] Classificação de risco derivada do baseline.
-- [ ] Métricas adicionais como RMSE.
+- [x] Métrica adicional RMSE.
 
 ## Fase 9: Comparação e Alerta
 
