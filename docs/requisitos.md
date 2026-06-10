@@ -1,6 +1,6 @@
 # Requisitos
 
-Este documento detalha os requisitos iniciais do **Radar da Transição Energética**. O [README](../README.md) continua sendo a fonte de verdade inicial do produto, e o [planejamento inicial](planejamento-inicial.md) consolida a primeira leitura de escopo.
+Este documento detalha os requisitos iniciais do **Radar da Transição Energética**. O [README](../README.md) continua sendo a fonte de verdade inicial do produto, o [planejamento inicial](planejamento-inicial.md) consolida a primeira leitura de escopo e o [plano de testes](testes.md) organiza guardrails e critérios de aceite verificáveis.
 
 ## Objetivo da V0
 

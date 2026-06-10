@@ -1,6 +1,6 @@
 # CI/CD
 
-Este documento define a estratégia inicial de CI/CD do **Radar da Transição Energética**. Como o projeto já possui uma primeira implementação CLI, a CI começa simples e evolui junto com o MVP.
+Este documento define a estratégia inicial de CI/CD do **Radar da Transição Energética**. Como o projeto já possui uma primeira implementação CLI, a CI começa simples e evolui junto com o MVP. O [plano de testes](testes.md) consolida comandos, guardrails, critérios de aceite e QA manual.
 
 ## Objetivos
 
