@@ -21,6 +21,7 @@ O projeto saiu da fase exclusivamente documental e possui uma primeira implement
 - calcula participação renovável;
 - grava cache SQLite local com a última análise e os registros normalizados;
 - reutiliza registros ONS já normalizados no cache para o mesmo período;
+- permite limitar a idade máxima do cache ONS antes de revalidar a fonte pública;
 - integra previsão climática horária opcional via Open-Meteo, com temperatura, vento, radiação solar e nebulosidade;
 - exibe gráfico textual por fonte, tendência por período e comparação real vs previsto;
 - calcula baseline por média móvel com MAE, comparação real vs previsto e features climáticas simples quando há clima alinhado por período;
@@ -111,6 +112,15 @@ python -m radar_transicao_energetica --fonte ons --ons-periodo 2026-01 --json --
 
 O argumento `--ons-periodo` usa o formato `YYYY-MM`, com mês em dois dígitos. A integração ONS V0 trabalha com os arquivos mensais publicados a partir de 2022. Essa execução depende de acesso à internet, pode baixar arquivos com dezenas de MB e possui limite local de 200 MB por download; os testes automatizados continuam usando fixtures offline.
 
+Para reutilizar o cache ONS apenas quando a análise tiver sido gravada dentro de uma janela de tempo, informe a idade máxima em dias:
+
+```powershell
+$env:PYTHONPATH='src'
+python -m radar_transicao_energetica --fonte ons --ons-periodo 2026-01 --ons-cache-max-age-dias 7 --json
+```
+
+Quando a entrada ONS mais recente do período estiver vencida, a aplicação ignora os registros normalizados do SQLite e tenta baixar novamente o CSV público. Se esse argumento for omitido, o cache ONS existente continua sendo reutilizado até o usuário usar `--sem-cache` ou definir uma política de idade máxima.
+
 Executar com a integração climática inicial via Open-Meteo:
 
 ```powershell
@@ -155,7 +165,7 @@ O cache atual mantém:
 - `analyses`: payload serializado da análise, origem dos dados, período e participação renovável;
 - `generation_records`: registros normalizados em `period`, `source` e `generation_mw`.
 
-Quando a análise usa `--fonte ons --ons-periodo YYYY-MM`, a aplicação procura no SQLite a análise ONS mais recente do mesmo período antes de baixar novamente o CSV público. Se a análise também habilitar clima, o payload enriquecido com `weather` é gravado como última análise sem baixar novamente a fonte ONS. Use `--sem-cache` quando quiser executar sem ler nem gravar esse banco local.
+Quando a análise usa `--fonte ons --ons-periodo YYYY-MM`, a aplicação procura no SQLite a análise ONS mais recente do mesmo período antes de baixar novamente o CSV público. A opção `--ons-cache-max-age-dias N` limita esse reuso a entradas criadas há no máximo `N` dias; entradas vencidas são ignoradas e a coleta ONS é reexecutada. Se a análise também habilitar clima, o payload enriquecido com `weather` é gravado como última análise sem baixar novamente a fonte ONS quando o cache ainda estiver válido. Use `--sem-cache` quando quiser executar sem ler nem gravar esse banco local.
 
 ## Baseline e Avaliação
 
@@ -291,6 +301,7 @@ Limites e decisões da integração ONS V0:
 
 - arquivos anteriores a 2022, agrupados por ano, não entram nesta primeira integração;
 - os dados publicados pelo ONS podem passar por atualização após a publicação, então o resultado local deve ser lido como retrato do momento de coleta;
+- `--ons-cache-max-age-dias` permite revalidar dados ONS quando o cache local passar da idade máxima escolhida;
 - a suíte automatizada usa fixtures offline e não baixa dados reais do ONS;
 - o resultado JSON e o cache registram a origem da análise em `data_source`;
 - a coleta manual com rede possui limite local de 200 MB por arquivo mensal.
@@ -314,7 +325,7 @@ Contrato de normalização da fonte ONS:
 
 As fontes reconhecidas na V0 são normalizadas para hidráulica, eólica, solar e térmica. Fontes fora dessa classificação continuam entrando no total de geração e aparecem em `unknown_sources`, para evitar classificação silenciosa.
 
-O cache SQLite atual registra o resultado da última análise, incluindo `data_source`, resumo, séries por período, alerta e baseline, e também persiste os registros normalizados. Ele não salva o CSV ONS bruto.
+O cache SQLite atual registra o resultado da última análise, incluindo `data_source`, resumo, séries por período, alerta e baseline, e também persiste os registros normalizados. Ele não salva o CSV ONS bruto. A política de revalidação ONS usa o `created_at` da análise gravada para decidir se uma entrada ainda pode ser reutilizada.
 
 Fontes candidatas para o projeto:
 
@@ -444,7 +455,7 @@ A implementação atual já atende parte desses critérios com dados de exemplo,
 Próxima sequência técnica recomendada:
 
 1. Registrar o QA manual remanescente da interface desktop inicial, incluindo leitura visual dos gráficos Canvas, painel de estados, teclado e cenários com/sem clima.
-2. Definir política de expiração ou invalidação do cache ONS quando necessário.
+2. Executar QA manual da UI desktop e registrar resultado.
 3. Avaliar Matplotlib/Plotly apenas se os gráficos Canvas continuarem limitando a leitura.
 4. Avaliar PySide6 apenas se Tkinter limitar evolução visual ou acessibilidade.
 5. Avaliar `scikit-learn` apenas depois que a leitura visual do baseline estiver estável.

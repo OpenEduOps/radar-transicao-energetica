@@ -4,7 +4,7 @@ Este documento descreve a arquitetura inicial do **Radar da Transição Energét
 
 ## Objetivo Arquitetural
 
-A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação real vs previsto, gráficos Canvas iniciais, estados operacionais de tela, acessibilidade básica e alerta textual. As próximas camadas devem avançar para QA manual, refinamento visual avançado, gráficos ricos opcionais e executável de release quando o fluxo principal estiver estável.
+A arquitetura deve permitir evolução incremental: a base atual é uma aplicação Python local com regras testáveis, CLI empacotável, interface desktop inicial, fonte ONS, cache SQLite com reuso por período e política configurável de revalidação, integração climática opcional Open-Meteo, features climáticas simples no baseline, MAE, comparação real vs previsto, gráficos Canvas iniciais, estados operacionais de tela, acessibilidade básica e alerta textual. As próximas camadas devem avançar para QA manual, refinamento visual avançado, gráficos ricos opcionais e executável de release quando o fluxo principal estiver estável.
 
 ## Stack Inicial
 
@@ -135,7 +135,7 @@ Essa normalização fica em `data.py`, enquanto `ons.py` fica responsável por U
 
 Fontes reconhecidas na V0 entram em hidráulica, eólica, solar ou térmica. Fontes não reconhecidas continuam no total de geração e são expostas em `unknown_sources`, preservando rastreabilidade sem assumir classificação indevida.
 
-O cache SQLite atual salva metadados do schema em `cache_metadata`, o payload serializado da análise em `analyses` e registros normalizados em `generation_records`. Ele não persiste o CSV ONS bruto. Para a fonte ONS, a aplicação consulta a análise mais recente do mesmo período e reutiliza os registros normalizados antes de baixar novamente o CSV público.
+O cache SQLite atual salva metadados do schema em `cache_metadata`, o payload serializado da análise em `analyses` e registros normalizados em `generation_records`. Ele não persiste o CSV ONS bruto. Para a fonte ONS, a aplicação consulta a análise mais recente do mesmo período e reutiliza os registros normalizados antes de baixar novamente o CSV público. Quando a camada de aplicação recebe uma idade máxima em dias, o `created_at` da análise determina se o cache ainda é válido; entradas vencidas são ignoradas e a fonte ONS é consultada novamente.
 
 ## Fluxo de Dados Inicial
 
@@ -189,7 +189,7 @@ Fonte pública ONS, CSV local ou exemplo embutido
 ## Decisões Pendentes
 
 - Evoluir a fonte ONS para filtros de período e agregações mais eficientes quando o volume de dados exigir.
-- Definir política de expiração ou invalidação para cache ONS quando necessário.
+- Avaliar limpeza/compactação assistida do cache local quando o volume crescer.
 - Definir quando a heurística climática simples deve evoluir para modelo estatístico ou `scikit-learn`, após estabilizar a leitura visual.
 - Definir se o primeiro alvo será regressão de participação renovável ou classificação de risco.
 - Definir se Matplotlib ou Plotly serão necessários além dos gráficos Canvas atuais.

@@ -86,7 +86,7 @@ Limites assumidos:
 - o executável inicial não valida ainda PySide6, pandas, scikit-learn ou bibliotecas gráficas ricas;
 - o baseline atual é média móvel avaliada por MAE com analogia climática simples, não modelo de machine learning com `scikit-learn`;
 - a visualização atual combina CLI textual, tabela desktop e gráficos Canvas iniciais, ainda sem biblioteca gráfica rica;
-- o cache atual é SQLite, com análise, metadados, versão de schema, registros normalizados e reuso ONS por período;
+- o cache atual é SQLite, com análise, metadados, versão de schema, registros normalizados, reuso ONS por período e política configurável de revalidação por idade máxima;
 - a primeira fonte pública real foi consolidada com ONS Geração por Usina em Base Horária, com `data_source`, limite local de 200 MB por download e validações offline, mas a execução com rede ainda é manual e fora da CI obrigatória;
 - a primeira fonte climática foi consolidada com Open-Meteo Forecast API, de forma opcional, com limite local de 5 MB, fixtures offline e uso simples como feature do baseline quando há alinhamento por período;
 - não há release workflow, checksum, assinatura, smoke test formal ou build automático de artefato.
@@ -400,9 +400,9 @@ Commits sugeridos:
 
 ## Fase 5: Cache Local
 
-Status: concluída para o cache SQLite inicial com reuso ONS por período.
+Status: concluída para o cache SQLite inicial com reuso ONS por período e revalidação configurável.
 
-A implementação atual grava cache SQLite local em `data/cache/analises.sqlite`. O banco registra versão de schema, payload da análise, metadados da fonte e registros normalizados. Para ONS, a aplicação consulta a análise mais recente do mesmo período e reutiliza esses registros antes de chamar o loader de rede.
+A implementação atual grava cache SQLite local em `data/cache/analises.sqlite`. O banco registra versão de schema, payload da análise, metadados da fonte e registros normalizados. Para ONS, a aplicação consulta a análise mais recente do mesmo período e reutiliza esses registros antes de chamar o loader de rede. A opção `--ons-cache-max-age-dias` permite ignorar entradas vencidas e revalidar a fonte pública quando o usuário define uma idade máxima.
 
 Rastreabilidade:
 
@@ -424,6 +424,7 @@ Entregáveis:
 - metadados de fonte, período, URL do recurso e momento de coleta;
 - leitura e escrita em diretório controlado;
 - consulta por origem e período;
+- política configurável de idade máxima para revalidação ONS;
 - sinalização de `cache_hit`;
 - testes usando diretório temporário.
 
@@ -431,6 +432,7 @@ Critérios de aceite:
 
 - dados podem ser salvos e recuperados;
 - ONS reutiliza registros do mesmo período sem chamar a fonte pública;
+- ONS ignora registros vencidos quando uma idade máxima é definida;
 - cache de dados normalizados não se confunde com o payload serializado da análise;
 - cache não exige serviço externo;
 - testes não escrevem fora de diretório temporário;

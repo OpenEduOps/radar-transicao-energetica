@@ -52,6 +52,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             weather_latitude=args.clima_latitude,
             weather_longitude=args.clima_longitude,
             weather_forecast_days=args.clima_dias,
+            ons_cache_max_age_days=args.ons_cache_max_age_dias,
         )
     except (GenerationDataError, ValueError) as exc:
         parser.exit(status=1, message=f"Erro: {exc}\n")
@@ -125,6 +126,15 @@ def build_parser() -> argparse.ArgumentParser:
         "--sem-cache",
         action="store_true",
         help="Nao le nem grava cache local da ultima analise.",
+    )
+    parser.add_argument(
+        "--ons-cache-max-age-dias",
+        type=int,
+        default=None,
+        help=(
+            "Idade maxima, em dias, para reutilizar registros ONS do cache. "
+            "Se omitido, reutiliza o cache existente ate --sem-cache ser usado."
+        ),
     )
     parser.add_argument(
         "--clima",

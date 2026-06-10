@@ -22,6 +22,13 @@ radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-c
 python scripts\build_exe.py --release-status
 ```
 
+Quando a mudança afetar reuso ou revalidação de cache ONS, validar também com testes
+focados:
+
+```powershell
+python -m unittest tests.test_cache tests.test_app
+```
+
 Quando a mudança afetar o build local experimental:
 
 ```powershell
@@ -37,6 +44,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 - [x] Testes ONS devem usar fixtures, loaders injetados ou payloads sintéticos.
 - [x] Testes Open-Meteo devem usar fixtures ou loaders injetados.
 - [x] Testes de cache devem escrever apenas em diretórios temporários.
+- [x] Revalidação ONS por idade máxima deve ser testada com `created_at` sintético, sem rede.
 - [x] UI desktop deve ser testada por modelo de apresentação e `FakeCanvas`, sem abrir janela na suíte obrigatória.
 - [x] Release pública do `.exe` deve continuar bloqueada enquanto o gate estiver incompleto.
 - [x] Build, upload e checksum de artefato devem permanecer fora da CI atual.
@@ -57,6 +65,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 - [x] O baseline calcula MAE e comparação real vs previsto.
 - [x] Falha climática opcional não interrompe cálculo elétrico.
 - [x] Cache ONS reutiliza registros normalizados do mesmo período.
+- [x] Cache ONS ignora registros vencidos quando a idade máxima é configurada.
 - [x] UI desktop exibe geração por fonte, alerta, baseline, clima opcional e estados operacionais.
 - [x] UI desktop não depende apenas de cor para diferenciar fonte ou método.
 - [ ] UI desktop foi validada manualmente em janela real.
@@ -68,7 +77,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 | --- | --- | --- | --- | --- |
 | `TEST-001` | [x] | Unitário | Participação renovável | `tests/test_domain.py` |
 | `TEST-002` | [x] | Unitário | Fontes ausentes, zeradas e desconhecidas | `tests/test_domain.py`, `tests/test_data.py` |
-| `TEST-003` | [x] | Integração leve | ONS, CSV, `data_source`, cache SQLite | `tests/test_ons.py`, `tests/test_cache.py`, `tests/test_app.py` |
+| `TEST-003` | [x] | Integração leve | ONS, CSV, `data_source`, cache SQLite e revalidação por idade máxima | `tests/test_ons.py`, `tests/test_cache.py`, `tests/test_app.py` |
 | `TEST-004` | [x] | Unitário | Baseline, MAE e comparação walk-forward | `tests/test_app.py`, `tests/test_charts.py` |
 | `TEST-005` | [x] | Unitário | Alertas interpretáveis | `tests/test_app.py` |
 | `TEST-006` | [x] | Unitário e Canvas sem janela | Modelo desktop, estados, gráficos, acessibilidade básica | `tests/test_desktop.py` |

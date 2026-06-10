@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import sqlite3
 import sys
 import tempfile
 import unittest
-from datetime import datetime
+from contextlib import closing
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -131,6 +133,42 @@ class AppTest(unittest.TestCase):
         self.assertFalse(result.cache_hit)
         self.assertEqual(result.summary.renewable_share, 0.5)
 
+    def test_run_analysis_revalidates_expired_ons_cache(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "analise.sqlite"
+            run_analysis(
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                cache_path=cache_path,
+                ons_loader=lambda _year, _month: [
+                    GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 75.0),
+                    GenerationRecord(datetime(2026, 1, 1, 0), "termica", 25.0),
+                ],
+            )
+            expired_at = datetime.now(timezone.utc) - timedelta(days=3)
+            with closing(sqlite3.connect(str(cache_path))) as connection:
+                connection.execute(
+                    "UPDATE analyses SET created_at = ?",
+                    (expired_at.isoformat(timespec="seconds"),),
+                )
+                connection.commit()
+
+            result = run_analysis(
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                cache_path=cache_path,
+                ons_cache_max_age_days=1,
+                ons_loader=lambda _year, _month: [
+                    GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 40.0),
+                    GenerationRecord(datetime(2026, 1, 1, 0), "termica", 60.0),
+                ],
+            )
+
+        self.assertFalse(result.cache_hit)
+        self.assertEqual(result.summary.renewable_share, 0.4)
+
     def test_run_analysis_persists_weather_when_ons_records_are_reused_from_cache(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             cache_path = Path(tmpdir) / "analise.sqlite"
@@ -166,6 +204,10 @@ class AppTest(unittest.TestCase):
     def test_run_analysis_requires_ons_period(self) -> None:
         with self.assertRaisesRegex(ValueError, "--ons-periodo"):
             run_analysis(source="ons")
+
+    def test_run_analysis_rejects_negative_ons_cache_max_age(self) -> None:
+        with self.assertRaisesRegex(ValueError, "--ons-cache-max-age-dias"):
+            run_analysis(ons_cache_max_age_days=-1)
 
     def test_run_analysis_can_include_weather_with_fixture_loader(self) -> None:
         def fake_weather_loader(**kwargs: object) -> list[WeatherRecord]:

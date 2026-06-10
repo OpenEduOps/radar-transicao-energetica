@@ -40,7 +40,7 @@ adiados de propósito.
 - [x] Limite local de download ONS.
 - [x] Testes offline com fixture.
 - [x] Tratamento de download, encoding e tamanho inválido.
-- [ ] Política de atualização/revalidação dos dados ONS publicados após coleta.
+- [x] Política configurável de atualização/revalidação dos dados ONS por idade máxima do cache.
 
 ## Fase 3: Participação Renovável
 
@@ -74,7 +74,7 @@ adiados de propósito.
 - [x] Consulta por origem e período para reuso ONS.
 - [x] Sinalização de `cache_hit`.
 - [x] Testes com diretório temporário.
-- [ ] Política de expiração ou invalidação do cache ONS.
+- [x] Política de expiração/revalidação do cache ONS por `--ons-cache-max-age-dias`.
 - [ ] Limpeza/compactação assistida de cache local.
 
 ## Fase 6: Visualização Inicial e UI Desktop
@@ -173,7 +173,7 @@ adiados de propósito.
 ## Próximos Checkpoints Recomendados
 
 - [ ] Executar QA manual da UI e registrar resultado.
-- [ ] Definir política de expiração/invalidação do cache ONS.
+- [x] Definir política de expiração/invalidação do cache ONS.
 - [ ] Decidir se Canvas ainda atende a leitura visual.
 - [ ] Avaliar Matplotlib/Plotly somente se houver limitação clara.
 - [ ] Avaliar PySide6 somente se Tkinter limitar UX/acessibilidade.

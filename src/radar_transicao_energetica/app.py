@@ -67,7 +67,11 @@ def run_analysis(
     weather_longitude: float = DEFAULT_WEATHER_LONGITUDE,
     weather_forecast_days: int = DEFAULT_WEATHER_FORECAST_DAYS,
     weather_loader: Callable[..., list[WeatherRecord]] | None = None,
+    ons_cache_max_age_days: int | None = None,
 ) -> AnalysisResult:
+    if ons_cache_max_age_days is not None and ons_cache_max_age_days < 0:
+        raise ValueError("--ons-cache-max-age-dias deve ser maior ou igual a zero.")
+
     records, data_source, cache_hit = _load_records(
         source_path=source_path,
         source=source,
@@ -76,6 +80,7 @@ def run_analysis(
         ons_loader=ons_loader,
         cache_path=cache_path,
         prefer_cache=prefer_cache,
+        ons_cache_max_age_days=ons_cache_max_age_days,
     )
     summary = summarize_generation(records)
     period_summaries = summarize_by_period(records)
@@ -151,6 +156,7 @@ def _load_records(
     ons_loader: Callable[[int, int], list[GenerationRecord]] | None,
     cache_path: str | Path | None,
     prefer_cache: bool,
+    ons_cache_max_age_days: int | None,
 ) -> tuple[list[GenerationRecord], DataSourceMetadata, bool]:
     if source_path is not None:
         if source != "exemplo":
@@ -177,6 +183,7 @@ def _load_records(
                 cache_path,
                 source_kind=metadata.kind,
                 source_period=metadata.period,
+                max_age_days=ons_cache_max_age_days,
             )
             if cached_records:
                 return cached_records, metadata, True

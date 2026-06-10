@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from contextlib import closing
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -130,7 +130,11 @@ def find_generation_records_by_source_period(
     *,
     source_kind: str,
     source_period: str,
+    max_age_days: int | None = None,
 ) -> list[GenerationRecord] | None:
+    if max_age_days is not None and max_age_days < 0:
+        raise ValueError("max_age_days deve ser maior ou igual a zero.")
+
     cache_path = Path(path)
     if not cache_path.exists():
         return None
@@ -142,7 +146,7 @@ def find_generation_records_by_source_period(
             _ensure_schema(connection)
             analysis_row = connection.execute(
                 """
-                SELECT id
+                SELECT id, created_at
                 FROM analyses
                 WHERE data_source_kind = ?
                   AND data_source_period = ?
@@ -152,6 +156,8 @@ def find_generation_records_by_source_period(
                 (source_kind, source_period),
             ).fetchone()
             if analysis_row is None:
+                return None
+            if _is_cache_entry_expired(analysis_row[1], max_age_days=max_age_days):
                 return None
             rows = connection.execute(
                 """
@@ -169,6 +175,19 @@ def find_generation_records_by_source_period(
         _generation_record_from_row(period, source, generation_mw)
         for period, source, generation_mw in rows
     ]
+
+
+def _is_cache_entry_expired(created_at: str, *, max_age_days: int | None) -> bool:
+    if max_age_days is None:
+        return False
+    try:
+        created_at_datetime = datetime.fromisoformat(created_at)
+    except ValueError:
+        return True
+    if created_at_datetime.tzinfo is None:
+        created_at_datetime = created_at_datetime.replace(tzinfo=timezone.utc)
+    expires_at = created_at_datetime + timedelta(days=max_age_days)
+    return datetime.now(timezone.utc) >= expires_at
 
 
 def _validate_existing_cache_path(cache_path: Path) -> None:

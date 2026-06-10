@@ -5,7 +5,7 @@ import sys
 import tempfile
 import unittest
 from contextlib import closing
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -89,6 +89,54 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(len(cached_records or []), 2)
         self.assertEqual((cached_records or [])[0].source, "hidraulica")
         self.assertIsNone(missing_records)
+
+    def test_cache_ignores_expired_generation_records_by_source_and_period(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "cache.sqlite"
+            run_analysis(
+                source="ons",
+                ons_year=2026,
+                ons_month=1,
+                cache_path=cache_path,
+                ons_loader=lambda _year, _month: [
+                    GenerationRecord(datetime(2026, 1, 1, 0), "hidraulica", 90.0),
+                    GenerationRecord(datetime(2026, 1, 1, 0), "termica", 10.0),
+                ],
+            )
+            expired_at = datetime.now(timezone.utc) - timedelta(days=2)
+            with closing(sqlite3.connect(str(cache_path))) as connection:
+                connection.execute(
+                    "UPDATE analyses SET created_at = ?",
+                    (expired_at.isoformat(timespec="seconds"),),
+                )
+                connection.commit()
+
+            cached_records = find_generation_records_by_source_period(
+                cache_path,
+                source_kind="ons",
+                source_period="2026-01",
+                max_age_days=1,
+            )
+            fresh_without_policy = find_generation_records_by_source_period(
+                cache_path,
+                source_kind="ons",
+                source_period="2026-01",
+            )
+
+        self.assertIsNone(cached_records)
+        self.assertIsNotNone(fresh_without_policy)
+
+    def test_cache_rejects_negative_max_age_policy(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "cache.sqlite"
+
+            with self.assertRaisesRegex(ValueError, "max_age_days"):
+                find_generation_records_by_source_period(
+                    cache_path,
+                    source_kind="ons",
+                    source_period="2026-01",
+                    max_age_days=-1,
+                )
 
 
 if __name__ == "__main__":
