@@ -15,6 +15,7 @@ REQUIRED_FILES = (
     "docs/matriz-issues.md",
     "docs/planejamento-inicial.md",
     "docs/plano-implementacao.md",
+    "docs/qa-ui.md",
     "docs/requisitos.md",
     "docs/testes.md",
 )

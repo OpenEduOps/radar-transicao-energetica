@@ -3,7 +3,8 @@
 Este documento consolida comandos, guardrails, critérios de aceite e cobertura de
 testes do **Radar da Transição Energética**. Ele complementa
 [requisitos](requisitos.md), [CI/CD](ci.md) e o
-[plano de implementação](plano-implementacao.md).
+[plano de implementação](plano-implementacao.md) e o
+[roteiro de QA manual da UI](qa-ui.md).
 
 ## Comandos Obrigatórios Locais
 
@@ -106,6 +107,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 
 ## Checklist de QA Manual da UI
 
+O roteiro completo e o modelo de registro ficam em [QA Manual da UI](qa-ui.md).
 Registrar data, sistema operacional, Python, comando executado e resultado.
 
 - [ ] Abrir `radar-transicao-energetica-ui`.

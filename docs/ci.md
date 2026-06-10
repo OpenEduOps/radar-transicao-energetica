@@ -83,7 +83,8 @@ Estados operacionais cobertos pela suíte sem janela:
 - baseline sem pontos suficientes;
 - cache ONS reutilizado.
 
-QA manual mínimo que ainda exige inspeção humana da janela:
+QA manual mínimo que ainda exige inspeção humana da janela. O roteiro e modelo de
+registro ficam em [QA Manual da UI](qa-ui.md):
 
 - abrir `radar-transicao-energetica-ui` com exemplo embutido;
 - validar leitura visual de fonte, período, métricas centrais, geração por fonte e alerta;

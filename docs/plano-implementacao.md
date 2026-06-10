@@ -1,6 +1,6 @@
 # Plano de Implementação
 
-Este plano organiza a implementação do **Radar da Transição Energética** a partir do escopo já documentado no [README](../README.md), em [requisitos](requisitos.md), [arquitetura](arquitetura.md), [matriz de issues](matriz-issues.md), [CI/CD](ci.md), [checklists](checklists.md) e [plano de testes](testes.md).
+Este plano organiza a implementação do **Radar da Transição Energética** a partir do escopo já documentado no [README](../README.md), em [requisitos](requisitos.md), [arquitetura](arquitetura.md), [matriz de issues](matriz-issues.md), [CI/CD](ci.md), [checklists](checklists.md), [plano de testes](testes.md) e [QA manual da UI](qa-ui.md).
 
 O projeto saiu da fase exclusivamente documental e já possui uma primeira implementação local em Python. Este documento continua servindo como guia de evolução incremental, registrando o que foi entregue, o que segue pendente e os limites do primeiro executável local.
 
@@ -485,7 +485,7 @@ Entregáveis:
 - estado de clima indisponível;
 - estado de baseline sem pontos suficientes;
 - estado de cache reutilizado;
-- QA manual remanescente identificado.
+- roteiro de QA manual remanescente registrado em `docs/qa-ui.md`.
 
 Escopo:
 

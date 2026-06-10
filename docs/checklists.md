@@ -101,6 +101,7 @@ adiados de propósito.
 - [x] Marcadores distintos para real, média móvel e clima.
 - [x] Navegação/acionamento básico por teclado.
 - [x] Testes sem janela com `FakeCanvas`.
+- [x] Roteiro de QA manual da janela real criado.
 - [ ] QA manual da janela real registrado.
 - [ ] Refinamento visual avançado.
 - [ ] Acessibilidade completa ou auditada por ferramenta externa.

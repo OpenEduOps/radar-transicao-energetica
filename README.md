@@ -40,6 +40,7 @@ Este README é a porta de entrada e a fonte inicial de verdade do projeto. A doc
 - [Plano de implementação](docs/plano-implementacao.md): fases, entregáveis, critérios de aceite e sequência de implementação.
 - [Checklists de implementação](docs/checklists.md): visão marcável do que já foi implementado e do que segue pendente.
 - [Plano de testes](docs/testes.md): comandos, guardrails, critérios de aceite e QA manual pendente.
+- [QA manual da UI](docs/qa-ui.md): roteiro e registro para validação humana da janela desktop.
 - [Requisitos](docs/requisitos.md): requisitos V0, critérios de aceite e testes planejados.
 - [Arquitetura](docs/arquitetura.md): estrutura, responsabilidades, fluxo de dados e decisões pendentes.
 - [Matriz de issues](docs/matriz-issues.md): sequência planejada de issues e rastreabilidade.

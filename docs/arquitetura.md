@@ -48,6 +48,7 @@ radar-transicao-energetica/
 │   ├── matriz-issues.md
 │   ├── plano-implementacao.md
 │   ├── planejamento-inicial.md
+│   ├── qa-ui.md
 │   └── requisitos.md
 ├── pyproject.toml
 ├── src/
