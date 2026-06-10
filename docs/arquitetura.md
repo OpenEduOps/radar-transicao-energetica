@@ -71,6 +71,7 @@ radar-transicao-energetica/
 ├── scripts/
 │   ├── check_docs.py
 │   ├── check_secrets.py
+│   ├── check_style.py
 │   └── build_exe.py
 └── data/
     └── cache/
@@ -96,6 +97,7 @@ radar-transicao-energetica/
 | `cache.py` | Escrita, leitura, revalidação e compactação assistida do cache SQLite local. |
 | `scripts/check_docs.py` | Validação documental leve de arquivos centrais, links locais e marcadores do plano de testes. |
 | `scripts/check_secrets.py` | Checagem leve de segredos de alta confiança sem dependências externas. |
+| `scripts/check_style.py` | Checagem leve de estilo textual para arquivos versionados. |
 | `scripts/build_exe.py` | Build local experimental com PyInstaller, status de release e bloqueio de release pública prematura. |
 | `tests` | Testes unitários, integração leve, QA automatizado sem janela e `FakeCanvas` para gráficos desktop. |
 

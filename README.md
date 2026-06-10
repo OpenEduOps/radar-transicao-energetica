@@ -195,11 +195,12 @@ Rodar testes:
 ```powershell
 python scripts/check_docs.py
 python scripts/check_secrets.py
+python scripts/check_style.py
 python -m unittest discover -s tests
 python -m compileall src tests scripts
 ```
 
-A suíte automatizada cobre documentação central, links locais, checagem leve de segredos de alta confiança, interface desktop sem abrir janela e sem Docker. Os testes validam o modelo de apresentação, os dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios, geração sem valor positivo, estados operacionais da tela, contraste/cores dos gráficos, marcadores não dependentes só de cor, muitas barras, baseline com um único ponto, marcação de média móvel/clima, handler de teclado e redraw dos gráficos.
+A suíte automatizada cobre documentação central, links locais, checagem leve de segredos de alta confiança, estilo textual básico, interface desktop sem abrir janela e sem Docker. Os testes validam o modelo de apresentação, os dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios, geração sem valor positivo, estados operacionais da tela, contraste/cores dos gráficos, marcadores não dependentes só de cor, muitas barras, baseline com um único ponto, marcação de média móvel/clima, handler de teclado e redraw dos gráficos.
 
 ## Primeiro Executável Local
 

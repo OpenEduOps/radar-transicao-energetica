@@ -30,6 +30,9 @@ jobs:
       - name: Secrets
         run: python scripts/check_secrets.py
 
+      - name: Style
+        run: python scripts/check_style.py
+
       - name: Compile
         run: python -m compileall src tests scripts
 

@@ -60,7 +60,9 @@ adiados de propósito.
 - [x] Permissões mínimas no workflow.
 - [x] Testes garantem que build/upload/checksum não foram ativados na CI atual.
 - [x] Validação documental automática.
-- [ ] Lint/formatação/tipagem formal.
+- [x] Checagem leve de estilo textual.
+- [ ] Lint Python formal.
+- [ ] Tipagem formal.
 - [x] Checagem automatizada de segredos de alta confiança.
 - [ ] Checagem automatizada de vulnerabilidades em dependências.
 - [ ] Build de artefato na CI.

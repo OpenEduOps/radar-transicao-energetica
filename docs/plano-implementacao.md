@@ -371,6 +371,7 @@ Entregáveis:
 - workflow de CI Python mínima;
 - validação documental com `scripts/check_docs.py`;
 - checagem leve de segredos de alta confiança com `scripts/check_secrets.py`;
+- checagem leve de estilo textual com `scripts/check_style.py`;
 - execução de testes;
 - checagem de importação ou compilação;
 - permissões mínimas.
@@ -380,6 +381,7 @@ Critérios de aceite:
 - CI roda em push e PR;
 - documentos centrais, links locais e marcadores mínimos do plano de testes são validados;
 - padrões de segredo de alta confiança falham na CI;
+- whitespace final e ausência de newline final falham na CI;
 - testes passam;
 - pacote instala em modo editável;
 - comando `radar-transicao-energetica` executa um smoke test com o CSV de exemplo;

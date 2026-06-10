@@ -30,7 +30,7 @@ A automação deve responder, de forma incremental:
 | Job | Objetivo | Obrigatório no início |
 | --- | --- | --- |
 | Docs | Validar documentação central e links internos. | Sim |
-| Format/Lint | Validar padrão de código quando ferramenta for definida. | Não na CI atual |
+| Format/Lint | Validar estilo textual leve agora; lint Python formal quando ferramenta for definida. | Parcial |
 | Tests | Rodar testes unitários e integração leve. | Sim, após código |
 | Security | Checar segredos de alta confiança e, futuramente, dependências vulneráveis quando dependências existirem. | Parcial |
 | Build artifact | Gerar executável ou pacote. | Não na V0 inicial |
@@ -44,6 +44,7 @@ Os comandos oficiais iniciais são:
 python -m pip install -e .
 python scripts/check_docs.py
 python scripts/check_secrets.py
+python scripts/check_style.py
 python -m unittest discover -s tests
 python -m compileall src tests scripts
 radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-cache
@@ -54,6 +55,8 @@ O workflow atual executa esses comandos em Windows com Python 3.12. O pacote dec
 A validação documental atual usa `scripts/check_docs.py`, sem dependências externas. Ela verifica a presença dos documentos centrais, links Markdown locais e marcadores mínimos do plano de testes, incluindo guardrails, critérios de aceite, matriz de cobertura e checklist de QA manual.
 
 A checagem de segredos atual usa `scripts/check_secrets.py`, também sem dependências externas. Ela procura padrões de alta confiança, como chaves privadas, tokens GitHub, AWS Access Key e tokens Slack, ignorando diretórios gerados como `.venv`, `build/`, `dist/` e `data/cache/`. Checagem de vulnerabilidades em dependências segue adiada porque o pacote ainda não possui dependências runtime externas.
+
+A checagem de estilo textual usa `scripts/check_style.py`. Ela valida arquivos versionados de texto para bloquear whitespace no fim de linha e ausência de newline final. Lint Python, formatação automática e tipagem estática continuam adiados até a escolha explícita de ferramentas.
 
 O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
 
