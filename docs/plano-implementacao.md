@@ -355,7 +355,7 @@ Checklist de saída da primeira fatia funcional:
 
 ## Fase 4: CI Inicial da Primeira Fatia
 
-Status: concluída como CI mínima de testes e compilação, sem build de artefato.
+Status: concluída como CI mínima de documentação, testes e compilação, sem build de artefato.
 
 Rastreabilidade:
 
@@ -369,6 +369,7 @@ Criar automação compatível com a primeira fatia funcional, sem antecipar rele
 Entregáveis:
 
 - workflow de CI Python mínima;
+- validação documental com `scripts/check_docs.py`;
 - execução de testes;
 - checagem de importação ou compilação;
 - permissões mínimas.
@@ -376,6 +377,7 @@ Entregáveis:
 Critérios de aceite:
 
 - CI roda em push e PR;
+- documentos centrais, links locais e marcadores mínimos do plano de testes são validados;
 - testes passam;
 - pacote instala em modo editável;
 - comando `radar-transicao-energetica` executa um smoke test com o CSV de exemplo;

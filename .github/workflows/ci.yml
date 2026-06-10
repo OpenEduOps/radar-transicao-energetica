@@ -24,6 +24,9 @@ jobs:
       - name: Install package
         run: python -m pip install -e .
 
+      - name: Docs
+        run: python scripts/check_docs.py
+
       - name: Compile
         run: python -m compileall src tests scripts
 

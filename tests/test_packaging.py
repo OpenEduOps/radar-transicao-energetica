@@ -26,6 +26,11 @@ class PackagingTest(unittest.TestCase):
         self.assertNotIn("actions/upload-artifact", workflow)
         self.assertNotIn("checksum", workflow)
 
+    def test_ci_runs_documentation_validation(self) -> None:
+        workflow = Path(".github/workflows/ci.yml").read_text(encoding="utf-8")
+
+        self.assertIn("python scripts/check_docs.py", workflow)
+
     def test_gitignore_keeps_local_exe_artifacts_out_of_git(self) -> None:
         ignored_patterns = set(Path(".gitignore").read_text(encoding="utf-8").splitlines())
 

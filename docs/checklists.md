@@ -59,7 +59,7 @@ adiados de propósito.
 - [x] Smoke CLI com CSV de exemplo.
 - [x] Permissões mínimas no workflow.
 - [x] Testes garantem que build/upload/checksum não foram ativados na CI atual.
-- [ ] Validação documental automática.
+- [x] Validação documental automática.
 - [ ] Lint/formatação/tipagem formal.
 - [ ] Checagem automatizada de segredos/dependências.
 - [ ] Build de artefato na CI.

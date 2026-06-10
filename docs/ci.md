@@ -18,7 +18,7 @@ A automação deve responder, de forma incremental:
 
 | Fase | Quando aplicar | Saída esperada |
 | --- | --- | --- |
-| CI documental | Após definir ferramenta de validação documental | Validar estrutura básica de docs e links principais. |
+| CI documental | Implementada | Validar estrutura básica de docs, links locais principais e marcadores do plano de testes. |
 | CI Python mínima | Implementada | Rodar compilação e testes unitários. |
 | CI de dados | Implementada parcialmente | Validar normalização com fixtures e cache em diretório temporário. |
 | CI de clima | Implementada parcialmente | Validar Open-Meteo por fixtures/loaders injetados, sem rede. |
@@ -29,7 +29,7 @@ A automação deve responder, de forma incremental:
 
 | Job | Objetivo | Obrigatório no início |
 | --- | --- | --- |
-| Docs | Validar documentação central e links internos. | Não na CI atual |
+| Docs | Validar documentação central e links internos. | Sim |
 | Format/Lint | Validar padrão de código quando ferramenta for definida. | Não na CI atual |
 | Tests | Rodar testes unitários e integração leve. | Sim, após código |
 | Security | Checar segredos e dependências vulneráveis quando dependências existirem. | Não na CI atual |
@@ -42,12 +42,15 @@ Os comandos oficiais iniciais são:
 
 ```text
 python -m pip install -e .
+python scripts/check_docs.py
 python -m unittest discover -s tests
 python -m compileall src tests scripts
 radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-cache
 ```
 
 O workflow atual executa esses comandos em Windows com Python 3.12. O pacote declara suporte a Python 3.11 ou superior, mas a validação automatizada inicial fica concentrada em uma versão para manter a CI leve.
+
+A validação documental atual usa `scripts/check_docs.py`, sem dependências externas. Ela verifica a presença dos documentos centrais, links Markdown locais e marcadores mínimos do plano de testes, incluindo guardrails, critérios de aceite, matriz de cobertura e checklist de QA manual.
 
 O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
 

@@ -10,6 +10,7 @@ testes do **Radar da Transição Energética**. Ele complementa
 Executar antes de considerar uma mudança técnica concluída:
 
 ```powershell
+python scripts/check_docs.py
 python -m unittest discover -s tests
 python -m compileall src tests scripts
 ```
@@ -50,6 +51,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 - [x] Build, upload e checksum de artefato devem permanecer fora da CI atual.
 - [x] Credenciais, tokens e dados privados não devem ser necessários para testes.
 - [x] `build/`, `dist/` e arquivos `.spec` não devem ser versionados.
+- [x] Documentos centrais e links locais devem passar em `scripts/check_docs.py`.
 - [ ] QA manual da janela real deve ser registrado antes de tratar a UI como estável.
 - [ ] Smoke test formal do executável deve existir antes de release pública.
 
@@ -68,6 +70,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 - [x] Cache ONS ignora registros vencidos quando a idade máxima é configurada.
 - [x] UI desktop exibe geração por fonte, alerta, baseline, clima opcional e estados operacionais.
 - [x] UI desktop não depende apenas de cor para diferenciar fonte ou método.
+- [x] Documentação central possui validação automática de presença, links locais e marcadores mínimos.
 - [ ] UI desktop foi validada manualmente em janela real.
 - [ ] Release pública possui smoke test, checksum, artefato CI e workflow documentado.
 

@@ -184,11 +184,12 @@ No JSON, o bloco `baseline` inclui `error_metric`, `mean_absolute_error`, `evalu
 Rodar testes:
 
 ```powershell
+python scripts/check_docs.py
 python -m unittest discover -s tests
 python -m compileall src tests scripts
 ```
 
-A suíte automatizada cobre a interface desktop sem abrir janela e sem Docker. Os testes validam o modelo de apresentação, os dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios, geração sem valor positivo, estados operacionais da tela, contraste/cores dos gráficos, marcadores não dependentes só de cor, muitas barras, baseline com um único ponto, marcação de média móvel/clima, handler de teclado e redraw dos gráficos.
+A suíte automatizada cobre documentação central, links locais, interface desktop sem abrir janela e sem Docker. Os testes validam o modelo de apresentação, os dados dos gráficos Canvas, desenho em `FakeCanvas`, estados vazios, geração sem valor positivo, estados operacionais da tela, contraste/cores dos gráficos, marcadores não dependentes só de cor, muitas barras, baseline com um único ponto, marcação de média móvel/clima, handler de teclado e redraw dos gráficos.
 
 ## Primeiro Executável Local
 

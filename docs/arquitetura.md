@@ -69,6 +69,8 @@ radar-transicao-energetica/
 ├── tests/
 ├── examples/
 ├── scripts/
+│   ├── check_docs.py
+│   └── build_exe.py
 └── data/
     └── cache/
 ```
@@ -91,6 +93,7 @@ radar-transicao-energetica/
 | `release.py` | Critérios de readiness e mensagens do gate de release pública do `.exe`. |
 | `serialization.py` | Contrato JSON compartilhado entre CLI e cache. |
 | `cache.py` | Escrita e leitura do cache SQLite local. |
+| `scripts/check_docs.py` | Validação documental leve de arquivos centrais, links locais e marcadores do plano de testes. |
 | `scripts/build_exe.py` | Build local experimental com PyInstaller, status de release e bloqueio de release pública prematura. |
 | `tests` | Testes unitários, integração leve, QA automatizado sem janela e `FakeCanvas` para gráficos desktop. |
 
