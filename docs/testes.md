@@ -11,6 +11,7 @@ Executar antes de considerar uma mudança técnica concluída:
 
 ```powershell
 python scripts/check_docs.py
+python scripts/check_secrets.py
 python -m unittest discover -s tests
 python -m compileall src tests scripts
 ```
@@ -50,6 +51,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 - [x] Release pública do `.exe` deve continuar bloqueada enquanto o gate estiver incompleto.
 - [x] Build, upload e checksum de artefato devem permanecer fora da CI atual.
 - [x] Credenciais, tokens e dados privados não devem ser necessários para testes.
+- [x] Segredos de alta confiança devem falhar em `scripts/check_secrets.py`.
 - [x] `build/`, `dist/` e arquivos `.spec` não devem ser versionados.
 - [x] Documentos centrais e links locais devem passar em `scripts/check_docs.py`.
 - [ ] QA manual da janela real deve ser registrado antes de tratar a UI como estável.
@@ -71,6 +73,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 - [x] UI desktop exibe geração por fonte, alerta, baseline, clima opcional e estados operacionais.
 - [x] UI desktop não depende apenas de cor para diferenciar fonte ou método.
 - [x] Documentação central possui validação automática de presença, links locais e marcadores mínimos.
+- [x] Repositório passa em checagem leve de segredos de alta confiança.
 - [ ] UI desktop foi validada manualmente em janela real.
 - [ ] Release pública possui smoke test, checksum, artefato CI e workflow documentado.
 

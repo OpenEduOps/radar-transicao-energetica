@@ -61,7 +61,8 @@ adiados de propósito.
 - [x] Testes garantem que build/upload/checksum não foram ativados na CI atual.
 - [x] Validação documental automática.
 - [ ] Lint/formatação/tipagem formal.
-- [ ] Checagem automatizada de segredos/dependências.
+- [x] Checagem automatizada de segredos de alta confiança.
+- [ ] Checagem automatizada de vulnerabilidades em dependências.
 - [ ] Build de artefato na CI.
 - [ ] Smoke test de artefato na CI.
 

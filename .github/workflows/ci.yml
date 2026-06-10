@@ -27,6 +27,9 @@ jobs:
       - name: Docs
         run: python scripts/check_docs.py
 
+      - name: Secrets
+        run: python scripts/check_secrets.py
+
       - name: Compile
         run: python -m compileall src tests scripts
 

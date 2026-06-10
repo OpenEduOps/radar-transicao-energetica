@@ -32,7 +32,7 @@ A automação deve responder, de forma incremental:
 | Docs | Validar documentação central e links internos. | Sim |
 | Format/Lint | Validar padrão de código quando ferramenta for definida. | Não na CI atual |
 | Tests | Rodar testes unitários e integração leve. | Sim, após código |
-| Security | Checar segredos e dependências vulneráveis quando dependências existirem. | Não na CI atual |
+| Security | Checar segredos de alta confiança e, futuramente, dependências vulneráveis quando dependências existirem. | Parcial |
 | Build artifact | Gerar executável ou pacote. | Não na V0 inicial |
 | Smoke artifact | Validar execução do artefato final. | Não na V0 inicial |
 
@@ -43,6 +43,7 @@ Os comandos oficiais iniciais são:
 ```text
 python -m pip install -e .
 python scripts/check_docs.py
+python scripts/check_secrets.py
 python -m unittest discover -s tests
 python -m compileall src tests scripts
 radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-cache
@@ -51,6 +52,8 @@ radar-transicao-energetica --arquivo examples\geracao_exemplo.csv --json --sem-c
 O workflow atual executa esses comandos em Windows com Python 3.12. O pacote declara suporte a Python 3.11 ou superior, mas a validação automatizada inicial fica concentrada em uma versão para manter a CI leve.
 
 A validação documental atual usa `scripts/check_docs.py`, sem dependências externas. Ela verifica a presença dos documentos centrais, links Markdown locais e marcadores mínimos do plano de testes, incluindo guardrails, critérios de aceite, matriz de cobertura e checklist de QA manual.
+
+A checagem de segredos atual usa `scripts/check_secrets.py`, também sem dependências externas. Ela procura padrões de alta confiança, como chaves privadas, tokens GitHub, AWS Access Key e tokens Slack, ignorando diretórios gerados como `.venv`, `build/`, `dist/` e `data/cache/`. Checagem de vulnerabilidades em dependências segue adiada porque o pacote ainda não possui dependências runtime externas.
 
 O comando com `pytest` é opcional nesta fase, porque os testes foram escritos com `unittest` e rodam sem dependências externas. Ferramentas de lint, formatação e tipagem devem ser escolhidas quando o projeto tiver código suficiente para justificar a automação.
 
@@ -114,6 +117,7 @@ Permissões adicionais só devem aparecer em jobs que realmente publiquem releas
 ## Guardrails
 
 - Não versionar credenciais, tokens ou dados privados.
+- Rodar `scripts/check_secrets.py` na CI para bloquear padrões de segredo de alta confiança.
 - Não depender de APIs pagas ou credenciais privadas no fluxo obrigatório.
 - Manter metadados públicos focados em produto, comportamento ou engenharia.
 - Evitar CI cara enquanto o projeto ainda estiver validando o MVP.
