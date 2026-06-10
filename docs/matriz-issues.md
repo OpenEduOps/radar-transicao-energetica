@@ -46,7 +46,7 @@ Essa ordem permite entregar valor observável antes de avançar para QA manual r
 - `ISSUE-001`: implementada com comandos reais no README.
 - `ISSUE-002`: implementada com `pyproject.toml`, pacote em `src` e testes.
 - `ISSUE-003`: implementada para a primeira fonte real com ONS Geração por Usina em Base Horária, mantendo carregador CSV local, aliases de colunas, exemplo offline, limite local de download e `data_source`.
-- `ISSUE-004`: implementada com cache SQLite local que registra payload da análise, origem dos dados, versão de schema, registros normalizados, reuso ONS por período e revalidação configurável por idade máxima.
+- `ISSUE-004`: implementada com cache SQLite local que registra payload da análise, origem dos dados, versão de schema, registros normalizados, reuso ONS por período, revalidação configurável por idade máxima e compactação assistida.
 - `ISSUE-005`: implementada com cálculo de participação renovável e testes.
 - `ISSUE-006`: implementada para visualização inicial com gráfico textual, tabela desktop, painel de estados e gráfico Canvas de geração por fonte.
 - `ISSUE-007`: implementada com integração climática opcional Open-Meteo, fixtures offline, contrato `weather` no JSON/cache, resumo no CLI/desktop e features climáticas simples para o baseline.

@@ -406,7 +406,7 @@ Commits sugeridos:
 
 Status: concluída para o cache SQLite inicial com reuso ONS por período e revalidação configurável.
 
-A implementação atual grava cache SQLite local em `data/cache/analises.sqlite`. O banco registra versão de schema, payload da análise, metadados da fonte e registros normalizados. Para ONS, a aplicação consulta a análise mais recente do mesmo período e reutiliza esses registros antes de chamar o loader de rede. A opção `--ons-cache-max-age-dias` permite ignorar entradas vencidas e revalidar a fonte pública quando o usuário define uma idade máxima.
+A implementação atual grava cache SQLite local em `data/cache/analises.sqlite`. O banco registra versão de schema, payload da análise, metadados da fonte e registros normalizados. Para ONS, a aplicação consulta a análise mais recente do mesmo período e reutiliza esses registros antes de chamar o loader de rede. A opção `--ons-cache-max-age-dias` permite ignorar entradas vencidas e revalidar a fonte pública quando o usuário define uma idade máxima. A opção `--compactar-cache` executa manutenção assistida por `VACUUM` em um cache existente sem apagar registros.
 
 Rastreabilidade:
 
@@ -429,6 +429,7 @@ Entregáveis:
 - leitura e escrita em diretório controlado;
 - consulta por origem e período;
 - política configurável de idade máxima para revalidação ONS;
+- compactação explícita de cache existente;
 - sinalização de `cache_hit`;
 - testes usando diretório temporário.
 
@@ -437,6 +438,7 @@ Critérios de aceite:
 - dados podem ser salvos e recuperados;
 - ONS reutiliza registros do mesmo período sem chamar a fonte pública;
 - ONS ignora registros vencidos quando uma idade máxima é definida;
+- cache local pode ser compactado sem criar arquivo novo quando o banco não existe;
 - cache de dados normalizados não se confunde com o payload serializado da análise;
 - cache não exige serviço externo;
 - testes não escrevem fora de diretório temporário;

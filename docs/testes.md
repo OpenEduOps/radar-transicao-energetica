@@ -31,6 +31,12 @@ focados:
 python -m unittest tests.test_cache tests.test_app
 ```
 
+Quando a mudança afetar manutenção do cache local, validar o caminho de CLI:
+
+```powershell
+python -m unittest tests.test_cache tests.test_cli
+```
+
 Quando a mudança afetar o build local experimental:
 
 ```powershell
@@ -47,6 +53,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 - [x] Testes Open-Meteo devem usar fixtures ou loaders injetados.
 - [x] Testes de cache devem escrever apenas em diretórios temporários.
 - [x] Revalidação ONS por idade máxima deve ser testada com `created_at` sintético, sem rede.
+- [x] Compactação do cache deve exigir arquivo existente e preservar registros gravados.
 - [x] UI desktop deve ser testada por modelo de apresentação e `FakeCanvas`, sem abrir janela na suíte obrigatória.
 - [x] Release pública do `.exe` deve continuar bloqueada enquanto o gate estiver incompleto.
 - [x] Build, upload e checksum de artefato devem permanecer fora da CI atual.
@@ -70,6 +77,7 @@ dist\radar-transicao-energetica.exe --arquivo examples\geracao_exemplo.csv --jso
 - [x] Falha climática opcional não interrompe cálculo elétrico.
 - [x] Cache ONS reutiliza registros normalizados do mesmo período.
 - [x] Cache ONS ignora registros vencidos quando a idade máxima é configurada.
+- [x] Cache local pode ser compactado explicitamente sem executar nova análise.
 - [x] UI desktop exibe geração por fonte, alerta, baseline, clima opcional e estados operacionais.
 - [x] UI desktop não depende apenas de cor para diferenciar fonte ou método.
 - [x] Documentação central possui validação automática de presença, links locais e marcadores mínimos.

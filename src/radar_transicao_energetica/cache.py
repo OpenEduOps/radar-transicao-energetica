@@ -125,6 +125,19 @@ def read_latest_generation_records(path: str | Path) -> list[GenerationRecord]:
     ]
 
 
+def compact_analysis_cache(path: str | Path) -> Path:
+    cache_path = Path(path)
+    _validate_existing_cache_path(cache_path)
+    try:
+        with closing(sqlite3.connect(str(cache_path))) as connection:
+            _ensure_schema(connection)
+            connection.commit()
+            connection.execute("VACUUM")
+    except (OSError, sqlite3.Error) as exc:
+        raise AnalysisCacheError(f"Nao foi possivel compactar o cache em {cache_path}: {exc}") from exc
+    return cache_path
+
+
 def find_generation_records_by_source_period(
     path: str | Path,
     *,

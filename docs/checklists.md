@@ -76,7 +76,7 @@ adiados de propósito.
 - [x] Sinalização de `cache_hit`.
 - [x] Testes com diretório temporário.
 - [x] Política de expiração/revalidação do cache ONS por `--ons-cache-max-age-dias`.
-- [ ] Limpeza/compactação assistida de cache local.
+- [x] Limpeza/compactação assistida de cache local.
 
 ## Fase 6: Visualização Inicial e UI Desktop
 

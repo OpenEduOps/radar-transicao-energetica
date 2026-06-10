@@ -143,6 +143,59 @@ class CliTest(unittest.TestCase):
         self.assertEqual(payload["cache_path"], str(cache_path))
         self.assertEqual(payload["data_source"]["kind"], "exemplo")
 
+    def test_cli_can_compact_existing_cache(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "cache.sqlite"
+            run_analysis(cache_path=cache_path)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "radar_transicao_energetica",
+                    "--cache",
+                    str(cache_path),
+                    "--compactar-cache",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+            payload = read_latest_analysis_cache(cache_path)
+
+        self.assertIn("Cache compactado em:", result.stdout)
+        self.assertEqual(payload["data_source"]["kind"], "exemplo")
+
+    def test_cli_compact_cache_reports_missing_file_without_creating_it(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path.cwd() / "src")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "cache.sqlite"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "radar_transicao_energetica",
+                    "--cache",
+                    str(cache_path),
+                    "--compactar-cache",
+                ],
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+
+            self.assertFalse(cache_path.exists())
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Cache nao encontrado", result.stderr)
+
     def test_cli_reports_invalid_file_with_nonzero_exit(self) -> None:
         env = os.environ.copy()
         env["PYTHONPATH"] = str(Path.cwd() / "src")

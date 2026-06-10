@@ -7,6 +7,7 @@ from typing import Sequence
 
 from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.baseline import BaselinePrediction
+from radar_transicao_energetica.cache import compact_analysis_cache
 from radar_transicao_energetica.charts import (
     render_baseline_comparison_chart,
     render_share_trend,
@@ -33,6 +34,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
+        if args.compactar_cache:
+            compacted_cache_path = compact_analysis_cache(args.cache)
+            print(f"Cache compactado em: {compacted_cache_path}")
+            return 0
+
         ons_year = None
         ons_month = None
         if args.ons_periodo:
@@ -126,6 +132,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--sem-cache",
         action="store_true",
         help="Nao le nem grava cache local da ultima analise.",
+    )
+    parser.add_argument(
+        "--compactar-cache",
+        action="store_true",
+        help="Compacta o arquivo SQLite informado por --cache e encerra sem executar analise.",
     )
     parser.add_argument(
         "--ons-cache-max-age-dias",

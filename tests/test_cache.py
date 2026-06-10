@@ -14,8 +14,10 @@ from radar_transicao_energetica.app import run_analysis
 from radar_transicao_energetica.cache import (
     AnalysisCacheError,
     CACHE_SCHEMA_VERSION,
+    compact_analysis_cache,
     find_generation_records_by_source_period,
     read_latest_analysis_cache,
+    read_latest_generation_records,
 )
 from radar_transicao_energetica.data import GenerationRecord
 
@@ -137,6 +139,28 @@ class CacheTest(unittest.TestCase):
                     source_period="2026-01",
                     max_age_days=-1,
                 )
+
+    def test_compact_analysis_cache_requires_existing_sqlite_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "cache.sqlite"
+
+            with self.assertRaisesRegex(AnalysisCacheError, "Cache nao encontrado"):
+                compact_analysis_cache(cache_path)
+
+            self.assertFalse(cache_path.exists())
+
+    def test_compact_analysis_cache_runs_vacuum_without_removing_records(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_path = Path(tmpdir) / "cache.sqlite"
+            run_analysis(cache_path=cache_path)
+
+            compacted_path = compact_analysis_cache(cache_path)
+            payload = read_latest_analysis_cache(cache_path)
+            cached_records = read_latest_generation_records(cache_path)
+
+        self.assertEqual(compacted_path, cache_path)
+        self.assertEqual(payload["data_source"]["kind"], "exemplo")
+        self.assertGreater(len(cached_records), 0)
 
 
 if __name__ == "__main__":

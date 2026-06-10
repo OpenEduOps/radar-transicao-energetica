@@ -167,6 +167,15 @@ O cache atual mantém:
 
 Quando a análise usa `--fonte ons --ons-periodo YYYY-MM`, a aplicação procura no SQLite a análise ONS mais recente do mesmo período antes de baixar novamente o CSV público. A opção `--ons-cache-max-age-dias N` limita esse reuso a entradas criadas há no máximo `N` dias; entradas vencidas são ignoradas e a coleta ONS é reexecutada. Se a análise também habilitar clima, o payload enriquecido com `weather` é gravado como última análise sem baixar novamente a fonte ONS quando o cache ainda estiver válido. Use `--sem-cache` quando quiser executar sem ler nem gravar esse banco local.
 
+Para compactar um cache SQLite existente sem executar nova análise:
+
+```powershell
+$env:PYTHONPATH='src'
+python -m radar_transicao_energetica --cache data\cache\analises.sqlite --compactar-cache
+```
+
+Essa ação executa `VACUUM` no banco informado, não apaga registros normalizados e falha sem criar arquivo novo quando o cache ainda não existe.
+
 ## Baseline e Avaliação
 
 O baseline atual continua sem `scikit-learn`. A melhoria desta etapa é que a aplicação agora avalia o próprio baseline com comparação walk-forward e, quando há clima alinhado por período, usa uma analogia climática simples:

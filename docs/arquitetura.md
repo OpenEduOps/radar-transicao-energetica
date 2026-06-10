@@ -93,7 +93,7 @@ radar-transicao-energetica/
 | `weather.py` | Construção da URL Open-Meteo, download limitado, normalização horária, resumo climático e validações de coordenadas. |
 | `release.py` | Critérios de readiness e mensagens do gate de release pública do `.exe`. |
 | `serialization.py` | Contrato JSON compartilhado entre CLI e cache. |
-| `cache.py` | Escrita e leitura do cache SQLite local. |
+| `cache.py` | Escrita, leitura, revalidação e compactação assistida do cache SQLite local. |
 | `scripts/check_docs.py` | Validação documental leve de arquivos centrais, links locais e marcadores do plano de testes. |
 | `scripts/check_secrets.py` | Checagem leve de segredos de alta confiança sem dependências externas. |
 | `scripts/build_exe.py` | Build local experimental com PyInstaller, status de release e bloqueio de release pública prematura. |
@@ -140,7 +140,7 @@ Essa normalização fica em `data.py`, enquanto `ons.py` fica responsável por U
 
 Fontes reconhecidas na V0 entram em hidráulica, eólica, solar ou térmica. Fontes não reconhecidas continuam no total de geração e são expostas em `unknown_sources`, preservando rastreabilidade sem assumir classificação indevida.
 
-O cache SQLite atual salva metadados do schema em `cache_metadata`, o payload serializado da análise em `analyses` e registros normalizados em `generation_records`. Ele não persiste o CSV ONS bruto. Para a fonte ONS, a aplicação consulta a análise mais recente do mesmo período e reutiliza os registros normalizados antes de baixar novamente o CSV público. Quando a camada de aplicação recebe uma idade máxima em dias, o `created_at` da análise determina se o cache ainda é válido; entradas vencidas são ignoradas e a fonte ONS é consultada novamente.
+O cache SQLite atual salva metadados do schema em `cache_metadata`, o payload serializado da análise em `analyses` e registros normalizados em `generation_records`. Ele não persiste o CSV ONS bruto. Para a fonte ONS, a aplicação consulta a análise mais recente do mesmo período e reutiliza os registros normalizados antes de baixar novamente o CSV público. Quando a camada de aplicação recebe uma idade máxima em dias, o `created_at` da análise determina se o cache ainda é válido; entradas vencidas são ignoradas e a fonte ONS é consultada novamente. A manutenção assistida usa `VACUUM` somente em arquivo SQLite existente, sem remover registros.
 
 ## Fluxo de Dados Inicial
 
