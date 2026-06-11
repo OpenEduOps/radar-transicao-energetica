@@ -381,19 +381,30 @@ Métricas recomendadas:
 
 ## Stack Técnica
 
-Stack sugerida para o MVP funcional:
+A stack do projeto separa tecnologias já implementadas das tecnologias planejadas ou em avaliação. Essa distinção evita apresentar dependências futuras como parte da base atual do MVP.
 
-- Python;
-- `pandas` para tratamento de dados;
-- `requests` para consumo de APIs e arquivos públicos;
-- `scikit-learn` para modelos de machine learning;
-- SQLite para cache local;
-- Tkinter para a primeira interface desktop;
-- PySide6 para interface desktop;
-- Matplotlib ou Plotly para gráficos;
-- PyInstaller para build local experimental e futura geração de artefato de release.
+Stack atual implementada:
 
-A primeira implementação usa apenas biblioteca padrão do Python para reduzir atrito, manter os testes offline, abrir a primeira tela desktop com Tkinter e permitir o primeiro empacotamento local. `pandas`, `scikit-learn`, PySide6 e gráficos ricos seguem planejados para a evolução do MVP.
+- Python 3.11+;
+- biblioteca padrão do Python para CLI, dados, HTTP, serialização, datas e arquivos;
+- CLI empacotável por entry point do pacote;
+- Tkinter, `ttk` e Canvas para a primeira interface desktop;
+- CSV local, dataset público ONS Geração por Usina em Base Horária e previsão climática horária opcional via Open-Meteo;
+- SQLite para cache local, reuso de registros ONS normalizados e compactação do banco;
+- JSON como contrato de saída da CLI, cache e integração entre camadas;
+- baseline por média móvel, MAE, RMSE, comparação real vs previsto e features climáticas simples;
+- `unittest`, `compileall` e scripts próprios para checagem de documentação, estilo textual e possíveis segredos;
+- GitHub Actions em Windows com Python 3.12 para CI inicial;
+- PyInstaller como dependência opcional de desenvolvimento para build local experimental de `.exe`.
+
+Tecnologias planejadas ou em avaliação para evolução do MVP:
+
+- `pandas`, quando o volume e a complexidade das análises tabulares justificarem a dependência;
+- `requests`, se a camada de coleta HTTP crescer além do suficiente para `urllib`;
+- `scikit-learn`, depois que o baseline simples e a leitura visual estiverem estabilizados;
+- Matplotlib ou Plotly, se os gráficos Canvas deixarem de atender bem a leitura dos dados;
+- PySide6, se Tkinter limitar a evolução visual, acessibilidade ou experiência desktop;
+- workflow de release pública com artefato, checksum e smoke test formal.
 
 ## Arquitetura Inicial
 
