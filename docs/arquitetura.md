@@ -44,11 +44,13 @@ radar-transicao-energetica/
 ├── CONTRIBUTING.md
 ├── docs/
 │   ├── arquitetura.md
+│   ├── checklists.md
 │   ├── ci.md
 │   ├── matriz-issues.md
 │   ├── plano-implementacao.md
 │   ├── planejamento-inicial.md
 │   ├── qa-ui.md
+│   ├── testes.md
 │   └── requisitos.md
 ├── pyproject.toml
 ├── src/

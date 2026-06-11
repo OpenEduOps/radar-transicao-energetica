@@ -416,10 +416,13 @@ radar-transicao-energetica/
 ├── CONTRIBUTING.md
 ├── docs/
 │   ├── arquitetura.md
+│   ├── checklists.md
 │   ├── ci.md
 │   ├── matriz-issues.md
 │   ├── plano-implementacao.md
 │   ├── planejamento-inicial.md
+│   ├── qa-ui.md
+│   ├── testes.md
 │   └── requisitos.md
 ├── pyproject.toml
 ├── src/
@@ -435,6 +438,7 @@ radar-transicao-energetica/
 │       ├── desktop.py
 │       ├── features.py
 │       ├── weather.py
+│       ├── release.py
 │       ├── serialization.py
 │       └── cache.py
 ├── tests/
@@ -453,12 +457,14 @@ Responsabilidades sugeridas:
 - `domain.py`: cálculo de participação renovável;
 - `baseline.py`: baseline por média móvel, MAE, RMSE e comparação real vs previsto;
 - `alerts.py`: regras textuais de alerta;
-- `charts.py`: visualização textual inicial;
-- `desktop.py`: primeira interface desktop em Tkinter;
+- `charts.py`: visualização textual inicial por fonte, tendência e baseline;
+- `desktop.py`: primeira interface desktop em Tkinter, gráficos Canvas, estados operacionais e acessibilidade básica;
 - `features.py`: alinhamento de features climáticas simples por período e cálculo de distância climática;
 - `weather.py`: URL, coleta limitada, normalização e resumo climático Open-Meteo;
+- `release.py`: critérios do gate de release pública do `.exe`;
 - `serialization.py`: contrato JSON compartilhado por CLI e cache;
-- `cache.py`: escrita e leitura do cache SQLite local.
+- `cache.py`: escrita, leitura, revalidação e compactação assistida do cache SQLite local;
+- `scripts/`: checagens documentais, estilo textual, segredos e build local experimental.
 
 ## Critérios de Sucesso do MVP
 

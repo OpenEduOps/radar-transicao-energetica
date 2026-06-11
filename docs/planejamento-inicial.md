@@ -204,10 +204,13 @@ radar-transicao-energetica/
 ├── CONTRIBUTING.md
 ├── docs/
 │   ├── arquitetura.md
+│   ├── checklists.md
 │   ├── ci.md
 │   ├── matriz-issues.md
 │   ├── plano-implementacao.md
 │   ├── planejamento-inicial.md
+│   ├── qa-ui.md
+│   ├── testes.md
 │   └── requisitos.md
 ├── pyproject.toml
 ├── src/
@@ -227,27 +230,30 @@ radar-transicao-energetica/
 │       ├── serialization.py
 │       └── cache.py
 ├── tests/
+├── examples/
+├── scripts/
 └── data/
     └── cache/
 ```
 
 Responsabilidades:
 
-- `data.py`: leitura, normalização e validação de CSV;
+- `data.py`: leitura, normalização e validação de dados de geração;
 - `ons.py`: carregamento do dataset público ONS Geração por Usina em Base Horária;
-- `domain.py`: cálculo de participação renovável;
-- `baseline.py`: baseline por média móvel, MAE, RMSE e comparação real vs previsto;
+- `domain.py`: cálculo de participação renovável e agregações por período;
+- `baseline.py`: baseline por média móvel, MAE, RMSE, analogia climática simples e comparação real vs previsto;
 - `alerts.py`: alerta interpretável;
-- `charts.py`: visualização textual inicial;
-- `desktop.py`: interface desktop inicial em Tkinter, incluindo painel de estados operacionais e acessibilidade básica;
+- `charts.py`: visualização textual inicial por fonte, tendência e comparação real vs previsto;
+- `desktop.py`: interface desktop inicial em Tkinter, gráficos Canvas, painel de estados operacionais e acessibilidade básica;
 - `release.py`: gate de release pública do `.exe`;
 - `features.py`: alinhamento de clima por período, features climáticas simples e distância climática;
 - `weather.py`: fonte climática Open-Meteo, validações, normalização e resumo;
-- `cache.py`: cache SQLite local;
-- `serialization.py`: contrato JSON compartilhado entre CLI e cache, incluindo `data_source`;
+- `cache.py`: cache SQLite local, reuso ONS, revalidação por idade máxima e compactação assistida;
+- `serialization.py`: contrato JSON compartilhado entre CLI e cache, incluindo `data_source`, `weather` e baseline;
 - `app.py`: composição da aplicação;
 - `cli.py`: ponto de entrada de linha de comando;
-- `tests`: testes unitários, integração leve e validação de regras.
+- `scripts`: checagens documentais, estilo textual, segredos e build local experimental;
+- `tests`: testes unitários, integração leve, packaging e QA automatizado sem janela.
 
 Princípios iniciais:
 

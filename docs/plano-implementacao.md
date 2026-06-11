@@ -118,9 +118,12 @@ Entregas já disponíveis:
 - `docs/planejamento-inicial.md`;
 - `docs/requisitos.md`;
 - `docs/arquitetura.md`;
+- `docs/checklists.md`;
 - `docs/matriz-issues.md`;
 - `docs/ci.md`;
-- `docs/plano-implementacao.md`.
+- `docs/plano-implementacao.md`;
+- `docs/qa-ui.md`;
+- `docs/testes.md`.
 
 Critério de aceite:
 

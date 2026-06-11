@@ -20,6 +20,9 @@ adiados de propósito.
 - [x] `docs/matriz-issues.md` criado.
 - [x] `docs/ci.md` criado.
 - [x] `docs/plano-implementacao.md` criado.
+- [x] `docs/checklists.md` criado.
+- [x] `docs/testes.md` criado.
+- [x] `docs/qa-ui.md` criado.
 - [x] Template local de planejamento mantido fora do Git.
 
 ## Fase 1: Scaffold Python
